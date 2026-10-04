@@ -401,7 +401,7 @@ esp_err_t esp_send_multicast(void)
 * รองรับมาตรฐาน **DNS-SD (DNS Service Discovery - RFC 6763)** เพื่อบอกประเภทบริการ (Service Type เช่น `_http._tcp`) และหมายเลขพอร์ตได้ในตัว
 
 <p align="center">
-<img src="Images/mdns-SD.svg" width="600">
+<img src="Images/mDNS-SD.svg" width="600">
 </p>
 
 <p align="center">
