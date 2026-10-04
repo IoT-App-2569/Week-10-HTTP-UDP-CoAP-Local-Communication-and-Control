@@ -33,30 +33,107 @@
 
 ## 3. ขั้นตอนการทดลอง (Deconstructed Activities)
 
-### กิจกรรมที่ 1.1: การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง
-สร้างโปรเจกต์ผ่านคำสั่ง ESP-IDF:
+### กิจกรรมที่ 1.1 การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง Dependency
+
+#### 1. สร้างโปรเจกต์ใหม่
+สร้างโฟลเดอร์โปรเจกต์ผ่านคำสั่ง ESP-IDF
 
 ```powershell
 idf.py create-project Lab10-1_HTTP_REST_Server
 cd Lab10-1_HTTP_REST_Server
 ```
 
-ตั้งค่า Target ชิปเป็น ESP32 ธรรมดา:
+**หรือรันผ่าน Docker**
+```powershell
+# รันคำสั่งสร้างโปรเจกต์ Lab10-1_HTTP_REST_Server ในโฟลเดอร์ปัจจุบัน
+docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py create-project Lab10-1_HTTP_REST_Server
+
+# เข้าสู่ไดเรกทอรีโปรเจกต์
+cd Lab10-1_HTTP_REST_Server
+```
+
+#### 2. กำหนด Target เป็นชิป ESP32
 ```powershell
 idf.py set-target esp32
 ```
 
-ตรวจสอบไฟล์ `main/CMakeLists.txt` ให้ดึงคอมโพเนนต์ `esp_http_server`, `mdns`, `esp_wifi`, และ `json` เข้ามาร่วมบิลด์:
-```cmake
-idf_component_register(SRCS "main.c"
-                       INCLUDE_DIRS "."
-                       REQUIRES esp_http_server mdns esp_wifi esp_event nvs_flash json esp_adc)
+**หรือรันผ่าน Docker (ต้อง cd เข้าไปใน  `Lab10-1_HTTP_REST_Server` ก่อนรันคำสั่ง)**
+```powershell
+docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py set-target esp32
 ```
+
+#### 3. การเพิ่ม Dependency: `mdns` และ `cjson` (IDF Component Manager)
+
+> [!IMPORTANT] **ข้อควรทราบสำคัญสำหรับ ESP-IDF v5.x และ v6.x**
+> ใน ESP-IDF เวอร์ชัน 5.0 ขึ้นไป คอมโพเนนต์ **`mdns`** และ **`cJSON`** ถูกแยกออกจากคอร์หลักของ ESP-IDF ย้ายไปยัง **IDF Component Registry** (`https://components.espressif.com`) 
+> หากระบุ `REQUIRES mdns` หรือ `REQUIRES json` โดยตรงใน `CMakeLists.txt` ระบบจะแจ้งเตือนความผิดพลาดต่อไปนี้
+> ```text
+> HINT: The component 'mdns' could not be found... 
+> component has been moved to the IDF component manager
+> ```
+> จึงจำเป็นต้องลงทะเบียน Dependency ผ่าน Component Manager ก่อนเสมอ
+
+เพิ่มคอมโพเนนต์ `espressif/mdns` และ `espressif/cjson` เข้าโปรเจกต์ โดยรันคำสั่งต่อไปนี้
+
+```powershell
+idf.py add-dependency "espressif/mdns"
+idf.py add-dependency "espressif/cjson"
+```
+
+**หรือรันผ่าน Docker (จากภายในโฟลเดอร์โปรเจกต์):**
+```powershell
+docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py add-dependency "espressif/mdns"
+docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py add-dependency "espressif/cjson"
+```
+
+คำสั่ง add-dependency จะไปแก้ไขไฟล์ `idf_component.yml` ใน main และถ้ายังไม่มีไฟล์ดังกล่าว idf จะสร้างไฟล์ดังกล่าวให้โดยอัตโนมัติ
+ผลลัพธ์ที่ได้จะมีหน้าตาคล้ายดังนี้
+```yaml
+dependencies:
+  idf:
+    version: "~6.0.0"
+  espressif/mdns:
+    version: "~3.1.0"
+  espressif/cjson:
+    version: "~1.8.1"  
+```
+
+*ถ้าไม่อยากรันสองคำสั่งด้านบน ให่สร้าง/ตรวจสอบไฟล์ `main/idf_component.yml` ให้มีเนื้อหาดังนี้*
+```yaml
+dependencies:
+  idf:
+    version: '>=4.1.0'
+  espressif/mdns: '*'
+  espressif/cjson: '*'
+```
+
+#### 4. ตั้งค่า `main/CMakeLists.txt`
+เปิดไฟล์ `main/CMakeLists.txt` และตรวจสอบว่าได้เรียกใช้คอมโพเนนต์ที่จำเป็นครบถ้วน:
+
+```cmake
+idf_component_register(SRCS "Lab10-1_HTTP_REST_Server.c"
+                       INCLUDE_DIRS "."
+                       REQUIRES esp_http_server mdns esp_wifi esp_event nvs_flash cjson esp_adc)
+```
+*(หมายเหตุ: ใน ESP-IDF v6.x ให้ใช้ `cjson` แทน `json` และตรวจดูชื่อไฟล์ใน `SRCS` ให้ตรงกับไฟล์โค้ดจริงในโฟลเดอร์ `main`)*
+
+#### 5. ทดสอบ Reconfigure ระบบบิลด์
+ทดสอบรันคำสั่ง Reconfigure เพื่อให้ระบบดาวน์โหลดคอมโพเนนต์และสร้างบิลด์ไฟล์:
+```powershell
+idf.py reconfigure
+```
+
+**หรือรันผ่าน Docker:**
+```powershell
+docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py reconfigure
+```
+เมื่อปรากฏข้อความ `-- Configuring done` และ `-- Generating done` แสดงว่าโครงสร้างโปรเจกต์พร้อมสำหรับการเขียนโค้ดในกิจกรรมถัดไป
+
 
 ---
 
-### กิจกรรมที่ 1.2: การติดตั้งและเปิดใช้งานบริการ mDNS
-ในไฟล์ `main/main.c` เขียนฟังก์ชันสำหรับเริ่มต้นระบบ mDNS:
+### กิจกรรมที่ 1.2 การติดตั้งและเปิดใช้งานบริการ mDNS
+ในไฟล์ `main/main.c` เขียนฟังก์ชันสำหรับเริ่มต้นระบบ mDNS
 
 ```c
 #include "mdns.h"
