@@ -33,7 +33,7 @@
 
 ## 3. ขั้นตอนการทดลอง (Deconstructed Activities)
 
-### กิจกรรมที่ 1.1 การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง Dependency
+### กิจกรรมที่ 10-1.1 การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง Dependency
 
 #### 1. สร้างโปรเจกต์ใหม่
 สร้างโฟลเดอร์โปรเจกต์ผ่านคำสั่ง ESP-IDF
@@ -132,7 +132,7 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 
 ---
 
-### กิจกรรมที่ 1.2 การติดตั้งและเปิดใช้งานบริการ mDNS
+### กิจกรรมที่ 10-1.2 การติดตั้งและเปิดใช้งานบริการ mDNS
 ในไฟล์ `main/Lab10-1_HTTP_REST_Server.c` เขียนฟังก์ชันสำหรับเริ่มต้นระบบ mDNS
 
 ```c
@@ -159,7 +159,7 @@ static void initialise_mdns(void)
 
 ---
 
-### กิจกรรมที่ 1.3: การพัฒนา REST API Endpoints บน `esp_http_server`
+### กิจกรรมที่ 10-1.3  การพัฒนา REST API Endpoints บน `esp_http_server`
 เขียนฟังก์ชัน Handler สำหรับรองรับคำสั่ง **GET** และ **POST**:
 
 ```c
@@ -215,7 +215,7 @@ static esp_err_t led_post_handler(httpd_req_t *req)
 
 ---
 
-### กิจกรรมที่ 1.4: การจัดการระบบ Wi-Fi และการเริ่มต้นระบบทั้งหมดใน `app_main()`
+### กิจกรรมที่ 10-1.4 การจัดการระบบ Wi-Fi และการเริ่มต้นระบบทั้งหมดใน `app_main()`
 
 ในกิจกรรมนี้ นักศึกษาจะผูกระบบทั้งหมดเข้าด้วยกัน โดยประกอบด้วย:
 1. การเชื่อมต่อ Wi-Fi Station
@@ -606,7 +606,7 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 
 ---
 
-### กิจกรรมที่ 1.5: การทดสอบและตรวจพิสูจน์ (Verification & Forensics)
+### กิจกรรมที่ 10-1.5 การทดสอบและตรวจพิสูจน์ (Verification & Forensics)
 
 #### 1. ตรวจสอบ mDNS ด้วยคำสั่ง ping
 เปิด Terminal บนเครื่องคอมพิวเตอร์ที่อยู่ในวง Wi-Fi เดียวกัน:
