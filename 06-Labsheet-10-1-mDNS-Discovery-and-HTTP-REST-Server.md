@@ -115,9 +115,12 @@ idf_component_register(SRCS "Lab10-1_HTTP_REST_Server.c"
                        INCLUDE_DIRS "."
                        REQUIRES esp_http_server mdns esp_wifi esp_event nvs_flash cjson esp_adc esp_driver_gpio)
 ```
-*(หมายเหตุ ใน ESP-IDF v6.x ให้ใช้ `cjson` แทน `json` และเพิ่ม `esp_driver_gpio` สำหรับควบคุมขา GPIO รวมถึงตรวจดูชื่อไฟล์ใน `SRCS` ให้ตรงกับไฟล์โค้ดจริงในโฟลเดอร์ `main`)*
+*หมายเหตุ* 
+1. ให้แทรกบรรทัด `REQUIRES esp_http_server mdns esp_wifi esp_event nvs_flash cjson esp_adc esp_driver_gpio` ระหว่าง `INCLUDE_DIRS "."` และ `)`
+2. ใน ESP-IDF v6.x ให้ใช้ `cjson` แทน `json` และเพิ่ม `esp_driver_gpio` สำหรับควบคุมขา GPIO รวมถึงตรวจดูชื่อไฟล์ใน `SRCS` ให้ตรงกับไฟล์โค้ดจริงในโฟลเดอร์ `main`
 
 #### 5. ทดสอบ Reconfigure ระบบบิลด์
+
 ทดสอบรันคำสั่ง Reconfigure เพื่อให้ระบบดาวน์โหลดคอมโพเนนต์และสร้างบิลด์ไฟล์
 ```powershell
 idf.py reconfigure
@@ -127,12 +130,13 @@ idf.py reconfigure
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py reconfigure
 ```
+
 เมื่อปรากฏข้อความ `-- Configuring done` และ `-- Generating done` แสดงว่าโครงสร้างโปรเจกต์พร้อมสำหรับการเขียนโค้ดในกิจกรรมถัดไป
 
 
 ---
-
 ### กิจกรรมที่ 10-1.2 การติดตั้งและเปิดใช้งานบริการ mDNS
+
 ในไฟล์ `main/Lab10-1_HTTP_REST_Server.c` เขียนฟังก์ชันสำหรับเริ่มต้นระบบ mDNS
 
 ```c
@@ -160,6 +164,7 @@ static void initialise_mdns(void)
 ---
 
 ### กิจกรรมที่ 10-1.3  การพัฒนา REST API Endpoints บน `esp_http_server`
+
 เขียนฟังก์ชัน Handler สำหรับรองรับคำสั่ง **GET** และ **POST**
 
 ```c
