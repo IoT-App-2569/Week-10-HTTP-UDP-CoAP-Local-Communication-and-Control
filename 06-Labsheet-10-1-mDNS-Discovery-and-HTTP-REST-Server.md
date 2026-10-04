@@ -300,6 +300,27 @@ void app_main(void)
 }
 ```
 
+
+### ตารางสรุป Header Files ที่ต้องใส่ใน  `Lab10-1_HTTP_REST_Server.c` และหน้าที่การทำงาน
+
+| Header file               | หน้าที่และขอบเขตการใช้งานในแล็บนี้                                                                               |
+| :------------------------ | :--------------------------------------------------------------------------------------------------------------- |
+| `stdio.h`                 | ฟังก์ชันมาตรฐานภาษา C สำหรับการจัดการ Input/Output เช่น การจัดรูปแบบข้อความด้วย `snprintf()`                     |
+| `string.h`                | ฟังก์ชันจัดการสตริงและบล็อกหน่วยความจำ เช่น `strlen()`, `memset()`, `memcpy()`                                   |
+| `esp_log.h`               | ระบบส่งข้อความแจ้งเตือนและดีบั๊ก (Logging) ของ ESP-IDF เช่น `ESP_LOGI()`, `ESP_LOGE()`, `ESP_LOGW()`             |
+| `nvs_flash.h`             | จัดการ Non-Volatile Storage (NVS) เพื่อเก็บการตั้งค่าระดับฟิสิคัล ซึ่งจำเป็นต่อการเริ่มระบบ Wi-Fi Driver         |
+| `esp_netif.h`             | ตัวกลางจัดการ TCP/IP Network Interface Adapter (เชื่อมโยงระหว่างไดรเวอร์เครือข่ายและสแตก LwIP)                   |
+| `esp_event.h`             | ระบบ Default Event Loop ของ ESP-IDF สำหรับกระจายและดักรับเหตุการณ์ของระบบ (เช่น Wi-Fi connected, IP acquired)    |
+| `esp_wifi.h`              | ไดรเวอร์ควบคุมวิทยุ Wi-Fi ทั้งหมด (การกำหนดโหมด Station, การตั้งค่า SSID/Password, และการเชื่อมต่อ AP)           |
+| `freertos/FreeRTOS.h`     | โครงสร้างหลัก ไทป์ตัวแปร และมาโครพื้นฐานของระบบปฏิบัติการเวลาจริง FreeRTOS                                       |
+| `freertos/task.h`         | การจัดการงาน (Tasks), การสลับบริบทการทำงาน และการหน่วงเวลา (`vTaskDelay`, `portMAX_DELAY`)                       |
+| `freertos/event_groups.h` | กลไก Event Group สำหรับ Synchronization ซิงค์สถานะระหว่าง Event Loop กับ Task หลักด้วย Event Bits                |
+| `esp_http_server.h`       | คอมโพเนนต์ HTTP Server ทางการของ ESP-IDF สำหรับจัดการ HTTP Requests, รับ/ส่ง Header, และลงทะเบียน URI Handlers   |
+| `cJSON.h`                 | ไลบรารีสำหรับพาร์สข้อมูล (JSON Parsing) และสร้างสตริง JSON Payload (JSON Serialization) ตอบกลับไคลเอนต์          |
+| `driver/gpio.h`           | ไดรเวอร์ควบคุมขา Hardware GPIO (กำหนดทิศทาง Input/Output และอ่าน/เขียนระดับสัญญาณเปิด-ปิดไฟ LED)                 |
+| `mdns.h`                  | คอมโพเนนต์ Multicast DNS (mDNS) สำหรับประกาศชื่อโฮสต์เสมือน (`esp32-node.local`) และบริการ DNS-SD บนเครือข่ายแลน |
+| `esp_adc/adc_oneshot.h`   | ไดรเวอร์ ADC โหมด Oneshot บน ESP-IDF v5/v6 สำหรับอ่านค่าแรงดันอนาล็อกจาก Potentiometer (GPIO 34)                 |
+
 <details>
 <summary><b>🔍 คลิกดูซอร์สโค้ดฉบับสมบูรณ์ทั้งไฟล์ (Lab10-1_HTTP_REST_Server.c)</b></summary>
 
@@ -388,11 +409,16 @@ static bool wifi_init_sta(void)
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = CONFIG_WIFI_SSID,
-            .password = CONFIG_WIFI_PASSWORD,
             .threshold.authmode = WIFI_AUTH_WPA2_PSK,
         },
     };
+    size_t ssid_len = strlen(CONFIG_WIFI_SSID);
+    if (ssid_len > sizeof(wifi_config.sta.ssid)) ssid_len = sizeof(wifi_config.sta.ssid);
+    memcpy(wifi_config.sta.ssid, CONFIG_WIFI_SSID, ssid_len);
+
+    size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
+    if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
+    memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
@@ -563,6 +589,21 @@ idf.py build
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py build
 ```
 
+#### 4. คำสั่ง Flash โปรเจกต์
+
+
+```powershell
+idf.py flash -p <COMxx>
+```
+
+**หรือคอมไพล์ผ่าน Docker:**
+```powershell
+python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 2MB --flash_freq 40m 0x1000  build/bootloader/bootloader.bin 0x8000  build/partition_table/partition-table.bin 0x10000 build/Lab10-1_HTTP_REST_Server.bin && idf monitor -p <COMxx>
+```
+
+
+
+
 ---
 
 ### กิจกรรมที่ 1.5: การทดสอบและตรวจพิสูจน์ (Verification & Forensics)
@@ -572,20 +613,52 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 ```powershell
 ping esp32-node.local
 ```
-*(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้)*
+*(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
+
+> [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
+> หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้:
+> 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network":**
+>    เปิด **Settings** $\rightarrow$ **Network & internet** $\rightarrow$ **Wi-Fi** $\rightarrow$ คลิกที่ชื่อเครือข่าย Wi-Fi ที่เชื่อมต่อ $\rightarrow$ เปลี่ยนจาก **Public network** เป็น **Private network** (เนื่องจาก Public network บน Windows จะสั่ง Firewall บล็อกแพ็กเก็ต mDNS UDP 5353 ขาเข้าทั้งหมด)
+> 2. **ปิดหรือถอดสาย LAN ที่ต่อซ้อนอยู่:**
+>    หากเครื่องคอมพิวเตอร์เสียบสาย LAN ไว้ด้วย Windows จะจัดลำดับ Routing Metric ให้สาย LAN สูงกว่า Wi-Fi เสมอ ทำให้แพ็กเก็ต Multicast (`224.0.0.251`) ถูกส่งออกไปทางสาย LAN แทนที่จะเป็น Wi-Fi ที่ ESP32 เกาะอยู่ ให้ปิด (Disable) การ์ดแลนหรือถอดสาย LAN ออกชั่วคราวขณะทดสอบ mDNS
 
 #### 2. ทดสอบอ่านค่าเซนเซอร์ผ่าน cURL
+เปิด PowerShell แล้วรันคำสั่ง (แนะนำให้พิมพ์ `curl.exe` เพื่อเรียกใช้โปรแกรม cURL แท้ของระบบแทน PowerShell Alias):
 ```powershell
-curl -X GET http://esp32-node.local/api/status
+curl.exe -X GET http://esp32-node.local/api/status
+```
+ผลลัพธ์ที่ได้จะเป็น JSON Payload เช่น:
+```json
+{"pot_raw":15,"free_heap":213848,"led":true}
 ```
 
-#### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL
+#### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
+
+**วิธีที่ 1: ใช้ `curl.exe` (ครอบสตริง JSON ด้วย Single Quote เพื่อป้องกัน PowerShell ตัดเครื่องหมายคำพูด):**
+```powershell
+# สั่งเปิดไฟ LED (GPIO 2)
+curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
+
+# สั่งปิดไฟ LED (GPIO 2)
+curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": false}'
+```
+การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
+
+
+**วิธีที่ 2: ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows):**
 ```powershell
 # สั่งเปิดไฟ LED
-curl -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d "{\"state\": true}"
+Invoke-RestMethod -Uri "http://esp32-node.local/api/led" -Method POST -ContentType "application/json" -Body '{"state": true}'
 
 # สั่งปิดไฟ LED
-curl -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d "{\"state\": false}"
+Invoke-RestMethod -Uri "http://esp32-node.local/api/led" -Method POST -ContentType "application/json" -Body '{"state": false}'
+```
+*สามารถสังเกตสถานะหลอดไฟ LED บนบอร์ด ESP32 ติด/ดับตามคำสั่ง และข้อความตอบกลับ เป็น *
+
+```
+result
+------
+success
 ```
 
 ---
