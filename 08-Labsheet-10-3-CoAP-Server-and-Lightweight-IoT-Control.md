@@ -51,7 +51,7 @@ idf.py set-target esp32
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py set-target esp32
 ```
 
-#### 3. การเพิ่ม Dependency: `espressif/coap` (IDF Component Manager)
+#### 3. การเพิ่ม Dependency  `espressif/coap` (IDF Component Manager)
 ใน ESP-IDF v5/v6 ไลบรารี `libcoap` ถูกย้ายไปอยู่บน Component Registry จึงต้องลงทะเบียน dependency ก่อนเสมอ
 
 ```powershell
@@ -83,7 +83,7 @@ idf_component_register(SRCS "Lab10-3_CoAP_Server.c"
 > [!IMPORTANT] **ข้อกำหนดสำคัญสำหรับ `espressif/coap`**
 > ไลบรารี `libcoap` มีการเรียกใช้ฟังก์ชัน DTLS cookie (`mbedtls_ssl_cookie_*`) ซึ่งค่าเริ่มต้นของ ESP-IDF จะปิดใช้งาน DTLS ไว้ หากไม่เปิดใช้งานจะเกิด Linker Error (`undefined reference to mbedtls_ssl_cookie_init`)
 >
-> ให้สร้างไฟล์ `sdkconfig.defaults` ในโฟลเดอร์หลักของโปรเจกต์ `Lab10-3_CoAP_Server/`:
+> ให้สร้างไฟล์ `sdkconfig.defaults` ในโฟลเดอร์หลักของโปรเจกต์ `Lab10-3_CoAP_Server/`
 > ```ini
 > CONFIG_MBEDTLS_SSL_PROTO_DTLS=y
 > CONFIG_MBEDTLS_SSL_COOKIE_C=y
@@ -95,7 +95,7 @@ idf_component_register(SRCS "Lab10-3_CoAP_Server.c"
 idf.py reconfigure
 ```
 
-**หรือรันผ่าน Docker:**
+**หรือรันผ่าน Docker**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py reconfigure
 ```
@@ -105,7 +105,7 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 ---
 
 ### กิจกรรมที่ 10-3.2 การพัฒนา Handlers สำหรับ Resource `/sensor/pot` และ `/actuator/led`
-เขียนฟังก์ชัน Callback สำหรับจัดการคำขออ่านค่าเซนเซอร์ (GET) และสั่งงานควบคุม LED (PUT):
+เขียนฟังก์ชัน Callback สำหรับจัดการคำขออ่านค่าเซนเซอร์ (GET) และสั่งงานควบคุม LED (PUT)
 
 ```c
 #include "coap3/coap.h"
@@ -157,7 +157,7 @@ static void hnd_put_led(coap_resource_t *resource,
 ---
 
 ### กิจกรรมที่ 10-3.3 การพัฒนา CoAP Server FreeRTOS Task
-สร้าง Task สำหรับเริ่มต้น CoAP Context, ลงทะเบียน Resources, และวนลูปประมวลผล Event Loop ด้วย `coap_io_process()`:
+สร้าง Task สำหรับเริ่มต้น CoAP Context, ลงทะเบียน Resources, และวนลูปประมวลผล Event Loop ด้วย `coap_io_process()`
 
 ```c
 static void coap_server_task(void *pvParameters)
@@ -215,7 +215,7 @@ static void coap_server_task(void *pvParameters)
 
 ### กิจกรรมที่ 10-3.4 การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main(void)`
 
-ในกิจกรรมนี้ จะเป็นการประกอบระบบทั้งหมดเข้าด้วยกัน โดยมีขั้นตอนสำคัญใน `app_main()` ดังนี้:
+ในกิจกรรมนี้ จะเป็นการประกอบระบบทั้งหมดเข้าด้วยกัน โดยมีขั้นตอนสำคัญใน `app_main()` ดังนี้
 1. เริ่มต้นระบบหน่วยความจำแฟลช **NVS (Non-Volatile Storage)** ซึ่งจำเป็นสำหรับโมดูล Wi-Fi Driver
 2. เริ่มต้น **LwIP TCP/IP Stack** และ **Default Event Loop**
 3. กำหนดค่าฮาร์ดแวร์ **GPIO 2 (LED)** เป็นโหมด Input/Output และ **ADC1 Channel 6 (GPIO 34)** สำหรับอ่านค่า Potentiometer
@@ -552,16 +552,16 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 ### กิจกรรมที่ 10-3.5 การทดสอบด้วย Python aiocoap Script บนคอมพิวเตอร์
 
 #### 1. ติดตั้งไลบรารี aiocoap
-เปิด PowerShell บนเครื่องคอมพิวเตอร์:
+เปิด PowerShell บนเครื่องคอมพิวเตอร์
 ```powershell
 pip install aiocoap
 ```
 
 #### 2. สคริปต์ทดสอบ CoAP Client (`test_coap.py`)
-สร้างไฟล์ `test_coap.py` บนเครื่องคอมพิวเตอร์ เพื่อทดสอบ 3 การทำงานหลัก:
-1. **Resource Discovery (`/.well-known/core`)**: ค้นหารายการ Resource ทั้งหมดบน ESP32
-2. **GET `/sensor/pot`**: อ่านค่าเซนเซอร์อนาล็อก
-3. **PUT `/actuator/led`**: สั่งเปิด-ปิดหลอดไฟ LED
+สร้างไฟล์ `test_coap.py` บนเครื่องคอมพิวเตอร์ เพื่อทดสอบ 3 การทำงานหลัก
+1. **Resource Discovery (`/.well-known/core`)** ค้นหารายการ Resource ทั้งหมดบน ESP32
+2. **GET `/sensor/pot`** อ่านค่าเซนเซอร์อนาล็อก
+3. **PUT `/actuator/led`** สั่งเปิด-ปิดหลอดไฟ LED
 
 ```python
 import asyncio

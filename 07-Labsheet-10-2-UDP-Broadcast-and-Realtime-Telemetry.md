@@ -68,7 +68,7 @@ idf_component_register(SRCS "Lab10-2_UDP_Telemetry_Socket.c"
 idf.py reconfigure
 ```
 
-**หรือรันผ่าน Docker:**
+**หรือรันผ่าน Docker**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py reconfigure
 ```
@@ -186,7 +186,7 @@ void udp_telemetry_broadcast_task(void *pvParameters)
 
 ### กิจกรรมที่ 10-2.4 การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main()`
 
-ในกิจกรรมนี้ จะเป็นการประกอบระบบทั้งหมดเข้าด้วยกัน โดยมีขั้นตอนสำคัญใน `app_main()` ดังนี้:
+ในกิจกรรมนี้ จะเป็นการประกอบระบบทั้งหมดเข้าด้วยกัน โดยมีขั้นตอนสำคัญใน `app_main()` ดังนี้
 1. เริ่มต้นระบบหน่วยความจำแฟลช **NVS (Non-Volatile Storage)** ซึ่งจำเป็นสำหรับโมดูล Wi-Fi Driver
 2. เริ่มต้น **LwIP TCP/IP Stack** และ **Default Event Loop**
 3. กำหนดค่าฮาร์ดแวร์ **GPIO 2 (LED)** เป็นโหมด Input/Output และ **ADC1 Channel 6 (GPIO 34)** สำหรับอ่านค่า Potentiometer
@@ -547,7 +547,7 @@ except KeyboardInterrupt:
 ```
 
 #### 2. สคริปต์ทดสอบคำสั่งควบคุมและวัด RTT Latency (`udp_controller.py`)
-สร้างไฟล์ `udp_controller.py` เพื่อส่งคำสั่งเปิด-ปิด LED และวัดเวลา Round-Trip Latency:
+สร้างไฟล์ `udp_controller.py` เพื่อส่งคำสั่งเปิด-ปิด LED และวัดเวลา Round-Trip Latency
 
 ```python
 import socket

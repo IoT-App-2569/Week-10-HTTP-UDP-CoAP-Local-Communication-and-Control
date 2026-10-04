@@ -62,7 +62,7 @@ idf.py set-target esp32
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py set-target esp32
 ```
 
-#### 3. การเพิ่ม Dependency: `mdns` และ `cjson` (IDF Component Manager)
+#### 3. การเพิ่ม Dependency `mdns` และ `cjson` (IDF Component Manager)
 
 > [!IMPORTANT] **ข้อควรทราบสำคัญสำหรับ ESP-IDF v5.x และ v6.x**
 > ใน ESP-IDF เวอร์ชัน 5.0 ขึ้นไป คอมโพเนนต์ **`mdns`** และ **`cJSON`** ถูกแยกออกจากคอร์หลักของ ESP-IDF ย้ายไปยัง **IDF Component Registry** (`https://components.espressif.com`) 
@@ -80,7 +80,7 @@ idf.py add-dependency "espressif/mdns"
 idf.py add-dependency "espressif/cjson"
 ```
 
-**หรือรันผ่าน Docker (จากภายในโฟลเดอร์โปรเจกต์):**
+**หรือรันผ่าน Docker (จากภายในโฟลเดอร์โปรเจกต์)**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py add-dependency "espressif/mdns"
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py add-dependency "espressif/cjson"
@@ -108,22 +108,22 @@ dependencies:
 ```
 
 #### 4. ตั้งค่า `main/CMakeLists.txt`
-เปิดไฟล์ `main/CMakeLists.txt` และตรวจสอบว่าได้เรียกใช้คอมโพเนนต์ที่จำเป็นครบถ้วน:
+เปิดไฟล์ `main/CMakeLists.txt` และตรวจสอบว่าได้เรียกใช้คอมโพเนนต์ที่จำเป็นครบถ้วน
 
 ```cmake
 idf_component_register(SRCS "Lab10-1_HTTP_REST_Server.c"
                        INCLUDE_DIRS "."
                        REQUIRES esp_http_server mdns esp_wifi esp_event nvs_flash cjson esp_adc esp_driver_gpio)
 ```
-*(หมายเหตุ: ใน ESP-IDF v6.x ให้ใช้ `cjson` แทน `json` และเพิ่ม `esp_driver_gpio` สำหรับควบคุมขา GPIO รวมถึงตรวจดูชื่อไฟล์ใน `SRCS` ให้ตรงกับไฟล์โค้ดจริงในโฟลเดอร์ `main`)*
+*(หมายเหตุ ใน ESP-IDF v6.x ให้ใช้ `cjson` แทน `json` และเพิ่ม `esp_driver_gpio` สำหรับควบคุมขา GPIO รวมถึงตรวจดูชื่อไฟล์ใน `SRCS` ให้ตรงกับไฟล์โค้ดจริงในโฟลเดอร์ `main`)*
 
 #### 5. ทดสอบ Reconfigure ระบบบิลด์
-ทดสอบรันคำสั่ง Reconfigure เพื่อให้ระบบดาวน์โหลดคอมโพเนนต์และสร้างบิลด์ไฟล์:
+ทดสอบรันคำสั่ง Reconfigure เพื่อให้ระบบดาวน์โหลดคอมโพเนนต์และสร้างบิลด์ไฟล์
 ```powershell
 idf.py reconfigure
 ```
 
-**หรือรันผ่าน Docker:**
+**หรือรันผ่าน Docker**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py reconfigure
 ```
@@ -160,7 +160,7 @@ static void initialise_mdns(void)
 ---
 
 ### กิจกรรมที่ 10-1.3  การพัฒนา REST API Endpoints บน `esp_http_server`
-เขียนฟังก์ชัน Handler สำหรับรองรับคำสั่ง **GET** และ **POST**:
+เขียนฟังก์ชัน Handler สำหรับรองรับคำสั่ง **GET** และ **POST**
 
 ```c
 #include <esp_http_server.h>
@@ -217,7 +217,7 @@ static esp_err_t led_post_handler(httpd_req_t *req)
 
 ### กิจกรรมที่ 10-1.4 การจัดการระบบ Wi-Fi และการเริ่มต้นระบบทั้งหมดใน `app_main()`
 
-ในกิจกรรมนี้ นักศึกษาจะผูกระบบทั้งหมดเข้าด้วยกัน โดยประกอบด้วย:
+ในกิจกรรมนี้ นักศึกษาจะผูกระบบทั้งหมดเข้าด้วยกัน โดยประกอบด้วย
 1. การเชื่อมต่อ Wi-Fi Station
 2. การเริ่มต้นระบบ mDNS
 3. การเริ่มต้น Web Server และลงทะเบียน URI Endpoints
@@ -584,7 +584,7 @@ void app_main(void)
 idf.py build
 ```
 
-**หรือคอมไพล์ผ่าน Docker:**
+**หรือคอมไพล์ผ่าน Docker**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py build
 ```
@@ -596,7 +596,7 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 idf.py flash -p <COMxx>
 ```
 
-**หรือคอมไพล์ผ่าน Docker:**
+**หรือคอมไพล์ผ่าน Docker**
 ```powershell
 python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 2MB --flash_freq 40m 0x1000  build/bootloader/bootloader.bin 0x8000  build/partition_table/partition-table.bin 0x10000 build/Lab10-1_HTTP_REST_Server.bin && idf monitor -p <COMxx>
 ```
@@ -609,32 +609,32 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 ### กิจกรรมที่ 10-1.5 การทดสอบและตรวจพิสูจน์ (Verification & Forensics)
 
 #### 1. ตรวจสอบ mDNS ด้วยคำสั่ง ping
-เปิด Terminal บนเครื่องคอมพิวเตอร์ที่อยู่ในวง Wi-Fi เดียวกัน:
+เปิด Terminal บนเครื่องคอมพิวเตอร์ที่อยู่ในวง Wi-Fi เดียวกัน
 ```powershell
 ping esp32-node.local
 ```
 *(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
 
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
-> หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้:
-> 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network":**
+> หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
+> 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network"**
 >    เปิด **Settings** $\rightarrow$ **Network & internet** $\rightarrow$ **Wi-Fi** $\rightarrow$ คลิกที่ชื่อเครือข่าย Wi-Fi ที่เชื่อมต่อ $\rightarrow$ เปลี่ยนจาก **Public network** เป็น **Private network** (เนื่องจาก Public network บน Windows จะสั่ง Firewall บล็อกแพ็กเก็ต mDNS UDP 5353 ขาเข้าทั้งหมด)
-> 2. **ปิดหรือถอดสาย LAN ที่ต่อซ้อนอยู่:**
+> 2. **ปิดหรือถอดสาย LAN ที่ต่อซ้อนอยู่**
 >    หากเครื่องคอมพิวเตอร์เสียบสาย LAN ไว้ด้วย Windows จะจัดลำดับ Routing Metric ให้สาย LAN สูงกว่า Wi-Fi เสมอ ทำให้แพ็กเก็ต Multicast (`224.0.0.251`) ถูกส่งออกไปทางสาย LAN แทนที่จะเป็น Wi-Fi ที่ ESP32 เกาะอยู่ ให้ปิด (Disable) การ์ดแลนหรือถอดสาย LAN ออกชั่วคราวขณะทดสอบ mDNS
 
 #### 2. ทดสอบอ่านค่าเซนเซอร์ผ่าน cURL
-เปิด PowerShell แล้วรันคำสั่ง (แนะนำให้พิมพ์ `curl.exe` เพื่อเรียกใช้โปรแกรม cURL แท้ของระบบแทน PowerShell Alias):
+เปิด PowerShell แล้วรันคำสั่ง (แนะนำให้พิมพ์ `curl.exe` เพื่อเรียกใช้โปรแกรม cURL แท้ของระบบแทน PowerShell Alias)
 ```powershell
 curl.exe -X GET http://esp32-node.local/api/status
 ```
-ผลลัพธ์ที่ได้จะเป็น JSON Payload เช่น:
+ผลลัพธ์ที่ได้จะเป็น JSON Payload เช่น
 ```json
 {"pot_raw":15,"free_heap":213848,"led":true}
 ```
 
 #### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
 
-**วิธีที่ 1: ใช้ `curl.exe` (ครอบสตริง JSON ด้วย Single Quote เพื่อป้องกัน PowerShell ตัดเครื่องหมายคำพูด):**
+**วิธีที่ 1 ใช้ `curl.exe` (ครอบสตริง JSON ด้วย Single Quote เพื่อป้องกัน PowerShell ตัดเครื่องหมายคำพูด)**
 ```powershell
 # สั่งเปิดไฟ LED (GPIO 2)
 curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
@@ -645,7 +645,7 @@ curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: applicatio
 การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
 
 
-**วิธีที่ 2: ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows):**
+**วิธีที่ 2 ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows)**
 ```powershell
 # สั่งเปิดไฟ LED
 Invoke-RestMethod -Uri "http://esp32-node.local/api/led" -Method POST -ContentType "application/json" -Body '{"state": true}'
