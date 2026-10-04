@@ -1,12 +1,16 @@
-# บทเรียนที่ 3: การสื่อสารระดับซ็อกเก็ต UDP และข้อมูล Telemetry แบบเรียลไทม์ (UDP Socket & Real-time Telemetry)
+# 10.3 การสื่อสารระดับซ็อกเก็ต UDP และข้อมูล Telemetry แบบเรียลไทม์ (UDP Socket & Real-time Telemetry)
 
-## 1. คุณลักษณะของโปรโตคอล UDP (UDP Characteristics)
-**User Datagram Protocol (UDP)** เป็นโปรโตคอลในระดับ Transport Layer (Layer 4) ตามมาตรฐาน RFC 768 ซึ่งแตกต่างจาก TCP อย่างสิ้นเชิง:
+## 10.3.1  คุณลักษณะของโปรโตคอล UDP (UDP Characteristics)
+**User Datagram Protocol (UDP)** เป็นโปรโตคอลในระดับ Transport Layer (Layer 4) ตามมาตรฐาน RFC 768 ซึ่งแตกต่างจาก TCP อย่างสิ้นเชิง
 
-1. **Connectionless**: ไม่มีการเชื่อมต่อก่อนส่งข้อมูล (ไม่มี 3-Way Handshake SYN, SYN-ACK, ACK) สามารถยิงแพ็กเก็ตข้อมูลออกไปได้ทันที
-2. **Minimal Header Overhead**: ขนาด Header ของ UDP มีขนาดคงที่เพียง **8 ไบต์** เท่านั้น (ประกอบด้วย Source Port, Destination Port, Length, และ Checksum) เทียบกับ TCP ที่มี Header ขั้นต่ำ 20 ไบต์บวก Options
-3. **No Retransmission / No Flow Control**: ไม่มีการรับประกันว่าข้อมูลจะถึงปลายทาง ไม่มีการจัดเรียงลำดับใหม่เมื่อแพ็กเก็ตมาสลับลำดับ (Best-effort Delivery)
-4. **รองรับ Broadcast และ Multicast**: ข้อมูล 1 แพ็กเก็ตสามารถกระจายไปยังอุปกรณ์หลายตัวพร้อมกันในวงแลนได้
+1. **Connectionless**
+   ไม่มีการเชื่อมต่อก่อนส่งข้อมูล (ไม่มี 3-Way Handshake SYN, SYN-ACK, ACK) สามารถยิงแพ็กเก็ตข้อมูลออกไปได้ทันที
+2. **Minimal Header Overhead**
+   ขนาด Header ของ UDP มีขนาดคงที่เพียง **8 ไบต์** เท่านั้น (ประกอบด้วย Source Port, Destination Port, Length, และ Checksum) เทียบกับ TCP ที่มี Header ขั้นต่ำ 20 ไบต์บวก Options
+3. **No Retransmission / No Flow Control**
+   ไม่มีการรับประกันว่าข้อมูลจะถึงปลายทาง ไม่มีการจัดเรียงลำดับใหม่เมื่อแพ็กเก็ตมาสลับลำดับ (Best-effort Delivery)
+4. **รองรับ Broadcast และ Multicast**
+   ข้อมูล 1 แพ็กเก็ตสามารถกระจายไปยังอุปกรณ์หลายตัวพร้อมกันในวงแลนได้
 
 <p align="center">
 <!-- [รูปภาพ: การเปรียบเทียบโครงสร้าง Header ระหว่าง TCP 20-60 ไบต์ และ UDP 8 ไบต์] -->
