@@ -1,4 +1,4 @@
-# ใบงานการทดลองที่ 10.2 (Lab 10.2)
+# ใบงานการทดลองที่ 10.2
 ### การสื่อสารความหน่วงต่ำด้วย UDP Socket และการถ่ายทอดข้อมูล Real-time Telemetry
 
 > [!NOTE] **คำชี้แจง**
@@ -29,7 +29,7 @@
 
 ## 3. ขั้นตอนการทดลอง (Deconstructed Activities)
 
-### กิจกรรมที่ 2.1  การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง
+### กิจกรรมที่ 10-2.1  การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง
 
 #### 1. สร้างโปรเจกต์ใหม่
 ```powershell
@@ -37,7 +37,7 @@ idf.py create-project Lab10-2_UDP_Telemetry_Socket
 cd Lab10-2_UDP_Telemetry_Socket
 ```
 
-**หรือรันผ่าน Docker:**
+**หรือรันผ่าน Docker**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py create-project Lab10-2_UDP_Telemetry_Socket
 cd Lab10-2_UDP_Telemetry_Socket
@@ -48,7 +48,7 @@ cd Lab10-2_UDP_Telemetry_Socket
 idf.py set-target esp32
 ```
 
-**หรือรันผ่าน Docker:**
+**หรือรันผ่าน Docker**
 ```powershell
 docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py set-target esp32
 ```
@@ -64,8 +64,8 @@ idf_component_register(SRCS "Lab10-2_UDP_Telemetry_Socket.c"
 
 ---
 
-### กิจกรรมที่ 2.2: พัฒนา Task รับคำสั่ง UDP Control Server (Port 3333)
-ฟังก์ชันนี้ทำหน้าที่เปิด UDP Socket ผูกเข้ากับพอร์ต 3333 (`INADDR_ANY`) เพื่อคอยรับคำสั่งควบคุม LED แบบ Unicast และตอบรับกลับ (ACK) เพื่อให้ไคลเอนต์นำไปคำนวณ Round-Trip Time (RTT):
+### กิจกรรมที่ 10-2.2 พัฒนา Task รับคำสั่ง UDP Control Server (Port 3333)
+ฟังก์ชันนี้ทำหน้าที่เปิด UDP Socket ผูกเข้ากับพอร์ต 3333 (`INADDR_ANY`) เพื่อคอยรับคำสั่งควบคุม LED แบบ Unicast และตอบรับกลับ (ACK) เพื่อให้ไคลเอนต์นำไปคำนวณ Round-Trip Time (RTT)
 
 ```c
 #include "lwip/sockets.h"
@@ -122,8 +122,8 @@ void udp_control_server_task(void *pvParameters)
 
 ---
 
-### กิจกรรมที่ 2.3: พัฒนา Task ส่งข้อมูล Telemetry แบบ Broadcast (Port 3334)
-ฟังก์ชันนี้ทำหน้าที่อ่านค่าแอนะล็อกเซนเซอร์ Potentiometer จาก ADC1 (GPIO 34) แล้วแพ็กข้อมูลร่วมกับหมายเลขลำดับ (Sequence Number) ส่งบรอดแคสต์ไปยัง `255.255.255.255` พอร์ต 3334 ทุกๆ 100 ms (10 Hz):
+### กิจกรรมที่ 10-2.3 พัฒนา Task ส่งข้อมูล Telemetry แบบ Broadcast (Port 3334)
+ฟังก์ชันนี้ทำหน้าที่อ่านค่าแอนะล็อกเซนเซอร์ Potentiometer จาก ADC1 (GPIO 34) แล้วแพ็กข้อมูลร่วมกับหมายเลขลำดับ (Sequence Number) ส่งบรอดแคสต์ไปยัง `255.255.255.255` พอร์ต 3334 ทุกๆ 100 ms (10 Hz)
 
 ```c
 #define UDP_BROADCAST_PORT 3334
@@ -172,21 +172,21 @@ void udp_telemetry_broadcast_task(void *pvParameters)
 
 ---
 
-### กิจกรรมที่ 2.4: การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main()`
+### กิจกรรมที่ 10-2.4 การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main()`
 
 ### ตารางสรุป Header Files และหน้าที่การทำงาน
 
-| Header file | หน้าที่และขอบเขตการใช้งานในแล็บนี้ |
-| :--- | :--- |
-| `stdio.h` / `string.h` | จัดการ Input/Output และฟังก์ชันจัดรูปแบบสตริง (`snprintf()`, `strlen()`, `memcpy()`) |
-| `esp_log.h` | ส่งข้อความแจ้งสถานะและตรวจแก้ข้อผิดพลาด (`ESP_LOGI()`, `ESP_LOGE()`) |
-| `nvs_flash.h` | จัดการ Non-Volatile Storage สำหรับระบบ Wi-Fi |
-| `esp_netif.h` / `esp_event.h` | จัดการ Network Interface Adapter และ Event Loop |
-| `esp_wifi.h` | จัดการการเชื่อมต่อวิทยุ Wi-Fi Station |
-| `freertos/FreeRTOS.h` / `task.h` | โครงสร้างระบบ FreeRTOS สำหรับสร้าง Task แบบมัลติทาสก์กิ้ง (`xTaskCreate()`) |
+| Header file                       | หน้าที่และขอบเขตการใช้งานในแล็บนี้                                                      |
+| :-------------------------------- | :-------------------------------------------------------------------------------------- |
+| `stdio.h` / `string.h`            | จัดการ Input/Output และฟังก์ชันจัดรูปแบบสตริง (`snprintf()`, `strlen()`, `memcpy()`)    |
+| `esp_log.h`                       | ส่งข้อความแจ้งสถานะและตรวจแก้ข้อผิดพลาด (`ESP_LOGI()`, `ESP_LOGE()`)                    |
+| `nvs_flash.h`                     | จัดการ Non-Volatile Storage สำหรับระบบ Wi-Fi                                            |
+| `esp_netif.h` / `esp_event.h`     | จัดการ Network Interface Adapter และ Event Loop                                         |
+| `esp_wifi.h`                      | จัดการการเชื่อมต่อวิทยุ Wi-Fi Station                                                   |
+| `freertos/FreeRTOS.h` / `task.h`  | โครงสร้างระบบ FreeRTOS สำหรับสร้าง Task แบบมัลติทาสก์กิ้ง (`xTaskCreate()`)             |
 | `lwip/sockets.h` / `lwip/netdb.h` | BSD Socket API บน LwIP (`socket()`, `bind()`, `sendto()`, `recvfrom()`, `setsockopt()`) |
-| `driver/gpio.h` | ควบคุมระดับสัญญาณดิจิทัลเปิด-ปิดหลอดไฟ LED (GPIO 2) |
-| `esp_adc/adc_oneshot.h` | อ่านค่าแรงดันแอนะล็อกจาก Potentiometer (GPIO 34 / ADC1 Channel 6) |
+| `driver/gpio.h`                   | ควบคุมระดับสัญญาณดิจิทัลเปิด-ปิดหลอดไฟ LED (GPIO 2)                                     |
+| `esp_adc/adc_oneshot.h`           | อ่านค่าแรงดันแอนะล็อกจาก Potentiometer (GPIO 34 / ADC1 Channel 6)                       |
 
 <details>
 <summary><b>🔍 คลิกดูซอร์สโค้ดฉบับสมบูรณ์ทั้งไฟล์ (Lab10-2_UDP_Telemetry_Socket.c)</b></summary>
@@ -397,7 +397,7 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 
 ---
 
-### กิจกรรมที่ 2.5: การทดสอบด้วยสคริปต์ Python บนคอมพิวเตอร์
+### กิจกรรมที่ 10-2.5 การทดสอบด้วยสคริปต์ Python บนคอมพิวเตอร์
 
 #### 1. สคริปต์ดักฟังข้อมูล Telemetry Broadcast (`udp_listener.py`)
 สร้างไฟล์ `udp_listener.py` บนเครื่องคอมพิวเตอร์เพื่อดักฟังข้อมูลบรอดแคสต์พอร์ต 3334 และตรวจสอบการสูญหายของแพ็กเก็ต (Packet Loss) จาก Sequence Number:
@@ -486,7 +486,7 @@ if rtt_list:
 
 ---
 
-## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
-1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
+## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง 
+1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
 2. รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi
 3. อธิบายข้อดีและข้อจำกัดของการใช้ `255.255.255.255` (UDP Broadcast) ในระบบ IoT และในสถานการณ์ใดที่ควรเปลี่ยนไปใช้ **UDP Multicast** หรือ **Unicast** แทน?
