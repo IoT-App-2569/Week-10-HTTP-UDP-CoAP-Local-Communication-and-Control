@@ -21,17 +21,17 @@
 ## 2. แผนผังเนื้อหาการเรียนรู้ประจำสัปดาห์ (Lesson Roadmap)
 
 ```mermaid
-flowchart TD
-    A["สัปดาห์ที่ 10: Local Control Protocols (HTTP, UDP, CoAP)"] --> B["1. สถาปัตยกรรม Local Control & Device Discovery<br/>(Local vs Cloud, Broadcast, Multicast, mDNS)"]
+flowchart LR
+    A["<b>สัปดาห์ที่ 10</b><br> Local Control Protocols (HTTP, UDP, CoAP)"] --> B["1. สถาปัตยกรรม Local Control & Device Discovery<br/>(Local vs Cloud, Broadcast, Multicast, mDNS)"]
     A --> C["2. HTTP Server & RESTful API บน ESP-IDF<br/>(esp_http_server, REST Endpoints, cJSON)"]
     A --> D["3. UDP Socket & Real-time Telemetry<br/>(LwIP BSD Socket, Unicast, Broadcast, Low Latency)"]
     A --> E["4. CoAP Protocol สำหรับ Constrained IoT<br/>(RFC 7252, 4-Byte Header, CON/NON, Observe RFC 7641)"]
 
-    B --> F["06-Labsheet-10-1: mDNS Discovery & HTTP REST Server"]
+    B --> F["<b>06-Labsheet-10-1</b><br> mDNS Discovery & HTTP REST Server"]
     C --> F
-    D --> G["07-Labsheet-10-2: UDP Socket & Real-time Telemetry Broadcast"]
-    E --> H["08-Labsheet-10-3: CoAP Server & Lightweight IoT Control"]
-    A --> I["09-Labsheet-10-4: Protocol Benchmark & Network Forensics (Wireshark)"]
+    D --> G["<b>07-Labsheet-10-2</b><br> UDP Socket & Real-time Telemetry Broadcast"]
+    E --> H["<b>08-Labsheet-10-3</b><br> CoAP Server & Lightweight IoT Control"]
+    A --> I["<b>09-Labsheet-10-4</b><br> Protocol Benchmark & Performance Analyzer (Python Suite)"]
 ```
 
 ---
@@ -82,7 +82,7 @@ flowchart TD
 6. **[06-Labsheet-10-1-mDNS-Discovery-and-HTTP-REST-Server.md](06-Labsheet-10-1-mDNS-Discovery-and-HTTP-REST-Server.md)** - **ใบงานที่ 10.1: การพัฒนา mDNS Discovery และ HTTP RESTful API Server ควบคุมอุปกรณ์บน ESP-IDF**
 7. **[07-Labsheet-10-2-UDP-Broadcast-and-Realtime-Telemetry.md](07-Labsheet-10-2-UDP-Broadcast-and-Realtime-Telemetry.md)** - **ใบงานที่ 10.2: การสื่อสารความหน่วงต่ำด้วย UDP Socket และการถ่ายทอดข้อมูล Real-time Telemetry**
 8. **[08-Labsheet-10-3-CoAP-Server-and-Lightweight-IoT-Control.md](08-Labsheet-10-3-CoAP-Server-and-Lightweight-IoT-Control.md)** - **ใบงานที่ 10.3: การพัฒนา CoAP Server สำหรับระบบฝังตัวและการควบคุมอุปกรณ์ด้วยโปรโตคอลน้ำหนักเบา**
-9. **[09-Labsheet-10-4-Protocol-Benchmark-and-Network-Forensics.md](09-Labsheet-10-4-Protocol-Benchmark-and-Network-Forensics.md)** - **ใบงานที่ 10.4: การทดสอบเปรียบเทียบสมรรถนะ (Benchmark) และการตรวจพิสูจน์ทางนิติวิทยาศาสตร์เครือข่ายด้วย Wireshark**
+9. **[09-Labsheet-10-4-Protocol-Benchmark-and-Network-Forensics.md](09-Labsheet-10-4-Protocol-Benchmark-and-Network-Forensics.md)** - **ใบงานที่ 10.4: การทดสอบเปรียบเทียบสมรรถนะ (Benchmark) ของโปรโตคอลเครือข่ายด้วย Python Script และสถิติเชิงวิศวกรรม**
 
 ---
 
@@ -91,5 +91,6 @@ flowchart TD
 * บอร์ดไมโครคอนโทรลเลอร์ **ESP32** (Classic ESP32 หรือ ESP32-C3) จำนวน 1 บอร์ด
 * โมดูลหลอดไฟ LED หรือตัวต้านทานปรับค่าได้ (Potentiometer) 10k
 * เครื่องคอมพิวเตอร์ที่ติดตั้ง **ESP-IDF v5.x / v6.x** และสภาวะแวดล้อม **Python 3.10+**
-* เครื่องมือทดสอบเครือข่าย: **cURL**, **Wireshark** (สำหรับวิเคราะห์แพ็กเก็ต), และ Python Library (`requests`, `aiocoap`)
+* เครื่องมือทดสอบเครือข่าย: **cURL**, สคริปต์ **Benchmark Suite (`benchmark_protocols.py`)**, และ Python Libraries (`aiocoap`)
 * เราเตอร์ Wi-Fi (Wi-Fi Access Point 2.4 GHz) ในวงแลนเดียวกัน
+
