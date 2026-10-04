@@ -6,7 +6,7 @@
 
 ---
 
-## 1. วัตถุประสงค์การทดลอง (Objectives)
+## 1. วัตถุประสงค์การทดลอง
 1. เข้าใจกลไกการเชื่อมต่อเครือข่าย Wi-Fi ในโหมด Station (STA) ด้วยสแตก LwIP บน ESP-IDF
 2. สามารถเปิดใช้งานและตั้งค่า mDNS Service Discovery เพื่อประกาศชื่อโฮสต์และบริการ HTTP ได้
 3. สามารถพัฒนา RESTful API Endpoints (`GET /api/status` และ `POST /api/led`) ด้วยคอมโพเนนต์ `esp_http_server` ได้
@@ -16,17 +16,18 @@
 ---
 
 ## 2. วงจรและการต่อสายฮาร์ดแวร์ (Schematic & Wiring)
-
 <p align="center">
-<!-- [รูปภาพ: แผนภาพการต่อสาย ESP32 เข้ากับ LED (GPIO 2) และ Potentiometer (GPIO 34)] -->
-<!-- <img src="Images/lab10_1_wiring.svg" width="550"> -->
+<img src="Images/lab10_1_wiring.svg" width="600"> 
+</p>
+<p align="center">
+<b> รูปที่ L10-1 </b> แผนภาพการต่อสาย ESP32 เข้ากับ LED (GPIO 2) และ Potentiometer (GPIO 34)
 </p>
 
-| อุปกรณ์ | ขาอุปกรณ์ | ขาต่อบน ESP32 | หน้าที่ |
-| :--- | :--- | :--- | :--- |
-| **Onboard / External LED** | ขาบวก (Anode) | **GPIO 2** | หลอดไฟแสดงสถานะการควบคุม Output |
-| **Potentiometer (10k)** | ขากลาง (Wiper) | **GPIO 34** | เซนเซอร์แอนะล็อกอินพุต (ADC1 Channel 6) |
-| **Potentiometer (10k)** | ขาซ้าย/ขวา | **3.3V / GND** | แรงดันไฟเลี้ยงและกราวด์ |
+| อุปกรณ์                    | ขาอุปกรณ์      | ขาต่อบน ESP32  | หน้าที่                                 |
+| :------------------------- | :------------- | :------------- | :-------------------------------------- |
+| **Onboard / External LED** | ขาบวก (Anode)  | **GPIO 2**     | หลอดไฟแสดงสถานะการควบคุม Output         |
+| **Potentiometer (10k)**    | ขากลาง (Wiper) | **GPIO 34**    | เซนเซอร์แอนะล็อกอินพุต (ADC1 Channel 6) |
+| **Potentiometer (10k)**    | ขาซ้าย/ขวา     | **3.3V / GND** | แรงดันไฟเลี้ยงและกราวด์                 |
 
 ---
 

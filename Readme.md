@@ -13,6 +13,9 @@
 
 นอกจากนี้ เราจะได้ศึกษาและประยุกต์ใช้โปรโตคอล **mDNS (Multicast DNS)** เพื่อให้คอมพิวเตอร์และสมาร์ตโฟนสามารถค้นหาอุปกรณ์ ESP32 ในวงแลนได้อัตโนมัติ โดยไม่ต้องจดจำหมายเลข IP Address (Zero-Configuration Networking)
 
+
+* หนังสืออ้างอิงที่กล่าวถึงในบทนี้คือ  chapter 8 ของ  _**ESP32-C3 Wireless Adventure A Comprehensive Guide to IoT**_  แต่งโดย **Espressif Systems** 
+
 ---
 
 ## 2. แผนผังเนื้อหาการเรียนรู้ประจำสัปดาห์ (Lesson Roadmap)
