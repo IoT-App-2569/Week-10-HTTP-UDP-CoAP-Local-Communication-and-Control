@@ -6,7 +6,7 @@
 
 ---
 
-## 1. วัตถุประสงค์การทดลอง (Objectives)
+## 1. วัตถุประสงค์การทดลอง
 1. สามารถเขียนโปรแกรม Socket แบบ Connectionless (UDP Datagram) ด้วยคำสั่ง `socket()`, `bind()`, `recvfrom()`, และ `sendto()` บน ESP-IDF ได้
 2. สามารถพัฒนา FreeRTOS Task เพื่อส่งข้อมูลแอนะล็อกเซนเซอร์แบบบรอดแคสต์ (UDP Broadcast) สู่เครือข่ายได้ด้วยความถี่ 10-50 Hz
 3. สามารถพัฒนาสคริปต์ภาษา Python บนเครื่องคอมพิวเตอร์เพื่อดักฟังข้อมูลบรอดแคสต์ และส่งคำสั่งควบคุม LED กลับมายัง ESP32 ได้
@@ -14,7 +14,7 @@
 
 ---
 
-## 2. โครงสร้างระบบและการทำงาน (System Architecture)
+## 2. โครงสร้างระบบและการทำงาน
 
 ```
    [ESP32 Node]                                              [PC Client / Python]
@@ -27,7 +27,7 @@
 
 ---
 
-## 3. ขั้นตอนการทดลอง (Deconstructed Activities)
+## 3. ขั้นตอนการทดลอง
 
 ### กิจกรรมที่ 10-2.1  การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง
 
@@ -54,13 +54,25 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 ```
 
 #### 3. ตั้งค่า `main/CMakeLists.txt`
-เปิดไฟล์ `main/CMakeLists.txt` และระบุคอมโพเนนต์ที่ต้องใช้งาน:
+เปิดไฟล์ `main/CMakeLists.txt` และระบุคอมโพเนนต์ที่ต้องใช้งาน
 
 ```cmake
 idf_component_register(SRCS "Lab10-2_UDP_Telemetry_Socket.c"
                        INCLUDE_DIRS "."
                        REQUIRES esp_wifi esp_event nvs_flash lwip esp_adc esp_driver_gpio)
 ```
+
+#### 4. ทดสอบ Reconfigure ระบบบิลด์
+ทดสอบรันคำสั่ง Reconfigure เพื่อให้ระบบดาวน์โหลดคอมโพเนนต์และสร้างบิลด์ไฟล์
+```powershell
+idf.py reconfigure
+```
+
+**หรือรันผ่าน Docker:**
+```powershell
+docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py reconfigure
+```
+เมื่อปรากฏข้อความ `-- Configuring done` และ `-- Generating done` แสดงว่าโครงสร้างโปรเจกต์พร้อมสำหรับการเขียนโค้ดในกิจกรรมถัดไป
 
 ---
 
@@ -173,6 +185,93 @@ void udp_telemetry_broadcast_task(void *pvParameters)
 ---
 
 ### กิจกรรมที่ 10-2.4 การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main()`
+
+ในกิจกรรมนี้ จะเป็นการประกอบระบบทั้งหมดเข้าด้วยกัน โดยมีขั้นตอนสำคัญใน `app_main()` ดังนี้:
+1. เริ่มต้นระบบหน่วยความจำแฟลช **NVS (Non-Volatile Storage)** ซึ่งจำเป็นสำหรับโมดูล Wi-Fi Driver
+2. เริ่มต้น **LwIP TCP/IP Stack** และ **Default Event Loop**
+3. กำหนดค่าฮาร์ดแวร์ **GPIO 2 (LED)** เป็นโหมด Input/Output และ **ADC1 Channel 6 (GPIO 34)** สำหรับอ่านค่า Potentiometer
+4. เชื่อมต่อเครือข่าย Wi-Fi ในโหมด **Station (STA)** ไปยัง Access Point
+5. เมื่อเชื่อมต่อ Wi-Fi สำเร็จ ให้สร้าง FreeRTOS Tasks สำหรับรัน **`udp_control_server_task`** (รับคำสั่งพอร์ต 3333) และ **`udp_telemetry_broadcast_task`** (บรอดแคสต์ข้อมูลเซนเซอร์พอร์ต 3334 อัตรา 10 Hz)
+
+#### 1. ฟังก์ชันเชื่อมต่อ Wi-Fi Station (`wifi_init_sta`)
+```c
+static bool wifi_init_sta(void)
+{
+    s_wifi_event_group = xEventGroupCreate();
+
+    esp_netif_create_default_wifi_sta();
+
+    wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
+    ESP_ERROR_CHECK(esp_wifi_init(&cfg));
+
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
+    ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
+
+    wifi_config_t wifi_config = {
+        .sta = {
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        },
+    };
+    size_t ssid_len = strlen(CONFIG_WIFI_SSID);
+    if (ssid_len > sizeof(wifi_config.sta.ssid)) ssid_len = sizeof(wifi_config.sta.ssid);
+    memcpy(wifi_config.sta.ssid, CONFIG_WIFI_SSID, ssid_len);
+
+    size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
+    if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
+    memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
+
+    ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
+    ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
+    ESP_ERROR_CHECK(esp_wifi_start());
+
+    ESP_LOGI(TAG, "Connecting to AP: %s...", CONFIG_WIFI_SSID);
+
+    EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
+    return (bits & WIFI_CONNECTED_BIT) != 0;
+}
+```
+
+#### 2. ฟังก์ชันหลัก `app_main(void)`
+```c
+void app_main(void)
+{
+    // 1. Initialise NVS Flash
+    esp_err_t ret = nvs_flash_init();
+    if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
+        ESP_ERROR_CHECK(nvs_flash_erase());
+        ret = nvs_flash_init();
+    }
+    ESP_ERROR_CHECK(ret);
+
+    // 2. Netif & Event Loop
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
+    // 3. Setup Hardware (LED & ADC)
+    gpio_reset_pin(LED_GPIO_PIN);
+    gpio_set_direction(LED_GPIO_PIN, GPIO_MODE_INPUT_OUTPUT);
+
+    adc_oneshot_unit_init_cfg_t init_config1 = { .unit_id = ADC_UNIT_1 };
+    if (adc_oneshot_new_unit(&init_config1, &s_adc1_handle) == ESP_OK) {
+        adc_oneshot_chan_cfg_t chan_config = {
+            .bitwidth = ADC_BITWIDTH_DEFAULT,
+            .atten = ADC_ATTEN_DB_12,
+        };
+        adc_oneshot_config_channel(s_adc1_handle, POT_ADC_CHANNEL, &chan_config);
+        ESP_LOGI(TAG, "ADC Initialized on GPIO 34");
+    }
+
+    // 4. Connect Wi-Fi
+    if (wifi_init_sta()) {
+        // 5. Create FreeRTOS Tasks for UDP
+        xTaskCreate(udp_control_server_task, "udp_ctrl_task", 4096, NULL, 5, NULL);
+        xTaskCreate(udp_telemetry_broadcast_task, "udp_telemetry_task", 4096, NULL, 5, NULL);
+        ESP_LOGI(TAG, "Ready! Test UDP Telemetry with: python udp_listener.py");
+    } else {
+        ESP_LOGE(TAG, "Wi-Fi connection failed.");
+    }
+}
+```
 
 ### ตารางสรุป Header Files และหน้าที่การทำงาน
 
