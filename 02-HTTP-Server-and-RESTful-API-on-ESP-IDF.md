@@ -323,7 +323,7 @@ I (14890) HTTP_SERVER: Handling GET /light request
 
 ---
 
-## 10.2.8 สรุปท้ายบทเรียน (Chapter Summary)
+## 10.2.8 สรุปท้ายบทเรียน
 * **HTTP RESTful API** บน ESP-IDF ให้ความสะดวกในการควบคุมอุปกรณ์ มีความยืดหยุ่นสูง สามารถทดสอบและควบคุมได้โดยตรงผ่านเว็บบราวเซอร์หรือภาษาคอมพิวเตอร์ใดๆ
 * คอมโพเนนต์ `esp_http_server` ให้ประสิทธิภาพสูง รองรับ Keep-Alive และ LRU Purge สำหรับระบบสมองกลฝังตัว
-* จุดอ่อนสำคัญของ HTTP คือขนาด Header ที่ใหญ่ (100–300 ไบต์) และความหน่วงเวลาของ TCP Handshake ในบทเรียนถัดไป ([บทเรียนที่ 3: UDP Socket & Real-time Telemetry](03-UDP-Socket-Communication-and-Realtime-Telemetry.md)) เราจะมาศึกษา **UDP** ซึ่งตัดภาระทั้งหมดนี้ออกเพื่อให้ได้ความเร็วระดับสูงสุด
+* จุดอ่อนสำคัญของ HTTP คือขนาด Header ที่ใหญ่ (100–300 ไบต์) และความหน่วงเวลาของ TCP Handshake ในหัวข้อถัดไป ([10.3 UDP Socket & Real-time Telemetry](03-UDP-Socket-Communication-and-Realtime-Telemetry.md)) เราจะมาศึกษา **UDP** ซึ่งตัดภาระทั้งหมดนี้ออกเพื่อให้ได้ความเร็วระดับสูงสุด

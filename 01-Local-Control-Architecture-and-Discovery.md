@@ -503,9 +503,9 @@ ping my_smart_light.local
 
 ---
 
-## 10.1.7 สรุปท้ายบทเรียน (Chapter Summary)
+## 10.1.7 สรุปท้ายบทเรียน
 1. **Local Control** มอบความเร็ว (Low Latency), ความเสถียร (ทำงานได้แม้ไม่มีเน็ตบ้าน), และความเป็นส่วนตัวของข้อมูลที่เหนือกว่า Cloud Control
 2. **การค้นหาอุปกรณ์ (Discovery)** โดยไม่ทราบ IP เริ่มต้น ต้องอาศัย **Broadcast** หรือ **Multicast** 
 3. **Multicast** เหนือกว่า Broadcast อย่างมาก เนื่องจากไม่รบกวนอุปกรณ์อื่นที่ไม่เกี่ยวข้องในเครือข่าย
 4. **mDNS (RFC 6762)** คือมาตรฐานสากลระดับสูงสุดของ Local Discovery ที่ทำให้เราเรียกชื่อโฮสต์ `.local` และประกาศ Service พอร์ตผ่าน DNS-SD ได้อัตโนมัติ
-5. ในบทเรียนถัดไป ([บทเรียนที่ 2: HTTP Server & RESTful API](02-HTTP-Server-and-RESTful-API-on-ESP-IDF.md)) เราจะนำชื่อโฮสต์ mDNS นี้ ไปสร้าง Web API สำหรับส่งคำสั่งควบคุมฮาร์ดแวร์จริง
+5. ในหัวข้อถัดไป ([10.2 HTTP Server & RESTful API](02-HTTP-Server-and-RESTful-API-on-ESP-IDF.md)) เราจะนำชื่อโฮสต์ mDNS นี้ ไปสร้าง Web API สำหรับส่งคำสั่งควบคุมฮาร์ดแวร์จริง
