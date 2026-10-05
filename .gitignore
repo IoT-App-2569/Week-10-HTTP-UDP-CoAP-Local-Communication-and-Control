@@ -2,3 +2,14 @@
 ~$**
 .vscode/settings.json
 Ref/**
+.pytest_cache/
+__pycache__/
+
+# esp-idf built binaries
+build/
+build_*_*/
+
+dependencies.lock
+managed_components/
+*.old
+sdkconfig
