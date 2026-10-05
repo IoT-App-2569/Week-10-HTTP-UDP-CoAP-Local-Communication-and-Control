@@ -1,4 +1,76 @@
+# ==========================================
+# C / C++ / CMake / ESP-IDF Build Artifacts
+# ==========================================
+build/
+build-*/
+**/build/
+**/build-*/
+managed_components/
+**/managed_components/
+dependencies.lock
+sdkconfig.old
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles/
+**/CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps/
+CMakeUserPresets.json
+*.elf
+*.bin
+*.map
+
+# ==========================================
+# Python Temporary Files
+# ==========================================
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.venv
+env/
+venv/
+
+# ==========================================
+# IDE & Editor Directories / Settings
+# ==========================================
+.vscode/
+.obsidian/
+.idea/
+*.swp
+*.swo
+*~
+*.user
+
+# ==========================================
+# Operating System Junk
+# ==========================================
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# ==========================================
+# Logs, Backups & Temporary Files
+# ==========================================
+*.log
+*.tmp
 *.bkp
+*.bak
+~$*
 ~$**
-.vscode/settings.json
 Ref/**
+.env
+.env.*
+secrets.json
