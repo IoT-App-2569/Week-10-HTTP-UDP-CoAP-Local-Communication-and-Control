@@ -224,8 +224,8 @@ def main():
     print_banner()
 
     parser = argparse.ArgumentParser(description="IoT Protocol Benchmark Suite (HTTP vs UDP vs CoAP)")
-    parser.add_argument("--target", "-t", type=str, default="192.168.1.181",
-                        help="Target ESP32 IP address or hostname (default: 192.168.1.181)")
+    parser.add_argument("--target", "-t", type=str, default="192.168.1.41",
+                        help="Target ESP32 IP address or hostname (default: 192.168.1.41)")
     parser.add_argument("--protocol", "-p", type=str, choices=["http", "udp", "coap", "all", "interactive"],
                         default="interactive", help="Protocol to benchmark: http, udp, coap, all, or interactive")
     parser.add_argument("--rounds", "-n", type=int, default=50,
