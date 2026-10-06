@@ -609,3 +609,58 @@ if __name__ == "__main__":
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+---
+
+## รายงานผลการทดลอง (67030011)
+
+**โค้ด:** [HW-67030011/Lab10-3_CoAP_Server/](HW-67030011/Lab10-3_CoAP_Server/) — Build ด้วย ESP-IDF v6.0.2 ผ่าน (`espressif/coap`), รหัส Wi-Fi แยกไว้ใน `main/wifi_credentials.h`
+
+**สิ่งที่เพิ่มจากโค้ดตัวอย่าง:** โค้ดเดิมลงทะเบียน Resource โดยไม่มีแอตทริบิวต์ ผล Discovery จะได้แค่ Path เปล่าๆ จึงเพิ่ม `coap_add_attr()` ตาม RFC 6690:
+```c
+coap_add_attr(r_pot, coap_make_str_const("ct"), coap_make_str_const("0"), 0);
+coap_add_attr(r_pot, coap_make_str_const("rt"), coap_make_str_const("\"sensor.pot\""), 0);
+coap_add_attr(r_pot, coap_make_str_const("if"), coap_make_str_const("\"core.s\""), 0);
+coap_add_attr(r_led, coap_make_str_const("rt"), coap_make_str_const("\"actuator.led\""), 0);
+coap_add_attr(r_led, coap_make_str_const("if"), coap_make_str_const("\"core.a\""), 0);
+```
+
+**หน่วยความจำ (`idf.py size`):** DRAM แบบ static 48,439 ไบต์ (26.8%) มากที่สุดในสามโปรเจกต์ (มากกว่า UDP 12,976 ไบต์) จาก libcoap และ mbedTLS DTLS ที่เปิดใน `sdkconfig.defaults`
+
+**ขนาดแพ็กเก็ตจริง (Encode ด้วย aiocoap):**
+```text
+PUT coap://<ip>/actuator/led payload "1"  (token 2 ไบต์) = 21 ไบต์
+42 03 12 34 | 01 02 | b8 61 63 74 75 61 74 6f 72 | 03 6c 65 64 | ff | 31
+Header        Token   Uri-Path "actuator" (1+8)    "led" (1+3)  Marker Payload
+ACK 2.04 Changed (token 2 ไบต์) = 6 ไบต์ : 62 44 12 34 01 02
+```
+
+### คำตอบคำถามท้ายบท
+
+1. **ผลการ Query `/.well-known/core` และรูปแบบ CoRE Link Format (RFC 6690)**
+   * **คำตอบ:** เมื่อมีแอตทริบิวต์ข้างต้น libcoap จะตอบ `GET /.well-known/core` ด้วย Content-Format `40` (`application/link-format`) ในลักษณะนี้ (ลำดับของ Link และ Attribute อาจสลับได้ตามการทำงานของ libcoap):
+     ```text
+     </actuator/led>;rt="actuator.led";if="core.a",</sensor/pot>;ct=0;rt="sensor.pot";if="core.s"
+     ```
+     * แต่ละ Resource คือ **Link** หนึ่งตัว ครอบ URI ด้วย `< >` และคั่นแต่ละ Link ด้วย `,`
+     * ตามด้วย **Attribute** คั่นด้วย `;` เช่น `ct` = Content-Format ที่ Resource ตอบ (`0` = `text/plain`), `rt` = Resource Type (ความหมายเชิงแอปพลิเคชัน), `if` = Interface Description (`core.s` = Sensor อ่านอย่างเดียว, `core.a` = Actuator) และอาจมี `obs` (รองรับ Observe) หรือ `sz` (ขนาดโดยประมาณ)
+     * ไคลเอนต์กรองได้ด้วย Query เช่น `GET /.well-known/core?rt=sensor.pot` จึงค้นหาบริการได้เองโดยไม่ต้องรู้ URL ล่วงหน้า คล้าย mDNS-SD แต่อยู่ในระดับ Resource แทนระดับอุปกรณ์
+
+2. **ความแตกต่างระหว่าง CON และ NON เมื่อทดสอบในเครือข่ายที่มีการรบกวน**
+   * **คำตอบ:**
+     | | CON (Confirmable, Type 0) | NON (Non-confirmable, Type 1) |
+     | :--- | :--- | :--- |
+     | การยืนยัน | ผู้รับต้องตอบ **ACK** ที่มี Message ID เดียวกัน | ไม่มี ACK |
+     | เมื่อแพ็กเก็ตหาย | ส่งซ้ำอัตโนมัติด้วย **Exponential Back-off**: เริ่ม `ACK_TIMEOUT` 2 s × สุ่ม 1–1.5 แล้วเพิ่มเท่าตัวทุกครั้ง สูงสุด `MAX_RETRANSMIT` = 4 ครั้ง (รอได้นานสุดราว 45 วินาที) | หายแล้วหายเลย แอปพลิเคชันต้องจัดการเอง |
+     | ผลในเครือข่ายที่มีสัญญาณรบกวน | ข้อมูลไปถึงแน่นอนกว่า แต่ RTT กระโดดเป็นช่วงๆ (Jitter สูง) และเกิด Traffic ส่งซ้ำ | Latency ต่ำและคงที่ แต่ Loss Rate เท่ากับอัตราสูญหายของ Wi-Fi |
+     | การใช้งานที่เหมาะ | คำสั่งควบคุม เช่น `PUT /actuator/led` ที่ต้องได้ผลแน่นอน | Telemetry ที่ส่งถี่และค่าใหม่มาแทนค่าเก่าได้ |
+     
+     ผู้รับใช้ Message ID ตรวจจับแพ็กเก็ตซ้ำ (Deduplication) จึงไม่ทำคำสั่งซ้ำ แม้ ACK จะหายแล้วผู้ส่งยิงซ้ำมา
+
+3. **ทำไม CoAP จึงเหมาะกับ Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?**
+   * **คำตอบ:**
+     * **ขนาดเฟรมเล็ก:** เครือข่ายเหล่านี้ใช้ IEEE 802.15.4 ที่เฟรมใหญ่สุดเพียง **127 ไบต์** (หลังบีบอัดด้วย 6LoWPAN เหลือที่ให้ Payload น้อยมาก) คำสั่ง CoAP ข้างต้นทั้งก้อน 21 ไบต์ส่งได้ในเฟรมเดียว แต่ HTTP Request 152 ไบต์ + TCP Header ต้องแบ่ง Fragment หลายเฟรม เสี่ยงหายทั้งชุดถ้าเสียไปเฟรมเดียว
+     * **ไม่ต้องมี Connection:** CoAP อยู่บน UDP ไม่ต้องทำ TCP Handshake ที่เพิ่ม RTT (ใน NB-IoT หนึ่ง RTT อาจหลายร้อย ms ถึงวินาที) และไม่ต้องเก็บ TCP State บนอุปกรณ์ RAM น้อย
+     * **ประหยัดพลังงาน:** ส่งน้อยไบต์และน้อยรอบ วิทยุจึงเปิดสั้นลง อุปกรณ์กลับไปหลับ (PSM/eDRX ของ NB-IoT, Sleepy End Device ของ Thread) ได้เร็ว
+     * **ออกแบบมาเพื่อ Lossy Network:** มี Reliability ของตัวเองแบบเลือกได้ (CON/NON), รองรับ **Multicast** (ค้นหา/สั่งงานเป็นกลุ่ม), **Observe** (RFC 7641) ให้ Server Push ค่าได้โดยไม่ต้อง Poll และ **Block-wise Transfer** (RFC 7959) สำหรับข้อมูลใหญ่
+     * **ยังคงรูปแบบ REST:** มี GET/PUT/POST/DELETE และ Response Code แบบเดียวกับ HTTP จึงแปลงผ่าน HTTP-CoAP Proxy ไปเชื่อมกับเว็บได้ง่าย

@@ -672,3 +672,47 @@ success
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+---
+
+## รายงานผลการทดลอง (67030011)
+
+**โค้ด:** [HW-67030011/Lab10-1_HTTP_REST_Server/](HW-67030011/Lab10-1_HTTP_REST_Server/) — Build ด้วย ESP-IDF v6.0.2 (target `esp32`) ผ่าน (`espressif/mdns`, `espressif/cjson` ดึงผ่าน Component Manager)
+
+**สิ่งที่ปรับจากโค้ดตัวอย่าง:**
+1. ย้าย SSID/Password ออกจากซอร์สไปไว้ที่ `main/wifi_credentials.h` (อยู่ใน `.gitignore`) และ commit เฉพาะ `wifi_credentials.h.example` เพื่อไม่ให้รหัส Wi-Fi หลุดขึ้น GitHub
+2. เพิ่มฟิลด์ `"student_id":"67030011"` ใน `GET /api/status`
+
+**หน่วยความจำ (`idf.py size`):** DRAM แบบ static 37,567 ไบต์ (20.79%), IRAM 87,815 ไบต์, Flash Code 642,998 ไบต์, Flash Data 121,944 ไบต์
+
+### คำตอบคำถามท้ายการทดลอง
+
+1. **นำผลการรัน `curl -i` มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์**
+   * **คำตอบ:** `esp_http_server` สร้าง Response Header จากสตริงคงที่ใน `httpd_txrx.c` บรรทัด 265: `"HTTP/1.1 %s\r\nContent-Type: %s\r\nContent-Length: %d\r\n"` ตามด้วย `\r\n` ปิด Header จึงมี **3 บรรทัดเท่านั้น** (ไม่มี `Date`, `Server`, `Connection` แบบเว็บเซิร์ฟเวอร์ทั่วไป) รูปแบบที่ `curl -i` จะเห็น:
+     ```text
+     HTTP/1.1 200 OK
+     Content-Type: application/json
+     Content-Length: 71
+
+     {"student_id":"67030011","pot_raw":2048,"free_heap":215000,"led":false}
+     ```
+     | ส่วน | ขนาด (ไบต์) | วิธีนับ |
+     | :--- | ---: | :--- |
+     | Status Line `HTTP/1.1 200 OK\r\n` | 17 | |
+     | `Content-Type: application/json\r\n` | 32 | |
+     | `Content-Length: 71\r\n` | 20 | 2 หลัก |
+     | บรรทัดว่าง `\r\n` | 2 | |
+     | **รวม Response Header** | **71** | |
+     | **JSON Body** | **67 – 71** | ขึ้นกับจำนวนหลักของ `pot_raw` (0–4095) และ `led` (`true` 4 / `false` 5 ตัวอักษร) |
+     
+     Header กับข้อมูลจริงมีขนาดพอๆ กัน (~50%) ส่วนฝั่ง Request ที่ curl ส่งไป `GET /api/status` มี Header 89 ไบต์ (`Host`, `User-Agent`, `Accept`) และ `POST /api/led` วัดจริงได้ Header 137 + Body `{"state": true}` 15 = **152 ไบต์** ต่อคำสั่งเปิดไฟหนึ่งครั้ง ยังไม่นับ TCP Handshake
+
+2. **หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?**
+   * **คำตอบ:** เครื่องนั้นจะ Resolve `esp32-node.local` ไม่ได้ (`ping` ขึ้น `could not find host`) แต่ ESP32 ยังทำงานปกติและเข้าผ่าน IP ได้ตามเดิม ปัญหาคือ IP จาก DHCP เปลี่ยนได้ทุกครั้งที่ Lease หมด ผู้ใช้ต้องคอยไปเปิด Serial Monitor ดู IP ใหม่ **วิธีแก้:**
+     * เปิด Firewall ขาเข้า UDP 5353 / ตั้ง Wi-Fi เป็น Private Network (Windows) หรือติดตั้งตัว Resolver (Bonjour บน Windows รุ่นเก่า, `avahi-daemon` + `nss-mdns` บน Linux)
+     * จอง IP ให้ ESP32 ด้วย **DHCP Reservation** บนเราเตอร์ (ผูกกับ MAC) หรือตั้ง Static IP ใน `esp_netif_set_ip_info()`
+     * ใช้ Unicast DNS ในองค์กร (เพิ่ม A Record) หรือให้ ESP32 ประกาศตัวเองด้วยวิธีอื่น เช่น UDP Broadcast Beacon (ใบงาน 10.2)
+     * สำหรับเครือข่ายหลาย Subnet ต้องใช้ **mDNS Reflector/Gateway** (เช่น Avahi Reflector) เพราะ Multicast `224.0.0.251` ไม่ข้าม Router
+
+3. **เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?**
+   * **คำตอบ:** `cJSON_CreateObject()` / `cJSON_Parse()` จองโหนดทุกตัวของต้นไม้ JSON บน Heap ด้วย `malloc` และ `cJSON_PrintUnformatted()` จองบัฟเฟอร์สตริงใหม่อีกก้อน ทั้งสองส่วนไม่มี Garbage Collector คืนให้ Handler ถูกเรียกทุกครั้งที่มี Request ถ้าไม่คืน Heap จะรั่ว (Memory Leak) สะสมทีละหลายร้อยไบต์ต่อ Request เมื่อ Poll ทุก 150 ms ก็ใช้เวลาไม่นานจน `free_heap` ใน `/api/status` ลดลงเรื่อยๆ แล้ว `malloc` ล้มเหลว (เซิร์ฟเวอร์ตอบไม่ได้ หรือระบบ Reset) ต้องใช้ `cJSON_free()` (ไม่ใช่ `free()`) คืนสตริง เพราะ cJSON อาจถูกตั้งค่าให้ใช้ Allocator อื่นผ่าน `cJSON_InitHooks()` และ `cJSON_Delete(root)` จะไล่คืนโหนดลูกทั้งหมดแบบ Recursive ในครั้งเดียว
