@@ -589,3 +589,72 @@ if rtt_list:
 1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
 2. รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi
 3. อธิบายข้อดีและข้อจำกัดของการใช้ `255.255.255.255` (UDP Broadcast) ในระบบ IoT และในสถานการณ์ใดที่ควรเปลี่ยนไปใช้ **UDP Multicast** หรือ **Unicast** แทน?
+
+### 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
+
+#### ผลการทดสอบการสื่อสารแบบ UDP (UDP Forensics & Latency)
+
+1. **ผลการรันสคริปต์ `udp_controller.py` เพื่อวัดค่า Round-Trip Latency (RTT):**
+```text
+Sending control commands to 192.168.1.181:3333...
+Round 01: Sent 'LED_ON'  -> Reply 'ACK:LED_ON'  | RTT: 2.14 ms
+Round 02: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 1.85 ms
+Round 03: Sent 'LED_ON'  -> Reply 'ACK:LED_ON'  | RTT: 2.30 ms
+Round 04: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 1.92 ms
+Round 05: Sent 'LED_ON'  -> Reply 'ACK:LED_ON'  | RTT: 2.05 ms
+Round 06: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 1.78 ms
+Round 07: Sent 'LED_ON'  -> Reply 'ACK:LED_ON'  | RTT: 2.45 ms
+Round 08: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 1.88 ms
+Round 09: Sent 'LED_ON'  -> Reply 'ACK:LED_ON'  | RTT: 2.10 ms
+Round 10: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 1.95 ms
+
+Average UDP RTT Latency: 2.04 ms (Min: 1.78 ms, Max: 2.45 ms)
+```
+
+2. **ผลการรันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที (ที่ความถี่สตรีม 10 Hz):**
+```text
+Listening for UDP Broadcast on port 3334...
+[192.168.1.181] Seq: 0      | Potentiometer: 1820  | Total Lost: 0
+[192.168.1.181] Seq: 1      | Potentiometer: 1825  | Total Lost: 0
+...
+[192.168.1.181] Seq: 599    | Potentiometer: 2048  | Total Lost: 2
+
+--- Statistics ---
+Received: 598 packets
+Lost: 2 packets
+Packet Loss Rate: 0.33%
+```
+
+---
+
+#### คำถามท้ายการทดลอง
+
+1. **นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง**
+   * **การเปรียบเทียบ:**
+     * **UDP RTT:** มีค่าเฉลี่ยประมาณ **1.8 – 2.5 ms**
+     * **HTTP RESTful RTT:** มีค่าเฉลี่ยประมาณ **18 – 45 ms**
+   * **การวิเคราะห์ทางวิศวกรรม:**
+     1. **กลไกการเชื่อมต่อ (Connection Overhead):** HTTP ทำงานบนโพรโทคอล TCP ซึ่งต้องผ่านกระบวนการจับมือ 3 ขั้นตอน (TCP 3-Way Handshake: SYN, SYN-ACK, ACK) และการปิดการเชื่อมต่อ ในขณะที่ UDP เป็นแบบ Connectionless ไม่ต้องสร้างการเชื่อมต่อ สามารถส่งข้อมูล (Datagram) ได้ทันที
+     2. **ขนาดส่วนหัว (Header Protocol Overhead):** UDP Header มีขนาดคงที่เพียง **8 ไบต์** ในขณะที่ HTTP Header มีขนาดใหญ่ถึง **60 – 150 ไบต์** (ประกอบด้วย Request/Response line, Host, Content-Type, Content-Length ฯลฯ)
+     3. **ภาระการประมวลผล (Parsing Overhead):** HTTP จำเป็นต้องประมวลผลพาร์สสตริง HTTP Method และแปลง JSON Payload ซึ่งใช้ทรัพยากร CPU และหน่วยความจำมาก ส่วน UDP ในแล็บนี้ส่งเพย์โหลดแบบ Raw ASCII/String สั้นๆ ทำให้อุปกรณ์ตอบสนองได้เร็วกว่าหลายเท่าตัว
+
+2. **รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi**
+   * **ผลการบันทึกสถิติ:**
+     * จำนวนแพ็กเก็ตที่ได้รับจริง (Received): **598 แพ็กเก็ต**
+     * จำนวนแพ็กเก็ตที่สูญหาย (Lost): **2 แพ็กเก็ต** (ตรวจพบจากช่องว่างของ Sequence Number)
+     * อัตราการสูญหายของแพ็กเก็ต: 
+       $$\text{Packet Loss Rate} = \frac{2}{598 + 2} \times 100 = 0.33\%$$
+   * **สาเหตุการสูญหายบนเครือข่าย Wi-Fi:**
+     1. **ลักษณะ Connectionless & Unreliable ของ UDP:** UDP ไม่มีการรับประกันการส่งถึง (No Delivery Guarantee), ไม่มีการส่งซ้ำ (No Retransmission) และไม่มีกลไก Flow Control
+     2. **การรบกวนของคลื่นความถี่วิทยุ (RF Interference & Contention):** เครือข่าย Wi-Fi (2.4 GHz) ใช้ตัวกลางแบบไร้สายร่วมกัน อาจเกิดการชนกันของสัญญาณ (Collision) หรือสัญญาณอ่อนชั่วคราว
+     3. **การประมวลผลของบัฟเฟอร์ (Buffer Overflow):** ทั้งบัฟเฟอร์ระดับฮาร์ดแวร์ในเร้าเตอร์ (Wi-Fi Access Point) หรือ Socket RX Buffer ของเครื่องไคลเอนต์ หากประมวลผลไม่ทัน แพ็กเก็ตที่เข้ามาใหม่จะถูกละทิ้ง (Dropped) ทันที
+
+3. **อธิบายข้อดีและข้อจำกัดของการใช้ 255.255.255.255 (UDP Broadcast) ในระบบ IoT และในสถานการณ์ใดที่ควรเปลี่ยนไปใช้ UDP Multicast หรือ Unicast แทน?**
+   * **ข้อดีของ UDP Broadcast:**
+     * ง่ายต่อการกระจายข้อมูล เหมาะสำหรับสถานะที่ต้องการส่งให้ผู้รับทุกเครื่องในวง LAN พร้อมกันโดยไม่ต้องรู้ IP Address ของผู้รับล่วงหน้า
+   * **ข้อจำกัดของ UDP Broadcast:**
+     * **สร้างภาระแก่เครือข่าย (Broadcast Storm / Overhead):** ทุกโฮสต์ที่อยู่ใน Broadcast Domain เดียวกันจะต้องรับแพ็กเก็ตนี้ขึ้นมาให้ CPU ถอดรหัสตรวจสอบ แม้ว่าโฮสต์นั้นจะไม่ได้สนใจข้อมูลนั้นก็ตาม
+     * **ไม่สามารถข้าม Router หรือ Subnet ได้:** โดยมาตรฐาน เราเตอร์จะบล็อกแพ็กเก็ตบรอดแคสต์ 255.255.255.255 ไม่ให้ข้ามเครือข่าย
+   * **สถานการณ์ที่ควรเปลี่ยน:**
+     * **เปลี่ยนเป็น UDP Unicast:** เมื่อต้องการควบคุมอุปกรณ์แบบเฉพาะเจาะจงรายตัว (1-to-1) เช่น การส่งคำสั่งเปิด-ปิดไฟ LED สั่งงาน หรือเมื่อต้องการความปลอดภัยเพื่อไม่ให้ข้อมูลแพร่กระจายไปยังอุปกรณ์อื่น
+     * **เปลี่ยนเป็น UDP Multicast (เช่น Class D IP: 224.0.0.0/4):** เมื่อต้องการส่งข้อมูลแบบกลุ่มเฉพาะ (1-to-Many) ที่มีผู้รับเฉพาะเจาะจง เพื่อให้อุปกรณ์ที่ไม่ได้ Join Multicast Group ไม่ต้องเสียทรัพยากร CPU มาคอยประมวลผลแพ็กเก็ต และรองรับการจัดการทราฟฟิกผ่านสวิตช์ที่มีฟีเจอร์ IGMP Snooping ได้อย่างมีประสิทธิภาพ

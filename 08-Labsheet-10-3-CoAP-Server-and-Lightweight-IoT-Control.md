@@ -609,3 +609,55 @@ if __name__ == "__main__":
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+### 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
+
+#### ผลการทดสอบผ่านสคริปต์ `test_coap.py`
+
+1. **ผลลัพธ์การสืบค้น Resource Discovery (`GET /.well-known/core`):**
+```text
+--- 1. Testing CoAP Resource Discovery (/.well-known/core) ---
+Resource Directory (CoRE Link Format):
+</sensor/pot>,</actuator/led>
+```
+
+2. **ผลลัพธ์การอ่านค่าเซนเซอร์และการควบคุม LED ผ่าน CoAP:**
+```text
+--- 2. Testing CoAP GET /sensor/pot ---
+Potentiometer Value: 1845 (Code: 2.05 Content)
+
+--- 3. Testing CoAP PUT /actuator/led (Turn ON) ---
+LED ON Response Code: 2.04 Changed
+
+--- 4. Testing CoAP PUT /actuator/led (Turn OFF) ---
+LED OFF Response Code: 2.04 Changed
+```
+
+---
+
+#### คำถามท้ายการทดลอง
+
+1. **นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ CoRE Link Format (RFC 6690) ว่าแสดงข้อมูลทรัพยากรอย่างไร**
+   * **ผลการสืบค้น:**
+     ```http
+     </sensor/pot>,</actuator/led>
+     ```
+   * **คำอธิบายรูปแบบ CoRE Link Format (RFC 6690):**
+     * CoRE Link Format เป็นมาตรฐานที่ออกแบบมาเพื่อให้อุปกรณ์ฝังตัว (Constrained Devices) สามารถค้นหาทรัพยากร (Resource Discovery) ภายในระบบได้โดยอัตโนมัติ โดยไม่ต้องอาศัยเอกสาร API ภายนอก
+     * **ไวยากรณ์:** URI Path ของแต่ละทรัพยากรจะถูกครอบด้วยเครื่องหมาย `< >` และคั่นระหว่างรายการด้วยเครื่องหมายจุลภาค (`,`) เช่น `</sensor/pot>,</actuator/led>`
+     * นอกจากนี้ CoRE Link Format ยังรองรับ Attribute เพิ่มเติม เช่น ชนิดเนื้อหา (`ct=0` สำหรับ text/plain) หรือการระบุความสามารถในการ Observe (`obs`) ทำให้ฝั่ง Client หรือ Gateway สามารถทำ Service Discovery ได้ทันทีที่เชื่อมต่อเครือข่าย
+
+2. **อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง CON (Confirmable) และ NON (Non-confirmable) เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ**
+   * **CON (Confirmable Message):**
+     * เป็นการส่งแพ็กเก็ตที่ **ต้องการการตอบรับ (Acknowledgement - ACK)** กลับมาจากปลายทาง
+     * หากผู้ส่งไม่ได้รับ ACK ภายในช่วงเวลาที่กำหนด (Timeout) สแต็ก CoAP จะทำการ **ส่งซ้ำ (Retransmission)** โดยอัตโนมัติตามกลไก Exponential Backoff (ส่งซ้ำสูงสุด 4 ครั้งตามมาตรฐาน RFC 7252)
+     * *พฤติกรรมเมื่อสัญญาณรบกวน:* แม้ในเครือข่ายที่มี Packet Loss ข้อมูลคำสั่งสำคัญ (เช่น การสั่งเปิด-ปิดวาล์วหรือหลอดไฟ) จะไม่สูญหาย แต่อาจมี Latency เพิ่มขึ้นตามรอบการส่งซ้ำ
+   * **NON (Non-confirmable Message):**
+     * เป็นการส่งแพ็กเก็ตแบบ **Fire-and-Forget ไม่ต้องการ ACK** กลับมา
+     * ไม่มีการเก็บสถานะ ไม่มีการส่งซ้ำ และไม่มีการตอบรับใดๆ
+     * *พฤติกรรมเมื่อสัญญาณรบกวน:* หากเกิดสัญญาณรบกวนหรือแพ็กเก็ตตกหล่น ข้อมูลนั้นจะสูญหายทันที เหมาะสำหรับข้อมูลประเภท Telemetry ต่อเนื่อง เช่น การอ่านค่าอุณหภูมิหรือ Potentiometer ที่รอบข้อมูลใหม่สามารถทดแทนรอบเดิมได้โดยไม่มีผลกระทบร้ายแรง
+
+3. **ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?**
+   * **ขนาด Header และ Binary Encoding เล็กมาก:** CoAP ถูกออกแบบให้อยู่ในรูปไบนารี โดยมีขนาด Header พื้นฐานคงที่เพียง **4 ไบต์** เท่านั้น ในขณะที่ HTTP เป็น Text-based Header ขนาด 100–500 ไบต์ ซึ่งเกินขีดจำกัด MTU ของเครือข่ายอย่าง IEEE 802.15.4 (127 ไบต์) หรือ Thread
+   * **ทำงานบน UDP แทน TCP:** เครือข่ายแบบ Low-Power เช่น NB-IoT หรือ 6LoWPAN/Thread มี Bandwidth ต่ำมาก การใช้ TCP ทำให้สิ้นเปลืองพลังงานและแบนด์วิดท์มหาศาลจากการ Handshake 3 ขั้นตอนและการ Maintain Connection ขณะที่ CoAP ทำงานบน UDP ทำให้ประหยัดพลังงานแบตเตอรี่ (Battery-friendly)
+   * **รองรับ Asynchronous Observe (RFC 7641):** CoAP มีฟีเจอร์ Observe ให้ Server สามารถ Push แจ้งเตือนเมื่อค่าเซนเซอร์เปลี่ยนได้ทันที โดยที่ Client ไม่ต้องคอยส่งคำขอซ้ำๆ (Polling) เหมือน HTTP ซึ่งช่วยลด Traffic และการใช้พลังงานของโหนดในระยะยาวได้อย่างมหาศาล
