@@ -39,6 +39,7 @@
                                          <------- Payload 6 B ---->
 ```
 
+
 ---
 
 ## 3. ขั้นตอนการทดลอง
@@ -158,13 +159,276 @@ Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0
 [✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
 ```
 
+## ผลการทดลองที่ได้
+```text
+tanwat@MacBook-Air--Tanawat 091-Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control % python benchmark_protocols.py --target 172.20.10.2 --protocol http --rounds 50
+
+
+================================================================================
+   ESP32 Local Protocol Benchmark: HTTP vs UDP vs CoAP
+   Industrial IoT Systems Engineering - Real-time Performance Lab
+================================================================================
+
+
+[*] Starting HTTP REST Benchmark -> http://172.20.10.2/api/led (50 rounds)...
+  [HTTP Round 001/050] RTT: 170.48 ms | Status: 200
+  [HTTP Round 002/050] RTT:  47.43 ms | Status: 200
+  [HTTP Round 003/050] RTT:  61.45 ms | Status: 200
+  [HTTP Round 004/050] RTT:  46.66 ms | Status: 200
+  [HTTP Round 005/050] RTT:  44.95 ms | Status: 200
+  [HTTP Round 006/050] RTT:  49.99 ms | Status: 200
+  [HTTP Round 007/050] RTT:  64.91 ms | Status: 200
+  [HTTP Round 008/050] RTT:  43.17 ms | Status: 200
+  [HTTP Round 009/050] RTT:  69.35 ms | Status: 200
+  [HTTP Round 010/050] RTT:  44.50 ms | Status: 200
+  [HTTP Round 011/050] RTT:  47.94 ms | Status: 200
+  [HTTP Round 012/050] RTT:  82.67 ms | Status: 200
+  [HTTP Round 013/050] RTT:  47.00 ms | Status: 200
+  [HTTP Round 014/050] RTT:  55.48 ms | Status: 200
+  [HTTP Round 015/050] RTT:  46.53 ms | Status: 200
+  [HTTP Round 016/050] RTT:  52.20 ms | Status: 200
+  [HTTP Round 017/050] RTT:  58.41 ms | Status: 200
+  [HTTP Round 018/050] RTT:  77.50 ms | Status: 200
+  [HTTP Round 019/050] RTT:  49.34 ms | Status: 200
+  [HTTP Round 020/050] RTT:  54.54 ms | Status: 200
+  [HTTP Round 021/050] RTT:  54.98 ms | Status: 200
+  [HTTP Round 022/050] RTT:  47.93 ms | Status: 200
+  [HTTP Round 023/050] RTT:  47.26 ms | Status: 200
+  [HTTP Round 024/050] RTT:  49.56 ms | Status: 200
+  [HTTP Round 025/050] RTT:  47.07 ms | Status: 200
+  [HTTP Round 026/050] RTT:  65.69 ms | Status: 200
+  [HTTP Round 027/050] RTT:  50.34 ms | Status: 200
+  [HTTP Round 028/050] RTT:  67.59 ms | Status: 200
+  [HTTP Round 029/050] RTT:  69.76 ms | Status: 200
+  [HTTP Round 030/050] RTT:  55.20 ms | Status: 200
+  [HTTP Round 031/050] RTT:  44.25 ms | Status: 200
+  [HTTP Round 032/050] RTT:  49.47 ms | Status: 200
+  [HTTP Round 033/050] RTT:  80.86 ms | Status: 200
+  [HTTP Round 034/050] RTT:  57.01 ms | Status: 200
+  [HTTP Round 035/050] RTT:  53.90 ms | Status: 200
+  [HTTP Round 036/050] RTT:  48.17 ms | Status: 200
+  [HTTP Round 037/050] RTT:  56.02 ms | Status: 200
+  [HTTP Round 038/050] RTT:  47.84 ms | Status: 200
+  [HTTP Round 039/050] RTT:  57.12 ms | Status: 200
+  [HTTP Round 040/050] RTT:  49.92 ms | Status: 200
+  [HTTP Round 041/050] RTT:  54.57 ms | Status: 200
+  [HTTP Round 042/050] RTT:  47.67 ms | Status: 200
+  [HTTP Round 043/050] RTT:  58.20 ms | Status: 200
+  [HTTP Round 044/050] RTT: 112.71 ms | Status: 200
+  [HTTP Round 045/050] RTT:  52.73 ms | Status: 200
+  [HTTP Round 046/050] RTT:  48.52 ms | Status: 200
+  [HTTP Round 047/050] RTT:  51.37 ms | Status: 200
+  [HTTP Round 048/050] RTT:  54.26 ms | Status: 200
+  [HTTP Round 049/050] RTT:  58.55 ms | Status: 200
+  [HTTP Round 050/050] RTT:  43.85 ms | Status: 200
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+HTTP (REST)  | 50/50      |   0.0% |    43.17 |     57.94 |   170.48 |      20.26
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
+
+[✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
+
+```
+
+```text
+tanwat@MacBook-Air--Tanawat 091-Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control % python benchmark_protocols.py --target 172.20.10.2 --protocol udp --rounds 50
+
+
+================================================================================
+   ESP32 Local Protocol Benchmark: HTTP vs UDP vs CoAP
+   Industrial IoT Systems Engineering - Real-time Performance Lab
+================================================================================
+
+
+[*] Starting UDP Socket Benchmark -> 172.20.10.2:3333 (50 rounds)...
+  [UDP Round  001/050] RTT:  42.12 ms | Recv: ACK:LED_ON
+  [UDP Round  002/050] RTT:  12.17 ms | Recv: ACK:LED_OFF
+  [UDP Round  003/050] RTT:  11.14 ms | Recv: ACK:LED_ON
+  [UDP Round  004/050] RTT:  27.45 ms | Recv: ACK:LED_OFF
+  [UDP Round  005/050] RTT:  32.17 ms | Recv: ACK:LED_ON
+  [UDP Round  006/050] RTT:  11.06 ms | Recv: ACK:LED_OFF
+  [UDP Round  007/050] RTT:  12.93 ms | Recv: ACK:LED_ON
+  [UDP Round  008/050] RTT:  12.94 ms | Recv: ACK:LED_OFF
+  [UDP Round  009/050] RTT:  15.28 ms | Recv: ACK:LED_ON
+  [UDP Round  010/050] RTT:  10.66 ms | Recv: ACK:LED_OFF
+  [UDP Round  011/050] RTT:  15.57 ms | Recv: ACK:LED_ON
+  [UDP Round  012/050] RTT:  22.26 ms | Recv: ACK:LED_OFF
+  [UDP Round  013/050] RTT:  10.65 ms | Recv: ACK:LED_ON
+  [UDP Round  014/050] RTT:  10.28 ms | Recv: ACK:LED_OFF
+  [UDP Round  015/050] RTT:  13.71 ms | Recv: ACK:LED_ON
+  [UDP Round  016/050] RTT:  11.64 ms | Recv: ACK:LED_OFF
+  [UDP Round  017/050] RTT:  13.78 ms | Recv: ACK:LED_ON
+  [UDP Round  018/050] RTT:  15.21 ms | Recv: ACK:LED_OFF
+  [UDP Round  019/050] RTT:  14.46 ms | Recv: ACK:LED_ON
+  [UDP Round  020/050] RTT:  22.68 ms | Recv: ACK:LED_OFF
+  [UDP Round  021/050] RTT:  12.81 ms | Recv: ACK:LED_ON
+  [UDP Round  022/050] RTT:  12.43 ms | Recv: ACK:LED_OFF
+  [UDP Round  023/050] RTT:  10.85 ms | Recv: ACK:LED_ON
+  [UDP Round  024/050] RTT:  15.64 ms | Recv: ACK:LED_OFF
+  [UDP Round  025/050] RTT:  11.72 ms | Recv: ACK:LED_ON
+  [UDP Round  026/050] RTT:  15.02 ms | Recv: ACK:LED_OFF
+  [UDP Round  027/050] RTT:  16.52 ms | Recv: ACK:LED_ON
+  [UDP Round  028/050] RTT:  13.38 ms | Recv: ACK:LED_OFF
+  [UDP Round  029/050] RTT:  14.56 ms | Recv: ACK:LED_ON
+  [UDP Round  030/050] RTT:   9.80 ms | Recv: ACK:LED_OFF
+  [UDP Round  031/050] RTT:  10.39 ms | Recv: ACK:LED_ON
+  [UDP Round  032/050] RTT:  12.45 ms | Recv: ACK:LED_OFF
+  [UDP Round  033/050] RTT:   9.72 ms | Recv: ACK:LED_ON
+  [UDP Round  034/050] RTT:  15.48 ms | Recv: ACK:LED_OFF
+  [UDP Round  035/050] RTT:   9.72 ms | Recv: ACK:LED_ON
+  [UDP Round  036/050] RTT:  22.35 ms | Recv: ACK:LED_OFF
+  [UDP Round  037/050] RTT:  11.30 ms | Recv: ACK:LED_ON
+  [UDP Round  038/050] RTT:  11.35 ms | Recv: ACK:LED_OFF
+  [UDP Round  039/050] RTT:  11.23 ms | Recv: ACK:LED_ON
+  [UDP Round  040/050] RTT:  12.45 ms | Recv: ACK:LED_OFF
+  [UDP Round  041/050] RTT:  11.40 ms | Recv: ACK:LED_ON
+  [UDP Round  042/050] RTT:  12.04 ms | Recv: ACK:LED_OFF
+  [UDP Round  043/050] RTT:  13.26 ms | Recv: ACK:LED_ON
+  [UDP Round  044/050] RTT:  17.46 ms | Recv: ACK:LED_OFF
+  [UDP Round  045/050] RTT:  16.14 ms | Recv: ACK:LED_ON
+  [UDP Round  046/050] RTT:  16.25 ms | Recv: ACK:LED_OFF
+  [UDP Round  047/050] RTT:  16.06 ms | Recv: ACK:LED_ON
+  [UDP Round  048/050] RTT:  12.81 ms | Recv: ACK:LED_OFF
+  [UDP Round  049/050] RTT:  12.05 ms | Recv: ACK:LED_ON
+  [UDP Round  050/050] RTT:  10.99 ms | Recv: ACK:LED_OFF
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+UDP (Socket) | 50/50      |   0.0% |     9.72 |     14.72 |    42.12 |       5.89
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
+
+[✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
+
+ta
+```
+
+
+```text
+anwat@MacBook-Air--Tanawat 091-Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control % python benchmark_protocols.py --target 172.20.10.2 --protocol coap --rounds 50
+
+================================================================================
+   ESP32 Local Protocol Benchmark: HTTP vs UDP vs CoAP
+   Industrial IoT Systems Engineering - Real-time Performance Lab
+================================================================================
+
+
+[*] Starting CoAP Benchmark -> coap://172.20.10.2:5683/actuator/led (50 rounds)...
+  [CoAP Round 001/050] RTT: 117.40 ms | Code: 2.04 Changed
+  [CoAP Round 002/050] RTT:  22.77 ms | Code: 2.04 Changed
+  [CoAP Round 003/050] RTT:  16.71 ms | Code: 2.04 Changed
+  [CoAP Round 004/050] RTT:  18.27 ms | Code: 2.04 Changed
+  [CoAP Round 005/050] RTT:  12.60 ms | Code: 2.04 Changed
+  [CoAP Round 006/050] RTT:  14.59 ms | Code: 2.04 Changed
+  [CoAP Round 007/050] RTT:  36.05 ms | Code: 2.04 Changed
+  [CoAP Round 008/050] RTT:  23.17 ms | Code: 2.04 Changed
+  [CoAP Round 009/050] RTT:  12.27 ms | Code: 2.04 Changed
+  [CoAP Round 010/050] RTT:  13.93 ms | Code: 2.04 Changed
+  [CoAP Round 011/050] RTT:  18.41 ms | Code: 2.04 Changed
+  [CoAP Round 012/050] RTT:  11.38 ms | Code: 2.04 Changed
+  [CoAP Round 013/050] RTT:  18.93 ms | Code: 2.04 Changed
+  [CoAP Round 014/050] RTT:  17.98 ms | Code: 2.04 Changed
+  [CoAP Round 015/050] RTT:  19.19 ms | Code: 2.04 Changed
+  [CoAP Round 016/050] RTT:  14.63 ms | Code: 2.04 Changed
+  [CoAP Round 017/050] RTT:  21.77 ms | Code: 2.04 Changed
+  [CoAP Round 018/050] RTT:  14.40 ms | Code: 2.04 Changed
+  [CoAP Round 019/050] RTT:  13.28 ms | Code: 2.04 Changed
+  [CoAP Round 020/050] RTT:  12.25 ms | Code: 2.04 Changed
+  [CoAP Round 021/050] RTT:  18.63 ms | Code: 2.04 Changed
+  [CoAP Round 022/050] RTT:  18.71 ms | Code: 2.04 Changed
+  [CoAP Round 023/050] RTT:  20.17 ms | Code: 2.04 Changed
+  [CoAP Round 024/050] RTT:  18.22 ms | Code: 2.04 Changed
+  [CoAP Round 025/050] RTT:  17.67 ms | Code: 2.04 Changed
+  [CoAP Round 026/050] RTT:  25.97 ms | Code: 2.04 Changed
+  [CoAP Round 027/050] RTT:  16.53 ms | Code: 2.04 Changed
+  [CoAP Round 028/050] RTT:  13.41 ms | Code: 2.04 Changed
+  [CoAP Round 029/050] RTT:  14.85 ms | Code: 2.04 Changed
+  [CoAP Round 030/050] RTT:  16.47 ms | Code: 2.04 Changed
+  [CoAP Round 031/050] RTT:  14.47 ms | Code: 2.04 Changed
+  [CoAP Round 032/050] RTT:  13.29 ms | Code: 2.04 Changed
+  [CoAP Round 033/050] RTT:  16.31 ms | Code: 2.04 Changed
+  [CoAP Round 034/050] RTT:  16.24 ms | Code: 2.04 Changed
+  [CoAP Round 035/050] RTT:  12.44 ms | Code: 2.04 Changed
+  [CoAP Round 036/050] RTT:  24.07 ms | Code: 2.04 Changed
+  [CoAP Round 037/050] RTT:  21.20 ms | Code: 2.04 Changed
+  [CoAP Round 038/050] RTT:  24.24 ms | Code: 2.04 Changed
+  [CoAP Round 039/050] RTT:  17.93 ms | Code: 2.04 Changed
+  [CoAP Round 040/050] RTT:  16.49 ms | Code: 2.04 Changed
+  [CoAP Round 041/050] RTT:  38.14 ms | Code: 2.04 Changed
+  [CoAP Round 042/050] RTT:  15.20 ms | Code: 2.04 Changed
+  [CoAP Round 043/050] RTT:  20.15 ms | Code: 2.04 Changed
+  [CoAP Round 044/050] RTT:  17.04 ms | Code: 2.04 Changed
+  [CoAP Round 045/050] RTT:  28.72 ms | Code: 2.04 Changed
+  [CoAP Round 046/050] RTT:  14.69 ms | Code: 2.04 Changed
+  [CoAP Round 047/050] RTT:  24.62 ms | Code: 2.04 Changed
+  [CoAP Round 048/050] RTT:  17.47 ms | Code: 2.04 Changed
+  [CoAP Round 049/050] RTT:  13.71 ms | Code: 2.04 Changed
+  [CoAP Round 050/050] RTT:  15.27 ms | Code: 2.04 Changed
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+CoAP (RFC7252) | 50/50      |   0.0% |    11.38 |     20.25 |   117.40 |      14.91
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
+
+[✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
+
+
+```
+
 #### 3. ตารางบันทึกผลการทดสอบ RTT จริง (หน่วย: มิลลิวินาที ms)
 
 | โปรโตคอล                       | จำนวนรอบที่สำเร็จ | Packet Loss (%) | Min RTT (ms) | Mean RTT (ms) | Max RTT (ms) | Jitter / StdDev (ms) |
 | :----------------------------- | :---------------: | :-------------: | :----------: | :-----------: | :----------: | :------------------: |
-| **HTTP REST (`/api/led`)**     |  ......... / 50   |   ......... %   | ......... ms | ......... ms  | ......... ms |     ......... ms     |
-| **UDP Socket (`พอร์ต 3333`)**  |  ......... / 50   |   ......... %   | ......... ms | ......... ms  | ......... ms |     ......... ms     |
-| **CoAP PUT (`/actuator/led`)** |  ......... / 50   |   ......... %   | ......... ms | ......... ms  | ......... ms |     ......... ms     |
+| **HTTP REST (`/api/led`)**     |      50 / 50      |     0.0 %       |   43.17 ms   |   57.94 ms    |  170.48 ms   |       20.26 ms       |
+| **UDP Socket (`พอร์ต 3333`)**  |      50 / 50      |     0.0 %       |    9.72 ms   |   14.72 ms    |   42.12 ms   |        5.89 ms       |
+| **CoAP PUT (`/actuator/led`)** |      50 / 50      |     0.0 %       |   11.38 ms   |   20.25 ms    |  117.40 ms   |       14.91 ms       |
+
+**สรุปผล RTT:** UDP เร็วและนิ่งที่สุด, CoAP ช้ากว่า UDP เล็กน้อย, HTTP ช้าที่สุดและแกว่งมากที่สุด (Mean ช้ากว่า UDP ≈ 3.9 เท่า) ทุกโปรโตคอลไม่มีแพ็กเก็ตสูญหาย ค่า Max ของ HTTP และ CoAP เกิดจากรอบแรก (170.48 ms และ 117.40 ms) ซึ่งต้องเตรียมการเชื่อมต่อ/ARP ก่อน ทดสอบผ่าน iPhone Personal Hotspot
 
 ---
 
@@ -174,15 +438,17 @@ Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0
 
 | สถานะการทำงานของ ESP32                                 | หน่วยความจำแรมคงเหลือ (Free Heap) | ปริมาณแรมที่ใช้ไปโดยประมาณ |
 | :----------------------------------------------------- | :-------------------------------: | :------------------------: |
-| **Baseline หลังต่อ Wi-Fi สำเร็จ** (ก่อนรันเซิร์ฟเวอร์) |           ~ 240–260 KB            |       อ้างอิง (0 KB)       |
-| **HTTP REST Server (`esp_http_server`)**               |           ~ 210–225 KB            |         ~ 25–40 KB         |
-| **UDP Socket Server (LwIP Raw Socket)**                |           ~ 235–250 KB            |       **~ 5–10 KB**        |
-| **CoAP Server (`espressif/coap` / `libcoap`)**         |           ~ 190–215 KB            |         ~ 35–50 KB         |
+| **Baseline หลังต่อ Wi-Fi สำเร็จ** (ก่อนรันเซิร์ฟเวอร์) |   209–222 KB (HTTP 220 / UDP 222 / CoAP 209)   |       อ้างอิง (0 KB)       |
+| **HTTP REST Server (`esp_http_server`)**               |     212,232 B (≈ 207 KB)          |  13,232 B (≈ 13 KB) *รวม mDNS* |
+| **UDP Socket Server (LwIP Raw Socket)**                |     218,200 B (≈ 213 KB)          |   **9,368 B (≈ 9 KB)**     |
+| **CoAP Server (`espressif/coap` / `libcoap`)**         |     204,124 B (≈ 199 KB)          |  10,464 B (≈ 10 KB)        |
 
 > [!NOTE] **วิเคราะห์เชิงสถาปัตยกรรม:**
 > * **UDP Socket** ใช้แรมน้อยที่สุดเนื่องจากเป็นเพียง Socket FD ธรรมดาบน LwIP ไม่ต้องมี State Machine หรือ Context Complex
 > * **HTTP Server** ใช้แรมปานกลางสำหรับจัดสรร Connection Slots และ Parsing Buffer
 > * **CoAP Server (libcoap)** มีขนาด Task Stack Size (8 KB) และหน่วยความจำสำหรับจัดการ Resource Tree, PDU Session State, และ Observer List
+
+**สรุปผล RAM จากการวัดจริง:** UDP ใช้น้อยสุด (≈ 9 KB) < CoAP (≈ 10 KB) < HTTP (≈ 13 KB) เรียงลำดับตรงตามทฤษฎี แต่ค่าที่วัดได้ต่ำกว่าตารางอ้างอิงในใบงาน เพราะ ESP-IDF v6.0.2 และการตั้งค่าต่างกัน ค่า Baseline ของแต่ละเฟิร์มแวร์ก็ไม่เท่ากัน (209–222 KB) และค่า Minimum free heap ใกล้เคียงค่าหลังรัน แสดงว่าไม่มี memory leak
 
 ---
 
@@ -192,24 +458,24 @@ Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0
 
 ### 1. เปรียบเทียบจุดเด่นและจุดด้อย (Pros & Cons Matrix)
 จงสรุปข้อดีและข้อจำกัดของ **HTTP, UDP, และ CoAP** จากผลการทดลองจริง 
-* **HTTP** ......................................................................................................................................
-* **UDP** .......................................................................................................................................
-* **CoAP** ......................................................................................................................................
+* **HTTP** ข้อดี: ใช้งานง่าย เปิดจากเบราว์เซอร์/REST ได้ทันที และ TCP รับประกันการส่ง ข้อเสีย: ช้าที่สุด (Mean 57.94 ms), Jitter สูงสุด (20.26 ms), Header ใหญ่ (~200 ไบต์ ประสิทธิภาพข้อมูล ~6 %) และใช้แรมมากที่สุด (≈ 13 KB)
+* **UDP** ข้อดี: เร็วและนิ่งที่สุด (Mean 14.72 ms, Jitter 5.89 ms), Overhead ต่ำสุด (ประสิทธิภาพข้อมูล ~42.8 %), ใช้แรมน้อยสุด (≈ 9 KB) ข้อเสีย: ไม่มีการยืนยันการส่งหรือการส่งซ้ำ และไม่มีรูปแบบข้อมูลมาตรฐาน ต้องออกแบบเอง (ผลทดลอง Loss 0 % เพราะเครือข่ายไม่แออัด ไม่ได้แปลว่า UDP รับประกันการส่ง)
+* **CoAP** ข้อดี: ความหน่วงใกล้เคียง UDP (Mean 20.25 ms), Header มาตรฐานเพียง 4 ไบต์, มี ACK/ส่งซ้ำ และใช้รูปแบบ REST ที่เหมาะกับ IoT ข้อเสีย: ต้องใช้ไลบรารีเพิ่ม ใช้แรมมากกว่า UDP (≈ 10 KB) และ Jitter สูงกว่า UDP (14.91 ms)
 
 ### 2. กรณีศึกษาการตัดสินใจเลือกใช้โปรโตคอล (Engineering Case Studies)
 หากท่านเป็นหัวหน้าวิศวกรออกแบบระบบ IoT จงเลือกโปรโตคอลที่เหมาะสมที่สุดสำหรับแต่ละกรณีศึกษาต่อไปนี้ พร้อมให้เหตุผลทางวิศวกรรมสนับสนุน
 
 * **กรณีศึกษาที่ 1** *ระบบเซนเซอร์วัดความชื้นในดินและวาล์วน้ำเพื่อการเกษตรอัจฉริยะ ทำงานด้วยแบตเตอรี่โซลาร์เซลล์ขนาดเล็ก ติดตั้งกลางแจ้งห่างไกล*
-  * **โปรโตคอลที่เลือก** ....................................................................................................................
-  * **เหตุผลทางวิศวกรรม** ................................................................................................................
+  * **โปรโตคอลที่เลือก** CoAP
+  * **เหตุผลทางวิศวกรรม** Header เล็ก (4 ไบต์) ส่งข้อมูลน้อย ประหยัดพลังงานและเปิดวิทยุสั้น (ส่งข้อมูลน้อยกว่า HTTP ราว 15–20 เท่า) มี ACK/ส่งซ้ำให้เชื่อถือได้ในสัญญาณกลางแจ้งที่ไม่เสถียร ใช้แรมเพียง ≈ 10 KB และรูปแบบ REST ทำให้สั่งวาล์วได้ง่าย
 
 * **กรณีศึกษาที่ 2** *เว็บแดชบอร์ดสำหรับฝ่ายซ่อมบำรุงในโรงงาน เพื่อเปิดดูสถานะและตั้งค่าพารามิเตอร์ของอุปกรณ์ผ่านเว็บบราวเซอร์บนแท็บเล็ต/สมาร์ตโฟน*
-  * **โปรโตคอลที่เลือก** ....................................................................................................................
-  * **เหตุผลทางวิศวกรรม** ................................................................................................................
+  * **โปรโตคอลที่เลือก** HTTP REST
+  * **เหตุผลทางวิศวกรรม** เบราว์เซอร์ในแท็บเล็ต/สมาร์ตโฟนรองรับ HTTP ทันทีโดยไม่ต้องติดตั้งแอปหรือไลบรารีเพิ่ม และ TCP รับประกันการส่งข้อมูลตั้งค่า ส่วนข้อเสียคือ RTT ช้ากว่า (≈ 58 ms) และ Overhead สูง ซึ่งไม่เป็นปัญหาเพราะเป็นการใช้งานโดยคน ไม่ใช่งานเรียลไทม์และไม่ได้ใช้แบตเตอรี่
 
 * **กรณีศึกษาที่ 3** *ระบบควบคุมแขนกลอุตสาหกรรมความเร็วสูง ที่ต้องการส่งพิกัดตำแหน่งแกนหมุน (X, Y, Z) ด้วยความถี่ 100 ครั้งต่อวินาที (100 Hz) ภายในเครือข่าย LAN ปิด (intranet)*
-  * **โปรโตคอลที่เลือก** ....................................................................................................................
-  * **เหตุผลทางวิศวกรรม** ................................................................................................................
+  * **โปรโตคอลที่เลือก** UDP
+  * **เหตุผลทางวิศวกรรม** ความหน่วงต่ำสุด (≈ 15 ms) และ Jitter ต่ำสุด (≈ 6 ms) Overhead น้อย เหมาะกับการส่งถี่ 100 Hz (คาบ 10 ms) ข้อมูลใหม่มาแทนข้อมูลเก่าอยู่แล้ว หากแพ็กเก็ตหายบ้างก็ไม่กระทบ และใน LAN ปิดมีโอกาสสูญหายต่ำ (ควรเพิ่มเลขลำดับแพ็กเก็ตเองเพื่อตรวจจับการสูญหาย)
 
 
 
