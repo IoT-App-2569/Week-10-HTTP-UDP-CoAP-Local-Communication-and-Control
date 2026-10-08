@@ -606,6 +606,329 @@ if __name__ == "__main__":
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
+
+## ผลการทดลอง
+```text
+I (27) boot: ESP-IDF v6.0.2 2nd stage bootloader
+I (27) boot: compile time Oct  8 2026 22:50:25
+I (27) boot: Multicore bootloader
+I (29) boot: chip revision: v3.1
+I (32) boot.esp32: SPI Speed      : 40MHz
+I (35) boot.esp32: SPI Mode       : DIO
+I (39) boot.esp32: SPI Flash Size : 2MB
+I (42) boot: Enabling RNG early entropy source...
+I (47) boot: Partition Table:
+I (49) boot: ## Label            Usage          Type ST Offset   Length
+I (56) boot:  0 nvs              WiFi data        01 02 00009000 00006000
+I (62) boot:  1 phy_init         RF data          01 01 0000f000 00001000
+I (69) boot:  2 factory          factory app      00 00 00010000 00100000
+I (75) boot: End of partition table
+I (79) esp_image: segment 0: paddr=00010020 vaddr=3f400020 size=1ead0h (125648) map
+I (131) esp_image: segment 1: paddr=0002eaf8 vaddr=3ffb0000 size=01520h (  5408) load
+I (133) esp_image: segment 2: paddr=00030020 vaddr=400d0020 size=ae86ch (714860) map
+I (389) esp_image: segment 3: paddr=000de894 vaddr=3ffb1520 size=032f8h ( 13048) load
+I (395) esp_image: segment 4: paddr=000e1b94 vaddr=40080000 size=156f4h ( 87796) load
+I (431) esp_image: segment 5: paddr=000f7290 vaddr=50000000 size=00028h (    40) load
+I (442) boot: Loaded app from partition at offset 0x10000
+I (442) boot: Disabling RNG early entropy source...
+I (453) cpu_start: Multicore app
+I (461) cpu_start: GPIO 3 and 1 are used as console UART I/O pins
+I (461) cpu_start: Pro cpu start user code
+I (461) cpu_start: cpu freq: 160000000 Hz
+I (463) app_init: Application information:
+I (467) app_init: Project name:     Lab10-3_CoAP_Server
+I (472) app_init: App version:      cbd99d9
+I (476) app_init: Compile time:     Oct  8 2026 22:50:18
+I (481) app_init: ELF file SHA256:  869071b04...
+I (485) app_init: ESP-IDF:          v6.0.2
+I (489) efuse_init: Min chip rev:     v0.0
+I (493) efuse_init: Max chip rev:     v3.99 
+I (497) efuse_init: Chip rev:         v3.1
+I (501) heap_init: Initializing. RAM available for dynamic allocation:
+I (507) heap_init: At 3FFAE6E0 len 00001920 (6 KiB): DRAM
+I (512) heap_init: At 3FFBBD38 len 000242C8 (144 KiB): DRAM
+I (517) heap_init: At 3FFE0440 len 00003AE0 (14 KiB): D/IRAM
+I (523) heap_init: At 3FFE4350 len 0001BCB0 (111 KiB): D/IRAM
+I (528) heap_init: At 400956F4 len 0000A90C (42 KiB): IRAM
+I (535) spi_flash: detected chip: generic
+I (537) spi_flash: flash io: dio
+W (540) spi_flash: Detected size(4096k) larger than the size in the binary image header(2048k). Using the size in the binary image header.
+I (554) main_task: Started on CPU0
+I (554) main_task: Calling app_main()
+I (584) COAP_LAB: ADC Initialized on GPIO 34
+I (594) wifi:wifi driver task: 3ffc380c, prio:23, stack:6656, core=0
+I (604) wifi:wifi firmware version: 00ad238
+I (604) wifi:wifi certification version: v7.0
+I (604) wifi:config NVS flash: enabled
+I (604) wifi:config nano formatting: disabled
+I (614) wifi:Init data frame dynamic rx buffer num: 32
+I (614) wifi:Init static rx mgmt buffer num: 5
+I (614) wifi:Init management short buffer num: 32
+I (624) wifi:Init dynamic tx buffer num: 32
+I (624) wifi:Init static rx buffer size: 1600
+I (634) wifi:Init static rx buffer num: 10
+I (634) wifi:Init dynamic rx buffer num: 32
+I (644) wifi_init: rx ba win: 6
+I (644) wifi_init: accept mbox: 6
+I (644) wifi_init: tcpip mbox: 32
+I (644) wifi_init: udp mbox: 6
+I (654) wifi_init: tcp mbox: 6
+I (654) wifi_init: tcp tx win: 5760
+I (654) wifi_init: tcp rx win: 5760
+I (664) wifi_init: tcp mss: 1440
+I (664) wifi_init: WiFi IRAM OP enabled
+I (664) wifi_init: WiFi RX IRAM OP enabled
+I (694) phy_init: phy_version 4863,a3a4459,Oct 28 2025,14:30:06
+I (774) wifi:mode : sta (84:1f:e8:20:54:c0)
+I (774) wifi:enable tsf
+I (774) COAP_LAB: Connecting to AP: brown...
+I (794) wifi:new:<6,0>, old:<1,0>, ap:<255,255>, sta:<6,0>, prof:1, snd_ch_cfg:0x0
+I (794) wifi:state: init -> auth (0xb0)
+I (804) wifi:state: auth -> assoc (0x0)
+I (814) wifi:state: assoc -> run (0x10)
+I (874) wifi:connected with brown, aid = 1, channel 6, BW20, bssid = e2:2b:b4:a7:7a:88
+I (874) wifi:security: WPA2-PSK, phy: bgn, rssi: -57, cipher(pairwise:0x3, group:0x3), pmf:0
+I (894) wifi:pm start, type: 1
+
+I (894) wifi:dp: 1, bi: 102400, li: 3, scale listen interval from 307200 us to 307200 us
+I (924) wifi:AP's beacon interval = 102400 us, DTIM period = 1
+I (2154) esp_netif_handlers: sta ip: 172.20.10.2, mask: 255.255.255.240, gw: 172.20.10.1
+I (2154) COAP_LAB: Connected! IP Address: 172.20.10.2
+I (2154) COAP_LAB: CoAP Server listening on port 5683...
+I (2164) COAP_LAB: Ready! Test CoAP with: python test_coap.py
+I (2164) main_task: Returned from app_main()
+I (57064) wifi:<ba-add>idx:0 (ifx:0, e2:2b:b4:a7:7a:88), tid:0, ssn:2, winSize:64
+I (57114) COAP_LAB: GET /sensor/pot -> 328
+I (57134) COAP_LAB: LED turned ON via CoAP PUT
+I (59204) COAP_LAB: LED turned OFF via CoAP PUT
+I (196514) COAP_LAB: LED turned ON via CoAP PUT
+I (196824) COAP_LAB: LED turned OFF via CoAP PUT
+I (197234) COAP_LAB: LED turned ON via CoAP PUT
+I (197534) COAP_LAB: LED turned OFF via CoAP PUT
+I (197844) COAP_LAB: LED turned ON via CoAP PUT
+I (198154) COAP_LAB: LED turned OFF via CoAP PUT
+I (198454) COAP_LAB: LED turned ON via CoAP PUT
+I (198764) COAP_LAB: LED turned OFF via CoAP PUT
+I (199074) COAP_LAB: LED turned ON via CoAP PUT
+I (199384) COAP_LAB: LED turned OFF via CoAP PUT
+I (199684) COAP_LAB: LED turned ON via CoAP PUT
+I (199994) COAP_LAB: LED turned OFF via CoAP PUT
+I (200304) COAP_LAB: LED turned ON via CoAP PUT
+I (200614) COAP_LAB: LED turned OFF via CoAP PUT
+I (201014) COAP_LAB: LED turned ON via CoAP PUT
+I (201324) COAP_LAB: LED turned OFF via CoAP PUT
+I (201634) COAP_LAB: LED turned ON via CoAP PUT
+I (201944) COAP_LAB: LED turned OFF via CoAP PUT
+I (202244) COAP_LAB: LED turned ON via CoAP PUT
+I (202564) COAP_LAB: LED turned OFF via CoAP PUT
+I (202864) COAP_LAB: LED turned ON via CoAP PUT
+I (203174) COAP_LAB: LED turned OFF via CoAP PUT
+I (203474) COAP_LAB: LED turned ON via CoAP PUT
+I (203784) COAP_LAB: LED turned OFF via CoAP PUT
+I (204094) COAP_LAB: LED turned ON via CoAP PUT
+I (204404) COAP_LAB: LED turned OFF via CoAP PUT
+I (204704) COAP_LAB: LED turned ON via CoAP PUT
+I (205014) COAP_LAB: LED turned OFF via CoAP PUT
+I (205324) COAP_LAB: LED turned ON via CoAP PUT
+I (205624) COAP_LAB: LED turned OFF via CoAP PUT
+I (206134) COAP_LAB: LED turned ON via CoAP PUT
+I (206554) COAP_LAB: LED turned OFF via CoAP PUT
+I (206854) COAP_LAB: LED turned ON via CoAP PUT
+I (207164) COAP_LAB: LED turned OFF via CoAP PUT
+I (207474) COAP_LAB: LED turned ON via CoAP PUT
+I (207784) COAP_LAB: LED turned OFF via CoAP PUT
+I (208084) COAP_LAB: LED turned ON via CoAP PUT
+I (208394) COAP_LAB: LED turned OFF via CoAP PUT
+I (208704) COAP_LAB: LED turned ON via CoAP PUT
+I (209004) COAP_LAB: LED turned OFF via CoAP PUT
+I (209314) COAP_LAB: LED turned ON via CoAP PUT
+I (209624) COAP_LAB: LED turned OFF via CoAP PUT
+I (209924) COAP_LAB: LED turned ON via CoAP PUT
+I (210244) COAP_LAB: LED turned OFF via CoAP PUT
+I (210544) COAP_LAB: LED turned ON via CoAP PUT
+I (210854) COAP_LAB: LED turned OFF via CoAP PUT
+I (211154) COAP_LAB: LED turned ON via CoAP PUT
+I (211464) COAP_LAB: LED turned OFF via CoAP PUT
+I (211774) COAP_LAB: LED turned ON via CoAP PUT
+I (212074) COAP_LAB: LED turned OFF via CoAP PUT
+I (212384) COAP_LAB: LED turned ON via CoAP PUT
+I (212694) COAP_LAB: LED turned OFF via CoAP PUT
+I (213004) COAP_LAB: LED turned ON via CoAP PUT
+I (213304) COAP_LAB: LED turned OFF via CoAP PUT
+I (213614) COAP_LAB: LED turned ON via CoAP PUT
+I (213924) COAP_LAB: LED turned OFF via CoAP PUT
+I (214224) COAP_LAB: LED turned ON via CoAP PUT
+I (214534) COAP_LAB: LED turned OFF via CoAP PUT
+I (214844) COAP_LAB: LED turned ON via CoAP PUT
+I (215154) COAP_LAB: LED turned OFF via CoAP PUT
+I (247224) COAP_LAB: LED turned ON via CoAP PUT
+I (248224) COAP_LAB: LED turned OFF via CoAP PUT
+I (248734) COAP_LAB: LED turned ON via CoAP PUT
+I (249044) COAP_LAB: LED turned OFF via CoAP PUT
+I (249454) COAP_LAB: LED turned ON via CoAP PUT
+I (249864) COAP_LAB: LED turned OFF via CoAP PUT
+I (250174) COAP_LAB: LED turned ON via CoAP PUT
+I (250474) COAP_LAB: LED turned OFF via CoAP PUT
+I (250884) COAP_LAB: LED turned ON via CoAP PUT
+I (251394) COAP_LAB: LED turned OFF via CoAP PUT
+I (251804) COAP_LAB: LED turned ON via CoAP PUT
+I (252114) COAP_LAB: LED turned OFF via CoAP PUT
+I (252424) COAP_LAB: LED turned ON via CoAP PUT
+I (252734) COAP_LAB: LED turned OFF via CoAP PUT
+I (253034) COAP_LAB: LED turned ON via CoAP PUT
+I (253344) COAP_LAB: LED turned OFF via CoAP PUT
+I (253654) COAP_LAB: LED turned ON via CoAP PUT
+I (254164) COAP_LAB: LED turned OFF via CoAP PUT
+I (254474) COAP_LAB: LED turned ON via CoAP PUT
+I (254884) COAP_LAB: LED turned OFF via CoAP PUT
+I (255294) COAP_LAB: LED turned ON via CoAP PUT
+I (255604) COAP_LAB: LED turned OFF via CoAP PUT
+I (255904) COAP_LAB: LED turned ON via CoAP PUT
+I (256414) COAP_LAB: LED turned OFF via CoAP PUT
+I (257034) COAP_LAB: LED turned ON via CoAP PUT
+I (257544) COAP_LAB: LED turned OFF via CoAP PUT
+I (258054) COAP_LAB: LED turned ON via CoAP PUT
+I (258464) COAP_LAB: LED turned OFF via CoAP PUT
+I (259184) COAP_LAB: LED turned ON via CoAP PUT
+I (259494) COAP_LAB: LED turned OFF via CoAP PUT
+I (259794) COAP_LAB: LED turned ON via CoAP PUT
+I (260104) COAP_LAB: LED turned OFF via CoAP PUT
+I (260614) COAP_LAB: LED turned ON via CoAP PUT
+I (260924) COAP_LAB: LED turned OFF via CoAP PUT
+I (261234) COAP_LAB: LED turned ON via CoAP PUT
+I (261544) COAP_LAB: LED turned OFF via CoAP PUT
+I (261944) COAP_LAB: LED turned ON via CoAP PUT
+I (262264) COAP_LAB: LED turned OFF via CoAP PUT
+I (262564) COAP_LAB: LED turned ON via CoAP PUT
+I (262874) COAP_LAB: LED turned OFF via CoAP PUT
+I (263174) COAP_LAB: LED turned ON via CoAP PUT
+I (263584) COAP_LAB: LED turned OFF via CoAP PUT
+I (263894) COAP_LAB: LED turned ON via CoAP PUT
+I (264194) COAP_LAB: LED turned OFF via CoAP PUT
+I (264504) COAP_LAB: LED turned ON via CoAP PUT
+I (264814) COAP_LAB: LED turned OFF via CoAP PUT
+I (265124) COAP_LAB: LED turned ON via CoAP PUT
+I (265424) COAP_LAB: LED turned OFF via CoAP PUT
+I (265734) COAP_LAB: LED turned ON via CoAP PUT
+I (266044) COAP_LAB: LED turned OFF via CoAP PUT
+I (266344) COAP_LAB: LED turned ON via CoAP PUT
+I (266654) COAP_LAB: LED turned OFF via CoAP PUT
+I (266964) COAP_LAB: LED turned ON via CoAP PUT
+I (267274) COAP_LAB: LED turned OFF via CoAP PUT
+I (267584) COAP_LAB: LED turned ON via CoAP PUT
+I (267914) COAP_LAB: LED turned OFF via CoAP PUT
+I (273114) COAP_LAB: LED turned ON via CoAP PUT
+I (273414) COAP_LAB: LED turned OFF via CoAP PUT
+I (273724) COAP_LAB: LED turned ON via CoAP PUT
+I (274034) COAP_LAB: LED turned OFF via CoAP PUT
+```
+
+![alt text](image-2.png)
+
+
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+## 4. คำถามท้ายบท
+
+1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
+
+**ผลการทดลอง** (`python test_coap.py`)
+
+```
+Resource Directory (CoRE Link Format):
+</sensor/pot>,</actuator/led>
+```
+
+**อธิบาย CoRE Link Format (RFC 6690)**
+
+เป็นรูปแบบข้อความที่ CoAP Server ใช้บอกรายการทรัพยากรของตัวเอง
+
+- ทรัพยากรแต่ละตัวอยู่ในรูป `<path>` เช่น `</sensor/pot>`
+- หลายทรัพยากรคั่นด้วยเครื่องหมาย `,`
+- ถ้ามี attribute จะต่อท้ายด้วย `;` เช่น `;rt="potentiometer";if="sensor";ct=0`
+  - `rt` = ชนิดของทรัพยากร, `if` = รูปแบบการเข้าถึง, `ct` = ชนิดข้อมูล, `obs` = รองรับ Observe
+
+ผลที่ได้แสดง 2 ทรัพยากรตรงกับที่ลงทะเบียนใน `coap_server_task` และมีเฉพาะ path
+เพราะโค้ดไม่ได้กำหนด attribute ประโยชน์คือ Client ค้นหาทรัพยากรบนอุปกรณ์ได้เอง
+โดยไม่ต้องรู้ URI ล่วงหน้า
+
+**ผลการเรียกใช้งานอื่นๆ**
+
+| คำขอ | Response Code | ผลลัพธ์ |
+|---|---|---|
+| GET `/sensor/pot` | 2.05 Content | ค่า 328 |
+| PUT `/actuator/led` (`1`) | 2.04 Changed | LED ติด |
+| PUT `/actuator/led` (`0`) | 2.04 Changed | LED ดับ |
+
+---
+
+2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
+
+**ความแตกต่างของแพ็กเก็ต**
+
+| หัวข้อ | CON (Type = 0) | NON (Type = 1) |
+|---|---|---|
+| การตอบกลับ | ผู้รับตอบ **ACK** ที่มี Message ID เดียวกัน | ไม่มี ACK (ESP32 ตอบเป็น NON response) |
+| เมื่อแพ็กเก็ตหาย | ส่งซ้ำแบบ exponential backoff (เริ่ม 2 วินาที ส่งซ้ำสูงสุด 4 ครั้ง) | ไม่ส่งซ้ำ ข้อมูลหายถาวร |
+| จุดเด่น | เชื่อถือได้ | เร็ว เบา |
+
+**หลักฐานระดับแพ็กเก็ต** (`raw_coap.py`)
+
+```
+CON: ส่ง MID=4096 -> ได้รับ ACK MID=4096 (code 2.04)
+NON: ส่ง MID=4196 -> ได้รับ NON MID=4196 (code 2.04)
+```
+
+CON ได้ ACK ครบ 10/10 และ NON ได้ response ครบ 10/10 ในสภาพปกติ โดยไม่พบการส่งซ้ำ
+
+**ผลทดลอง** (`test_con_non.py` ส่งโหมดละ 30 ครั้ง)
+
+| สภาพ | โหมด | สำเร็จ | เฉลี่ย (ms) | สูงสุด (ms) |
+|---|---|---|---|---|
+| ปกติ | CON | 30/30 | 111.7 | 207.3 |
+| ปกติ | NON | 30/30 | 116.1 | 402.6 |
+| สัญญาณอ่อน | CON | 30/30 | 222.4 | 923.2 |
+| สัญญาณอ่อน | NON | 29/30 | 120.6 | 307.6 |
+
+**วิเคราะห์**
+
+- สภาพปกติ: ทั้งสองแบบทำงานใกล้เคียงกัน เพราะไม่มีแพ็กเก็ตหาย
+- สัญญาณอ่อน: CON ส่งสำเร็จครบ แต่เวลาเฉลี่ยเพิ่มขึ้นประมาณ 2 เท่า
+  เพราะต้องรอ ACK และมีความหน่วงเพิ่ม
+- สัญญาณอ่อน: NON เวลาตอบสนองคงที่ แต่หาย 1 ใน 30 ครั้ง (ประมาณ 3.3%)
+  และไม่มีกลไกในโปรโตคอลที่จะรู้หรือแก้ไข
+- หมายเหตุ: ค่าสูงสุดของ CON (923 ms) ต่ำกว่า ACK_TIMEOUT (2 วินาที)
+  จึงน่าจะเป็นความหน่วงของ Wi-Fi มากกว่าการ retransmit ระดับโปรโตคอล
+- ข้อจำกัด: ตัวอย่างมีเพียง 30 ครั้งต่อโหมด จึงสรุปได้เพียงว่าแนวโน้มสอดคล้องกับทฤษฎี
+
+**สรุป:** CON เหมาะกับคำสั่งที่ต้องแน่ใจว่าถึง เช่น เปิด/ปิด LED
+ส่วน NON เหมาะกับข้อมูลเซนเซอร์ที่ส่งถี่และยอมให้บางค่าหายได้
+
+---
+
+3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+
+เครือข่ายเหล่านี้เป็น **Constrained Network** คือแบนด์วิดท์ต่ำ แพ็กเก็ตเล็ก
+อุปกรณ์ใช้แบตเตอรี่ และมีโอกาสแพ็กเก็ตหายสูง
+
+| ปัจจัย | CoAP | HTTP |
+|---|---|---|
+| Header | 4 ไบต์ + options แบบไบนารี | ข้อความ ASCII มักหลายร้อยไบต์ |
+| Transport | UDP ไม่ต้องสร้าง connection | TCP ต้อง handshake (และ TLS) |
+| ขนาดแพ็กเก็ต | พอดีกับเฟรม 802.15.4 (ประมาณ 127 ไบต์) ของ 6LoWPAN | มักต้องแตกเป็นหลายแพ็กเก็ต |
+| พลังงาน | ส่งไบต์น้อย เปิดวิทยุสั้น นอนหลับได้นาน | ต้องรักษา connection ส่งไบต์มากกว่า |
+| ความน่าเชื่อถือ | เลือกได้ต่อข้อความ (CON/NON) | พึ่ง TCP ซึ่งแย่เมื่อ packet loss สูง |
+| ฟีเจอร์ IoT | Observe, Multicast, Resource Discovery | ต้อง polling หรือใช้ WebSocket |
+
+**ตัวอย่างเฉพาะเครือข่าย**
+
+- **Thread / Zigbee IP:** ใช้ 802.15.4 ผ่าน 6LoWPAN ที่เฟรมเล็กมาก
+  และ Multicast ของ CoAP ช่วยสั่งหลายอุปกรณ์พร้อมกัน
+- **NB-IoT:** ใช้พลังงานและคิดค่าบริการตามปริมาณข้อมูล
+  การส่ง UDP datagram เดียวจึงคุ้มกว่าการเปิด TCP connection ทุกครั้ง
+
+**ข้อควรระวัง:** CoAP ไม่ได้ดีกว่า HTTP ทุกกรณี เหมาะเฉพาะอุปกรณ์หรือเครือข่ายที่มีข้อจำกัด
+ระบบเว็บทั่วไปที่ทรัพยากรเหลือเฟือ HTTP ยังเหมาะกว่าเพราะเครื่องมือครบกว่า
