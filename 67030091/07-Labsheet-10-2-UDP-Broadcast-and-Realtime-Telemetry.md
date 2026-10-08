@@ -583,9 +583,244 @@ if rtt_list:
     print(f"\nAverage UDP RTT Latency: {avg_rtt:.2f} ms (Min: {min(rtt_list):.2f} ms, Max: {max(rtt_list):.2f} ms)")
 ```
 
+
+
+ผลการทำลอง
+```text
+anwat@MacBook-Air--Tanawat 091-Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control % python udp_listener.py
+Listening for UDP Broadcast on port 3334...
+[172.20.10.2] Seq: 231    | Potentiometer: 3523  | Total Lost: 0
+[172.20.10.2] Seq: 232    | Potentiometer: 3572  | Total Lost: 0
+[172.20.10.2] Seq: 233    | Potentiometer: 3588  | Total Lost: 0
+[172.20.10.2] Seq: 234    | Potentiometer: 3641  | Total Lost: 0
+[172.20.10.2] Seq: 235    | Potentiometer: 3655  | Total Lost: 0
+[172.20.10.2] Seq: 236    | Potentiometer: 3690  | Total Lost: 0
+[172.20.10.2] Seq: 237    | Potentiometer: 3686  | Total Lost: 0
+[172.20.10.2] Seq: 238    | Potentiometer: 3703  | Total Lost: 0
+[172.20.10.2] Seq: 239    | Potentiometer: 3752  | Total Lost: 0
+[172.20.10.2] Seq: 240    | Potentiometer: 3760  | Total Lost: 0
+[172.20.10.2] Seq: 241    | Potentiometer: 3793  | Total Lost: 0
+[172.20.10.2] Seq: 242    | Potentiometer: 3775  | Total Lost: 0
+[172.20.10.2] Seq: 243    | Potentiometer: 3788  | Total Lost: 0
+[172.20.10.2] Seq: 244    | Potentiometer: 3809  | Total Lost: 0
+[172.20.10.2] Seq: 245    | Potentiometer: 3824  | Total Lost: 0
+[172.20.10.2] Seq: 246    | Potentiometer: 3836  | Total Lost: 0
+[172.20.10.2] Seq: 247    | Potentiometer: 3823  | Total Lost: 0
+[172.20.10.2] Seq: 248    | Potentiometer: 3831  | Total Lost: 0
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 249, got 250)
+[172.20.10.2] Seq: 250    | Potentiometer: 3857  | Total Lost: 1
+[172.20.10.2] Seq: 251    | Potentiometer: 3838  | Total Lost: 1
+[172.20.10.2] Seq: 252    | Potentiometer: 3833  | Total Lost: 1
+[172.20.10.2] Seq: 253    | Potentiometer: 3844  | Total Lost: 1
+[172.20.10.2] Seq: 254    | Potentiometer: 3834  | Total Lost: 1
+[172.20.10.2] Seq: 255    | Potentiometer: 3816  | Total Lost: 1
+[172.20.10.2] Seq: 256    | Potentiometer: 3811  | Total Lost: 1
+[172.20.10.2] Seq: 257    | Potentiometer: 3809  | Total Lost: 1
+[172.20.10.2] Seq: 258    | Potentiometer: 3788  | Total Lost: 1
+[172.20.10.2] Seq: 259    | Potentiometer: 3775  | Total Lost: 1
+[172.20.10.2] Seq: 260    | Potentiometer: 3758  | Total Lost: 1
+[172.20.10.2] Seq: 261    | Potentiometer: 3755  | Total Lost: 1
+[172.20.10.2] Seq: 262    | Potentiometer: 3706  | Total Lost: 1
+[172.20.10.2] Seq: 263    | Potentiometer: 3686  | Total Lost: 1
+[172.20.10.2] Seq: 264    | Potentiometer: 3670  | Total Lost: 1
+[PACKET LOSS DETECTED] Lost 3 packets! (Expected 265, got 268)
+[172.20.10.2] Seq: 268    | Potentiometer: 3559  | Total Lost: 4
+[172.20.10.2] Seq: 269    | Potentiometer: 3530  | Total Lost: 4
+[172.20.10.2] Seq: 270    | Potentiometer: 3519  | Total Lost: 4
+[172.20.10.2] Seq: 271    | Potentiometer: 3452  | Total Lost: 4
+[172.20.10.2] Seq: 272    | Potentiometer: 3446  | Total Lost: 4
+[172.20.10.2] Seq: 273    | Potentiometer: 3392  | Total Lost: 4
+[172.20.10.2] Seq: 274    | Potentiometer: 3363  | Total Lost: 4
+[172.20.10.2] Seq: 275    | Potentiometer: 3301  | Total Lost: 4
+[172.20.10.2] Seq: 276    | Potentiometer: 3284  | Total Lost: 4
+[172.20.10.2] Seq: 277    | Potentiometer: 3224  | Total Lost: 4
+[172.20.10.2] Seq: 278    | Potentiometer: 3177  | Total Lost: 4
+[172.20.10.2] Seq: 279    | Potentiometer: 3170  | Total Lost: 4
+[172.20.10.2] Seq: 280    | Potentiometer: 3105  | Total Lost: 4
+[172.20.10.2] Seq: 281    | Potentiometer: 3060  | Total Lost: 4
+[172.20.10.2] Seq: 282    | Potentiometer: 3015  | Total Lost: 4
+[172.20.10.2] Seq: 283    | Potentiometer: 2954  | Total Lost: 4
+[172.20.10.2] Seq: 284    | Potentiometer: 2905  | Total Lost: 4
+[172.20.10.2] Seq: 285    | Potentiometer: 2852  | Total Lost: 4
+[172.20.10.2] Seq: 286    | Potentiometer: 2830  | Total Lost: 4
+[172.20.10.2] Seq: 287    | Potentiometer: 2745  | Total Lost: 4
+[172.20.10.2] Seq: 288    | Potentiometer: 2724  | Total Lost: 4
+[172.20.10.2] Seq: 289    | Potentiometer: 2647  | Total Lost: 4
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 290, got 291)
+[172.20.10.2] Seq: 291    | Potentiometer: 2558  | Total Lost: 5
+[172.20.10.2] Seq: 292    | Potentiometer: 2513  | Total Lost: 5
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 293, got 294)
+[172.20.10.2] Seq: 294    | Potentiometer: 2405  | Total Lost: 6
+[172.20.10.2] Seq: 295    | Potentiometer: 2324  | Total Lost: 6
+[172.20.10.2] Seq: 296    | Potentiometer: 2292  | Total Lost: 6
+[172.20.10.2] Seq: 297    | Potentiometer: 2223  | Total Lost: 6
+[172.20.10.2] Seq: 298    | Potentiometer: 2176  | Total Lost: 6
+[172.20.10.2] Seq: 299    | Potentiometer: 2098  | Total Lost: 6
+[172.20.10.2] Seq: 300    | Potentiometer: 2044  | Total Lost: 6
+[172.20.10.2] Seq: 301    | Potentiometer: 1992  | Total Lost: 6
+[172.20.10.2] Seq: 302    | Potentiometer: 1950  | Total Lost: 6
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 303, got 304)
+[172.20.10.2] Seq: 304    | Potentiometer: 1820  | Total Lost: 7
+[172.20.10.2] Seq: 305    | Potentiometer: 1766  | Total Lost: 7
+[172.20.10.2] Seq: 306    | Potentiometer: 1708  | Total Lost: 7
+[172.20.10.2] Seq: 307    | Potentiometer: 1668  | Total Lost: 7
+[172.20.10.2] Seq: 308    | Potentiometer: 1605  | Total Lost: 7
+[172.20.10.2] Seq: 309    | Potentiometer: 1543  | Total Lost: 7
+[172.20.10.2] Seq: 310    | Potentiometer: 1487  | Total Lost: 7
+[172.20.10.2] Seq: 311    | Potentiometer: 1428  | Total Lost: 7
+[172.20.10.2] Seq: 312    | Potentiometer: 1371  | Total Lost: 7
+[172.20.10.2] Seq: 313    | Potentiometer: 1337  | Total Lost: 7
+[172.20.10.2] Seq: 314    | Potentiometer: 1263  | Total Lost: 7
+[172.20.10.2] Seq: 315    | Potentiometer: 1220  | Total Lost: 7
+[172.20.10.2] Seq: 316    | Potentiometer: 1174  | Total Lost: 7
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 317, got 318)
+[172.20.10.2] Seq: 318    | Potentiometer: 1073  | Total Lost: 8
+[172.20.10.2] Seq: 319    | Potentiometer: 1035  | Total Lost: 8
+[172.20.10.2] Seq: 320    | Potentiometer: 1006  | Total Lost: 8
+[172.20.10.2] Seq: 321    | Potentiometer: 947   | Total Lost: 8
+[172.20.10.2] Seq: 322    | Potentiometer: 904   | Total Lost: 8
+[172.20.10.2] Seq: 323    | Potentiometer: 875   | Total Lost: 8
+[172.20.10.2] Seq: 324    | Potentiometer: 799   | Total Lost: 8
+[172.20.10.2] Seq: 325    | Potentiometer: 767   | Total Lost: 8
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 326, got 327)
+[172.20.10.2] Seq: 327    | Potentiometer: 705   | Total Lost: 9
+[172.20.10.2] Seq: 328    | Potentiometer: 658   | Total Lost: 9
+[172.20.10.2] Seq: 329    | Potentiometer: 636   | Total Lost: 9
+[172.20.10.2] Seq: 330    | Potentiometer: 575   | Total Lost: 9
+[172.20.10.2] Seq: 331    | Potentiometer: 539   | Total Lost: 9
+[172.20.10.2] Seq: 332    | Potentiometer: 515   | Total Lost: 9
+[172.20.10.2] Seq: 333    | Potentiometer: 486   | Total Lost: 9
+[172.20.10.2] Seq: 334    | Potentiometer: 466   | Total Lost: 9
+[172.20.10.2] Seq: 335    | Potentiometer: 458   | Total Lost: 9
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 336, got 337)
+[172.20.10.2] Seq: 337    | Potentiometer: 415   | Total Lost: 10
+[172.20.10.2] Seq: 338    | Potentiometer: 372   | Total Lost: 10
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 339, got 340)
+[172.20.10.2] Seq: 340    | Potentiometer: 324   | Total Lost: 11
+[172.20.10.2] Seq: 341    | Potentiometer: 333   | Total Lost: 11
+[172.20.10.2] Seq: 342    | Potentiometer: 284   | Total Lost: 11
+[172.20.10.2] Seq: 343    | Potentiometer: 287   | Total Lost: 11
+[172.20.10.2] Seq: 344    | Potentiometer: 261   | Total Lost: 11
+[172.20.10.2] Seq: 345    | Potentiometer: 280   | Total Lost: 11
+[172.20.10.2] Seq: 346    | Potentiometer: 277   | Total Lost: 11
+[172.20.10.2] Seq: 347    | Potentiometer: 268   | Total Lost: 11
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 348, got 349)
+[172.20.10.2] Seq: 349    | Potentiometer: 248   | Total Lost: 12
+[172.20.10.2] Seq: 350    | Potentiometer: 263   | Total Lost: 12
+[172.20.10.2] Seq: 351    | Potentiometer: 238   | Total Lost: 12
+[172.20.10.2] Seq: 352    | Potentiometer: 265   | Total Lost: 12
+[172.20.10.2] Seq: 353    | Potentiometer: 235   | Total Lost: 12
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 354, got 355)
+[172.20.10.2] Seq: 355    | Potentiometer: 255   | Total Lost: 13
+[172.20.10.2] Seq: 356    | Potentiometer: 275   | Total Lost: 13
+[172.20.10.2] Seq: 357    | Potentiometer: 307   | Total Lost: 13
+[172.20.10.2] Seq: 358    | Potentiometer: 304   | Total Lost: 13
+[172.20.10.2] Seq: 359    | Potentiometer: 304   | Total Lost: 13
+[172.20.10.2] Seq: 360    | Potentiometer: 331   | Total Lost: 13
+[172.20.10.2] Seq: 361    | Potentiometer: 353   | Total Lost: 13
+[PACKET LOSS DETECTED] Lost 2 packets! (Expected 362, got 364)
+[172.20.10.2] Seq: 364    | Potentiometer: 422   | Total Lost: 15
+[172.20.10.2] Seq: 365    | Potentiometer: 426   | Total Lost: 15
+[172.20.10.2] Seq: 366    | Potentiometer: 482   | Total Lost: 15
+[172.20.10.2] Seq: 367    | Potentiometer: 501   | Total Lost: 15
+[172.20.10.2] Seq: 368    | Potentiometer: 548   | Total Lost: 15
+[172.20.10.2] Seq: 369    | Potentiometer: 544   | Total Lost: 15
+[172.20.10.2] Seq: 370    | Potentiometer: 583   | Total Lost: 15
+[172.20.10.2] Seq: 371    | Potentiometer: 622   | Total Lost: 15
+[172.20.10.2] Seq: 372    | Potentiometer: 675   | Total Lost: 15
+[172.20.10.2] Seq: 373    | Potentiometer: 677   | Total Lost: 15
+[172.20.10.2] Seq: 374    | Potentiometer: 724   | Total Lost: 15
+[172.20.10.2] Seq: 375    | Potentiometer: 789   | Total Lost: 15
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 376, got 377)
+[172.20.10.2] Seq: 377    | Potentiometer: 859   | Total Lost: 16
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 378, got 379)
+[172.20.10.2] Seq: 379    | Potentiometer: 942   | Total Lost: 17
+[172.20.10.2] Seq: 380    | Potentiometer: 1005  | Total Lost: 17
+[172.20.10.2] Seq: 381    | Potentiometer: 1056  | Total Lost: 17
+[172.20.10.2] Seq: 382    | Potentiometer: 1085  | Total Lost: 17
+[172.20.10.2] Seq: 383    | Potentiometer: 1145  | Total Lost: 17
+[172.20.10.2] Seq: 384    | Potentiometer: 1167  | Total Lost: 17
+[172.20.10.2] Seq: 385    | Potentiometer: 1213  | Total Lost: 17
+[172.20.10.2] Seq: 386    | Potentiometer: 1264  | Total Lost: 17
+[172.20.10.2] Seq: 387    | Potentiometer: 1327  | Total Lost: 17
+[172.20.10.2] Seq: 388    | Potentiometer: 1396  | Total Lost: 17
+[172.20.10.2] Seq: 389    | Potentiometer: 1424  | Total Lost: 17
+[172.20.10.2] Seq: 390    | Potentiometer: 1501  | Total Lost: 17
+[172.20.10.2] Seq: 391    | Potentiometer: 1564  | Total Lost: 17
+[172.20.10.2] Seq: 392    | Potentiometer: 1591  | Total Lost: 17
+[172.20.10.2] Seq: 393    | Potentiometer: 1644  | Total Lost: 17
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 394, got 395)
+[172.20.10.2] Seq: 395    | Potentiometer: 1763  | Total Lost: 18
+[172.20.10.2] Seq: 396    | Potentiometer: 1839  | Total Lost: 18
+[172.20.10.2] Seq: 397    | Potentiometer: 1864  | Total Lost: 18
+[172.20.10.2] Seq: 398    | Potentiometer: 1917  | Total Lost: 18
+[172.20.10.2] Seq: 399    | Potentiometer: 1988  | Total Lost: 18
+[PACKET LOSS DETECTED] Lost 1 packets! (Expected 400, got 401)
+[172.20.10.2] Seq: 401    | Potentiometer: 2099  | Total Lost: 19
+[172.20.10.2] Seq: 402    | Potentiometer: 2162  | Total Lost: 19
+[172.20.10.2] Seq: 403    | Potentiometer: 2235  | Total Lost: 19
+[172.20.10.2] Seq: 404    
+```text
+tanwat@MacBook-Air--Tanawat 091-Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control % python udp_controller.py
+Sending control commands to 172.20.10.2:3333...
+Round 01: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 68.02 ms
+Round 02: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 21.85 ms
+Round 03: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 58.28 ms
+Round 04: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 35.61 ms
+Round 05: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 12.67 ms
+Round 06: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 38.99 ms
+Round 07: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 18.14 ms
+Round 08: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 68.93 ms
+Round 09: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 14.08 ms
+Round 10: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 16.89 ms
+
+Average UDP RTT Latency: 35.35 ms (Min: 12.67 ms, Max: 68.93 ms)
+```
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง 
 1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
 2. รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi
 3. อธิบายข้อดีและข้อจำกัดของการใช้ `255.255.255.255` (UDP Broadcast) ในระบบ IoT และในสถานการณ์ใดที่ควรเปลี่ยนไปใช้ **UDP Multicast** หรือ **Unicast** แทน?
+
+## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
+
+1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
+
+ผลการวัด RTT ของ UDP มีดังนี้
+
+| รอบการวัด | Min (ms) | Median (ms) | Average (ms) | Max (ms) |
+|---|---:|---:|---:|---:|
+| รอบที่ 1 (ทั้ง 10 ครั้ง) | 11.02 | 31.88 | 86.63 | 547.59 |
+| รอบที่ 1 (ไม่รวมครั้งแรก) | 11.02 | 19.66 | 35.41 | 76.03 |
+| รอบที่ 2 | 12.67 | 28.73 | 35.35 | 68.93 |
+
+ค่าเฉลี่ยรอบแรกสูงเนื่องจากมีค่า 547.59 ms ซึ่งเป็น Outlier เมื่อตัดครั้งแรกออก ค่าเฉลี่ยอยู่ประมาณ 35 ms และใกล้เคียงกับรอบที่ 2 โดย UDP มีความหน่วงต่ำเนื่องจากไม่ต้องสร้าง TCP Connection และมีขั้นตอนควบคุมน้อยกว่า แต่ไม่รับประกันการส่งข้อมูลเหมือน TCP
+
+2. รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi
+
+ผลการวัดที่ได้
+
+| รายการ | ค่า |
+|---|---:|
+| ช่วง Sequence ที่วัด | 231 – 403 |
+| แพ็กเก็ตที่ควรได้ | 173 |
+| แพ็กเก็ตที่สูญหาย | 19 |
+| แพ็กเก็ตที่ได้รับ | 154 |
+| **Packet Loss Rate** | **10.98%** |
+
+คำนวณได้จาก
+
+```text
+Packet Loss Rate = 19 / 173 × 100
+                 = 10.98%
+```
+
+สาเหตุของ Packet Loss อาจเกิดจากสัญญาณรบกวนบน Wi-Fi, การใช้ Mobile Hotspot, Power Save ของ ESP32 และ UDP ไม่มีการส่งแพ็กเก็ตซ้ำเมื่อข้อมูลสูญหาย
+
+3. อธิบายข้อดีและข้อจำกัดของการใช้ `255.255.255.255` (UDP Broadcast) ในระบบ IoT และในสถานการณ์ใดที่ควรเปลี่ยนไปใช้ **UDP Multicast** หรือ **Unicast** แทน?
+
+UDP Broadcast สามารถส่งข้อมูลไปยังอุปกรณ์หลายเครื่องได้โดยไม่ต้องรู้ IP ของผู้รับ เหมาะกับการค้นหาอุปกรณ์ในเครือข่าย แต่มีข้อจำกัดคือใช้แบนด์วิดท์มาก ไม่รับประกันว่าข้อมูลจะถึงผู้รับ และไม่สามารถข้าม Router ได้
+
+- **UDP Multicast** เหมาะเมื่อมีผู้รับเป็นกลุ่ม
+- **UDP Unicast** เหมาะเมื่อมีผู้รับเพียงเครื่องเดียวหรือต้องการควบคุมการส่งข้อมูลให้แน่นอน
