@@ -672,3 +672,48 @@ success
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+### 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
+
+#### ผลการทดสอบผ่าน cURL (โหมด Verbose -i)
+
+1. **ผลลัพธ์คำสั่ง `curl.exe -i -X GET http://esp32-node.local/api/status`**
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 46
+
+{"pot_raw":15,"free_heap":213848,"led":false}
+```
+
+2. **ผลลัพธ์คำสั่ง `curl.exe -i -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'`**
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{"result":"success"}
+```
+
+3. **การวิเคราะห์ขนาด Header และ Payload:**
+   * **HTTP Header:** มีขนาดประมาณ **65 - 85 ไบต์** (ประกอบด้วย Status Line, Content-Type, Content-Length)
+   * **JSON Data (Payload):**
+     * กรณี `GET /api/status`: ขนาด **46 ไบต์**
+     * กรณี `POST /api/led`: Request Payload ขนาด **15 ไบต์** (`{"state": true}`), Response Payload ขนาด **20 ไบต์** (`{"result":"success"}`)
+   * **ข้อสังเกตเชิงลึก:** ในโพรโทคอล HTTP สัดส่วนของ Header Protocol Overhead มีขนาดใหญ่กว่าหรือเทียบเท่ากับตัวข้อมูล Payload จริง ซึ่งเป็นภาระ (Overhead) สำคัญของระบบ IoT บนอุปกรณ์ทรัพยากรจำกัด
+
+---
+
+#### คำถามท้ายการทดลอง
+
+1. **หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?**
+   * **ผลกระทบ:** เครื่องคอมพิวเตอร์ไคลเอนต์จะไม่สามารถแปลงชื่อโดเมนเสมือน `esp32-node.local` ไปเป็นหมายเลข IP Address ได้ผ่านกระบวนการ Multicast DNS ทำให้คำสั่ง `ping` หรือ `curl` แสดงข้อผิดพลาด *Could not resolve host / Host not found* แม้ว่าบอร์ด ESP32 จะเชื่อมต่อเครือข่าย Wi-Fi อยู่และเปิด Web Server ตามปกติก็ตาม
+   * **แนวทางแก้ไข:**
+     1. เรียกใช้งานผ่าน **หมายเลข IP Address ตรง** ของ ESP32 เช่น `http://192.168.1.181/api/status` (อ่านได้จาก Serial Monitor ของบอร์ด)
+     2. ปรับการตั้งค่าเครือข่ายบน Windows ให้เป็น *Private Network* เพื่อปลดบล็อกการกรองพอร์ต Multicast ขาเข้า
+     3. อนุญาตพอร์ต **UDP 5353** ใน Windows Defender Firewall หรือเปิดใช้งาน Service mDNS (Bonjour Service) บนเครื่องไคลเอนต์
+
+2. **เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?**
+   * **เหตุผล:** ไลบรารี cJSON ทำการจองหน่วยความจำแบบไดนามิก (Dynamic Memory Allocation) บน **Heap Memory** ผ่านคำสั่ง `malloc()` / `calloc()` ทั้งการสร้างโครงสร้างโหนด JSON Object (`cJSON_CreateObject`) และการแปลงอ็อบเจกต์ให้เป็นข้อความสตริง (`cJSON_PrintUnformatted`)
+   * บนไมโครคอนโทรลเลอร์ ESP32 ซึ่งมีหน่วยความจำแรมจำกัด หากไม่คืนพื้นที่หน่วยความจำด้วย `cJSON_free((void *)resp)` และ `cJSON_Delete(root)` ทุกครั้งหลังส่งข้อมูลเสร็จ จะทำให้เกิดปัญหา **หน่วยความจำรั่วไหล (Memory Leak)**
+   * เมื่อมี Request ส่งเข้ามาอย่างต่อเนื่อง Free Heap จะลดลงเรื่อยๆ จนระบบเกิด Out of Memory (OOM) และส่งผลให้บอร์ดเกิด Panic Crash รีเซ็ตตัวเองในที่สุด
