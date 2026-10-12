@@ -11,7 +11,7 @@
 python3 -u "udp_listener.py"
 ```
 
-### ผลการทดสอบจริงจาก Terminal:
+### ผลการทดสอบจริงจาก Terminal
 ```text
 Listening for UDP Broadcast on port 3334...
 [192.168.1.50] Seq: 13789  | Potentiometer: 0     | Total Lost: 0
@@ -60,7 +60,7 @@ Packet Loss Rate: 19.06%
 * **การทำงานของเซนเซอร์** ค่า Potentiometer มีการเปลี่ยนแปลงอย่างต่อเนื่องแบบ Real-time ตามการหมุนจริง (ตั้งแต่ 0 ปรับขึ้นไปถึง ~2346 และหมุนกลับลงมาที่ 0) โดยที่ระบบยังคงส่งแพ็กเก็ตบรอดแคสต์ออกมาอย่างต่อเนื่อง
 * **สาเหตุของการสูญหายบนเครือข่าย Wi-Fi**
   1. **ธรรมชาติของ UDP (Unreliable)** UDP เป็นแบบ "Fire-and-forget" ไม่มีการรับประกันการส่งถึงปลายทาง ไม่มีการตรวจสอบการสูญหาย และไม่มีกลไกส่งซ้ำ (No Retransmission)
-  2. **กลไกของ Wi-Fi Broadcast (No ACK at MAC Layer)** บนมาตรฐาน IEEE 802.11 (Wi-Fi) แพ็กเก็ตแบบ Unicast จะต้องมี MAC-level ACK ตอบกลับเสมอ หากสัญญาณหลุดจะมีการ retransmit ระดับคลื่นวิทยุ แต่สำหรับ **Broadcast Frame** ตัว Access Point จะส่งออกไปโดย**ไม่มีการรอ ACK** จาก Client ใดๆ หากเกิดคลื่นรบกวน (Interference) แพ็กเก็ตจะสูญหายทันที
+  2. **กลไกของ Wi-Fi Broadcast (No ACK at MAC Layer)** บนมาตรฐาน IEEE 802.11 (Wi-Fi) แพ็กเก็ตแบบ Unicast จะต้องมี MAC-level ACK ตอบกลับเสมอ หากสัญญาณหลุดจะมีการ retransmit ระดับคลื่นวิทยุ แต่สำหรับ **Broadcast Frame** ตัว Access Point จะส่งออกไปโดยไม่มีการรอ ACK จาก Client ใดๆ หากเกิดคลื่นรบกวน (Interference) แพ็กเก็ตจะสูญหายทันที
   3. **สัญญาณรบกวนในย่าน 2.4 GHz** เครือข่าย Wi-Fi 2.4 GHz ที่ ESP32 ใช้งานมักมีความหนาแน่นสูง เกิดการชนกันของสัญญาณ (Collision) ได้ง่าย
   4. **บัฟเฟอร์เต็ม (Buffer Overflow)** หาก OS หรือ Client อ่านข้อมูลจาก Socket ไม่ทันในบางจังหวะ แพ็กเก็ตใหม่อาจถูกดรอปทิ้ง
 

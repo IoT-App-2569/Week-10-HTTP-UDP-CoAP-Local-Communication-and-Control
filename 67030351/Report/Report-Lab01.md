@@ -15,12 +15,12 @@ ping esp32-node.local
 
 ### 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
 
-**ผลการทดสอบด้วยคำสั่ง:**
+**ผลการทดสอบด้วยคำสั่ง**
 ```bash
 curl -i -X GET http://esp32-node.local/api/status
 ```
 
-**ผลลัพธ์ที่ได้รับ:**
+**ผลลัพธ์ที่ได้รับ**
 ```http
 HTTP/1.1 200 OK
 Content-Type: application/json
@@ -30,13 +30,13 @@ Content-Length: 46
 ```
 
 **การวิเคราะห์ขนาดข้อมูล (Header vs Payload)**
-* **HTTP Response Header:** มีขนาดรวมประมาณ **71 ไบต์**
-  * Status line (`HTTP/1.1 200 OK\r\n`): 17 ไบต์
-  * Header `Content-Type: application/json\r\n`: 32 ไบต์
-  * Header `Content-Length: 46\r\n`: 20 ไบต์
-  * บรรทัดว่างคั่น Header กับ Body (`\r\n`): 2 ไบต์
-* **ข้อมูล JSON (Payload):** มีขนาด **46 ไบต์** (ตามที่ระบุใน `Content-Length`)
-* **บทวิเคราะห์:** Protocol Overhead ของ HTTP Header (71 ไบต์) มีขนาดคิดเป็น **~60.7%** ของขนาดข้อมูลทั้งหมดที่ส่งในระดับ Application Layer ซึ่งมากกว่าขนาดข้อมูลจริง (JSON 46 ไบต์ คิดเป็น ~39.3%) แสดงให้เห็นว่า HTTP มี Overhead สูง ไม่เหมาะกับการส่งข้อมูล Telemetry ความถี่สูงมากในอุปกรณ์ IoT ที่มีข้อจำกัดด้านพลังงานและแบนด์วิธ
+* **HTTP Response Header** มีขนาดรวมประมาณ **71 ไบต์**
+  * Status line (`HTTP/1.1 200 OK\r\n`) 17 ไบต์
+  * Header `Content-Type: application/json\r\n` 32 ไบต์
+  * Header `Content-Length: 46\r\n` 20 ไบต์
+  * บรรทัดว่างคั่น Header กับ Body (`\r\n`) 2 ไบต์
+* **ข้อมูล JSON (Payload)** มีขนาด **46 ไบต์** (ตามที่ระบุใน `Content-Length`)
+* **บทวิเคราะห์** Protocol Overhead ของ HTTP Header (71 ไบต์) มีขนาดคิดเป็น **~60.7%** ของขนาดข้อมูลทั้งหมดที่ส่งในระดับ Application Layer ซึ่งมากกว่าขนาดข้อมูลจริง (JSON 46 ไบต์ คิดเป็น ~39.3%) แสดงให้เห็นว่า HTTP มี Overhead สูง ไม่เหมาะกับการส่งข้อมูล Telemetry ความถี่สูงมากในอุปกรณ์ IoT ที่มีข้อจำกัดด้านพลังงานและแบนด์วิธ
 
 ---
 
@@ -46,10 +46,10 @@ Content-Length: 46
   1. คอมพิวเตอร์เครื่องนั้นจะไม่สามารถ Resolve ชื่อโดเมน `esp32-node.local` ได้ ทำให้เกิด Error เช่น `cannot resolve esp32-node.local: Unknown host`
   2. ฟังก์ชันค้นหาบริการอัตโนมัติ (Service Discovery) ล้มเหลว ทำให้ไม่สามารถเรียกใช้งาน API ผ่านชื่อโฮสต์เสมือนได้
 * **แนวทางแก้ไข**
-  1. **เข้าถึงด้วยหมายเลข IP ตรงๆ (Direct IP Address):** เช่น `http://192.168.1.50/api/status` (ดู IP ได้จาก Serial Monitor ของ ESP32 หรือหน้า Router)
-  2. **ทำ Static IP / DHCP Reservation:** ตั้งค่าบนเราเตอร์ให้ผูก MAC Address ของ ESP32 เข้ากับ IP เดิมเสมอ เพื่อไม่ให้หมายเลข IP เปลี่ยนแปลง
-  3. **กำหนดค่าในไฟล์ Hosts ของระบบปฏิบัติการ:** โดยจับคู่ IP กับชื่อโดเมนด้วยตนเอง (ไฟล์ `/etc/hosts` บน macOS/Linux หรือ `C:\Windows\System32\drivers\etc\hosts` บน Windows)
-  4. **ปลดบล็อกพอร์ต UDP 5353:** ปรับการตั้งค่า Firewall หรือเปลี่ยนโหมด Wi-Fi บนคอมพิวเตอร์ให้เป็น Private Network เพื่ออนุญาตแพ็กเก็ต Multicast
+  1. **เข้าถึงด้วยหมายเลข IP ตรงๆ (Direct IP Address)** เช่น `http://192.168.1.50/api/status` (ดู IP ได้จาก Serial Monitor ของ ESP32 หรือหน้า Router)
+  2. **ทำ Static IP / DHCP Reservation** ตั้งค่าบนเราเตอร์ให้ผูก MAC Address ของ ESP32 เข้ากับ IP เดิมเสมอ เพื่อไม่ให้หมายเลข IP เปลี่ยนแปลง
+  3. **กำหนดค่าในไฟล์ Hosts ของระบบปฏิบัติการ** โดยจับคู่ IP กับชื่อโดเมนด้วยตนเอง (ไฟล์ `/etc/hosts` บน macOS/Linux หรือ `C:\Windows\System32\drivers\etc\hosts` บน Windows)
+  4. **ปลดบล็อกพอร์ต UDP 5353** ปรับการตั้งค่า Firewall หรือเปลี่ยนโหมด Wi-Fi บนคอมพิวเตอร์ให้เป็น Private Network เพื่ออนุญาตแพ็กเก็ต Multicast
 
 ---
 
