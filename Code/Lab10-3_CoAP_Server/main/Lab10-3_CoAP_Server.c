@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
+#include "esp_system.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "esp_event.h"
@@ -8,23 +9,19 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/event_groups.h"
-#include "lwip/sockets.h"
-#include "lwip/netdb.h"
+#include "coap3/coap.h"
 #include "driver/gpio.h"
 #include "esp_adc/adc_oneshot.h"
 
-#define TAG "UDP_LAB"
+#define TAG "COAP_LAB"
 
 // กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
+#define CONFIG_WIFI_SSID      "Bismarck ."
+#define CONFIG_WIFI_PASSWORD  "jobshare"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
 #define POT_ADC_CHANNEL       ADC_CHANNEL_6 // GPIO 34 (ADC1 Channel 6)
-
-#define UDP_CONTROL_PORT      3333
-#define UDP_BROADCAST_PORT    3334
 
 static EventGroupHandle_t s_wifi_event_group;
 #define WIFI_CONNECTED_BIT    BIT0
@@ -89,66 +86,96 @@ static bool wifi_init_sta(void)
     return (bits & WIFI_CONNECTED_BIT) != 0;
 }
 
-// Task 1: UDP Control Server (Port 3333)
-void udp_control_server_task(void *pvParameters)
+// 1. Handler สำหรับ GET /sensor/pot
+static void hnd_get_pot(coap_resource_t *resource,
+                        coap_session_t *session,
+                        const coap_pdu_t *request,
+                        const coap_string_t *query,
+                        coap_pdu_t *response)
 {
-    char rx_buffer[128];
-    struct sockaddr_in server_addr, client_addr;
-    socklen_t client_addr_len = sizeof(client_addr);
-
-    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    server_addr.sin_family = AF_INET;
-    server_addr.sin_port = htons(UDP_CONTROL_PORT);
-
-    bind(sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
-    ESP_LOGI(TAG, "Control Server listening on UDP Port %d...", UDP_CONTROL_PORT);
-
-    while (1) {
-        int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&client_addr, &client_addr_len);
-        if (len > 0) {
-            rx_buffer[len] = '\0';
-            if (strcmp(rx_buffer, "LED_ON") == 0) {
-                gpio_set_level(LED_GPIO_PIN, 1);
-                sendto(sock, "ACK:LED_ON", 10, 0, (struct sockaddr *)&client_addr, client_addr_len);
-            } else if (strcmp(rx_buffer, "LED_OFF") == 0) {
-                gpio_set_level(LED_GPIO_PIN, 0);
-                sendto(sock, "ACK:LED_OFF", 11, 0, (struct sockaddr *)&client_addr, client_addr_len);
-            } else {
-                sendto(sock, "ACK:UNKNOWN", 11, 0, (struct sockaddr *)&client_addr, client_addr_len);
-            }
-        }
+    int pot_val = 0;
+    if (s_adc1_handle != NULL) {
+        adc_oneshot_read(s_adc1_handle, POT_ADC_CHANNEL, &pot_val);
     }
+
+    char pot_str[32];
+    snprintf(pot_str, sizeof(pot_str), "%d", pot_val);
+
+    coap_pdu_set_code(response, COAP_RESPONSE_CODE_CONTENT); // 2.05 Content
+    coap_add_data(response, strlen(pot_str), (const uint8_t *)pot_str);
+    ESP_LOGI(TAG, "GET /sensor/pot -> %s", pot_str);
 }
 
-// Task 2: UDP Telemetry Broadcast (Port 3334)
-void udp_telemetry_broadcast_task(void *pvParameters)
+// 2. Handler สำหรับ PUT /actuator/led
+static void hnd_put_led(coap_resource_t *resource,
+                        coap_session_t *session,
+                        const coap_pdu_t *request,
+                        const coap_string_t *query,
+                        coap_pdu_t *response)
 {
-    struct sockaddr_in dest_addr;
-    dest_addr.sin_addr.s_addr = inet_addr("255.255.255.255");
-    dest_addr.sin_family = AF_INET;
-    dest_addr.sin_port = htons(UDP_BROADCAST_PORT);
+    size_t size;
+    const uint8_t *data;
+    coap_get_data(request, &size, &data);
 
-    int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-    int broadcast_enable = 1;
-    setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
+    if (size > 0) {
+        if (data[0] == '1') {
+            gpio_set_level(LED_GPIO_PIN, 1);
+            ESP_LOGI(TAG, "LED turned ON via CoAP PUT");
+        } else if (data[0] == '0') {
+            gpio_set_level(LED_GPIO_PIN, 0);
+            ESP_LOGI(TAG, "LED turned OFF via CoAP PUT");
+        }
+    }
+    coap_pdu_set_code(response, COAP_RESPONSE_CODE_CHANGED); // 2.04 Changed
+}
 
-    uint32_t seq_no = 0;
-    char tx_buffer[64];
-
-    ESP_LOGI(TAG, "Broadcasting Telemetry to Port %d (10 Hz)...", UDP_BROADCAST_PORT);
+// CoAP Server Task
+static void coap_server_task(void *pvParameters)
+{
+    coap_context_t *ctx = NULL;
+    coap_address_t serv_addr;
 
     while (1) {
-        int pot_val = 0;
-        if (s_adc1_handle != NULL) {
-            adc_oneshot_read(s_adc1_handle, POT_ADC_CHANNEL, &pot_val);
+        coap_address_init(&serv_addr);
+        serv_addr.addr.sin.sin_family = AF_INET;
+        serv_addr.addr.sin.sin_addr.s_addr = htonl(INADDR_ANY);
+        serv_addr.addr.sin.sin_port = htons(COAP_DEFAULT_PORT);
+
+        ctx = coap_new_context(NULL);
+        if (!ctx) {
+            ESP_LOGE(TAG, "coap_new_context() failed");
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
         }
 
-        snprintf(tx_buffer, sizeof(tx_buffer), "SEQ:%lu,POT:%d\n", (unsigned long)seq_no++, pot_val);
-        sendto(sock, tx_buffer, strlen(tx_buffer), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
+        coap_endpoint_t *ep = coap_new_endpoint(ctx, &serv_addr, COAP_PROTO_UDP);
+        if (!ep) {
+            ESP_LOGE(TAG, "coap_new_endpoint() failed");
+            coap_free_context(ctx);
+            vTaskDelay(pdMS_TO_TICKS(1000));
+            continue;
+        }
 
-        vTaskDelay(pdMS_TO_TICKS(100)); // 10 Hz
+        // ลงทะเบียน Resources
+        coap_str_const_t *r_pot_uri = coap_make_str_const("sensor/pot");
+        coap_resource_t *r_pot = coap_resource_init(r_pot_uri, 0);
+        coap_register_handler(r_pot, COAP_REQUEST_GET, hnd_get_pot);
+        coap_add_resource(ctx, r_pot);
+
+        coap_str_const_t *r_led_uri = coap_make_str_const("actuator/led");
+        coap_resource_t *r_led = coap_resource_init(r_led_uri, 0);
+        coap_register_handler(r_led, COAP_REQUEST_PUT, hnd_put_led);
+        coap_add_resource(ctx, r_led);
+
+        ESP_LOGI(TAG, "CoAP Server listening on port %d...", COAP_DEFAULT_PORT);
+
+        while (1) {
+            coap_io_process(ctx, 100);
+        }
+
+        coap_free_context(ctx);
     }
+    vTaskDelete(NULL);
 }
 
 void app_main(void)
@@ -181,10 +208,12 @@ void app_main(void)
 
     // 4. Connect Wi-Fi
     if (wifi_init_sta()) {
-        // 5. Create FreeRTOS Tasks for UDP
-        xTaskCreate(udp_control_server_task, "udp_ctrl_task", 4096, NULL, 5, NULL);
-        xTaskCreate(udp_telemetry_broadcast_task, "udp_bcast_task", 4096, NULL, 4, NULL);
-        ESP_LOGI(TAG, "All UDP Tasks started!");
+        ESP_LOGI(TAG, "[HEAP] Baseline (Wi-Fi connected, server not started): %lu bytes", (unsigned long)esp_get_free_heap_size());
+        // 5. Create CoAP Server Task (ใช้ Stack Size 8192 ไบต์)
+        xTaskCreate(coap_server_task, "coap_server", 8192, NULL, 5, NULL);
+        ESP_LOGI(TAG, "Ready! Test CoAP with: python test_coap.py");
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        ESP_LOGI(TAG, "[HEAP] After CoAP server running: %lu bytes", (unsigned long)esp_get_free_heap_size());
     } else {
         ESP_LOGE(TAG, "Wi-Fi connection failed.");
     }

@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
+#include "esp_system.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
 #include "esp_event.h"
@@ -13,12 +14,13 @@
 #include "driver/gpio.h"
 #include "mdns.h"
 #include "esp_adc/adc_oneshot.h"
+#include "esp_random.h"
 
 #define TAG "HTTP_REST_LAB"
 
 // กำหนดชื่อและรหัสผ่าน Wi-Fi (แก้ไขให้ตรงกับ Access Point ของตนเอง)
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
+#define CONFIG_WIFI_SSID      "YOUR_WIFI_SSID"
+#define CONFIG_WIFI_PASSWORD  "YOUR_WIFI_PASSWORD"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -39,6 +41,8 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START) {
         esp_wifi_connect();
     } else if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_DISCONNECTED) {
+        wifi_event_sta_disconnected_t *disconn = (wifi_event_sta_disconnected_t *) event_data;
+        ESP_LOGW(TAG, "Disconnected! reason=%d", disconn->reason);
         if (s_retry_num < MAXIMUM_RETRY) {
             esp_wifi_connect();
             s_retry_num++;
@@ -133,10 +137,9 @@ static bool wifi_init_sta(void)
 // 1. GET /api/status - อ่านค่าเซนเซอร์และสถานะระบบ
 static esp_err_t status_get_handler(httpd_req_t *req)
 {
-    int pot_val = 0;
-    if (s_adc1_handle != NULL) {
-        adc_oneshot_read(s_adc1_handle, POT_ADC_CHANNEL, &pot_val);
-    }
+    // หมายเหตุ: ไม่มี Potentiometer ต่อจริงบน GPIO 34 จึงสุ่มค่าแทนการอ่าน ADC จริง
+    // (ช่วง 0-4095 เท่ากับความละเอียด ADC 12-bit ของ ESP32 เพื่อให้ค่าสมจริงกับของจริง)
+    int pot_val = esp_random() % 4096;
 
     cJSON *root = cJSON_CreateObject();
     cJSON_AddNumberToObject(root, "pot_raw", pot_val);
@@ -248,9 +251,12 @@ void app_main(void)
 
     // 6. เชื่อมต่อระบบ Wi-Fi
     if (wifi_init_sta()) {
+        ESP_LOGI(TAG, "[HEAP] Baseline (Wi-Fi connected, server not started): %lu bytes", (unsigned long)esp_get_free_heap_size());
         // 7. เริ่มต้น HTTP RESTful Web Server
         s_http_server = start_webserver();
         ESP_LOGI(TAG, "Ready! Test with: curl.exe http://esp32-node.local/api/status");
+        vTaskDelay(pdMS_TO_TICKS(2000));
+        ESP_LOGI(TAG, "[HEAP] After HTTP server running: %lu bytes", (unsigned long)esp_get_free_heap_size());
     } else {
         ESP_LOGE(TAG, "Cannot start server due to Wi-Fi connection failure.");
     }
