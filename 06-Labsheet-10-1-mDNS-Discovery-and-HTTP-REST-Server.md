@@ -620,6 +620,12 @@ ping esp32-node.local
 ```
 *(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
 
+<img width="611" height="355" alt="image" src="https://github.com/user-attachments/assets/955d70c9-3272-461b-8c9a-cac83cad86b2" />
+
+
+<img width="932" height="757" alt="image" src="https://github.com/user-attachments/assets/58e2eda0-9a2c-4fe3-af33-1ed3501e3869" />
+
+
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
 > 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network"**
@@ -649,6 +655,9 @@ curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: applicatio
 ```
 การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
 
+<img width="1487" height="366" alt="image" src="https://github.com/user-attachments/assets/3cdb4687-2b3a-4725-9888-bc9231d73d68" />
+
+
 
 **วิธีที่ 2 ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows)**
 ```powershell
@@ -670,5 +679,23 @@ success
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
+
+<img width="1220" height="520" alt="image" src="https://github.com/user-attachments/assets/69cefcbc-e155-40de-98a4-a859d848f9ae" />
+
+```
+HTTP Status: 200 OK หมายถึงเซิร์ฟเวอร์ตอบกลับสำเร็จ
+HTTP Header: มีข้อมูลสถานะ ชนิดข้อมูล และ Content-Length: 47 ซึ่งระบุว่า JSON Body มีขนาด 47 ไบต์
+JSON Body: มีขนาด 47 ไบต์ 
+pot_raw = 1889 คือค่าที่อ่านได้จาก Potentiometer
+free_heap = 216964 คือหน่วยความจำ Heap ที่ว่างอยู่
+led = false หมายถึงสถานะ LED เป็นปิด
+```
+
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
+```
+จะไม่สามารถค้นหา ESP32 ด้วยชื่อ esp32-node.local ได้ แต่ยังเข้าถึงได้ด้วย IP Address โดยตรง
+```
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+```
+เพื่อคืนหน่วยความจำที่จองไว้สำหรับโครงสร้าง JSON และข้อความ JSON ป้องกัน Memory Leak ซึ่งอาจทำให้หน่วยความจำ ESP32 ลดลงและระบบทำงานผิดพลาดได้
+```

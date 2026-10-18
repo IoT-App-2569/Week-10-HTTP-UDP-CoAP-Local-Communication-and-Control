@@ -547,6 +547,9 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 2MB --flash_freq 40m 0x1000 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/Lab10-3_CoAP_Server.bin
 ```
 
+<img width="922" height="610" alt="image" src="https://github.com/user-attachments/assets/8427136b-cf79-4808-8a5c-8935d7141609" />
+
+
 ---
 
 ### กิจกรรมที่ 10-3.5 การทดสอบด้วย Python aiocoap Script บนคอมพิวเตอร์
@@ -607,5 +610,24 @@ if __name__ == "__main__":
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
+
+<img width="1085" height="680" alt="image" src="https://github.com/user-attachments/assets/a978786f-4b38-47e9-8ee4-75e567d360a6" />
+
+
+<img width="650" height="308" alt="image" src="https://github.com/user-attachments/assets/2851657c-ec9b-4a71-a38d-d6d6e81a363b" />
+
+
+```
+พบว่าระบบสามารถอ่านค่า Potentiometer ผ่าน GET /sensor/pot และควบคุม LED ผ่านคำสั่ง PUT ได้
+```
+
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
+```
+CON (Confirmable): ต้องมีข้อความตอบรับ ACK ช่วยตรวจสอบการส่งถึงปลายทาง และสามารถส่งซ้ำเมื่อไม่ได้รับ ACK แต่มี overhead และความล่าช้าเพิ่มขึ้น
+NON (Non-confirmable): ไม่ต้องมี ACK ลดปริมาณการสื่อสารและเหมาะกับข้อมูลที่ส่งบ่อย แต่มีโอกาสสูญหายโดยไม่ทราบทันที
+```
+
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+```
+CoAP ใช้ UDP มีส่วนหัวขนาดเล็กและใช้ทรัพยากรเครือข่ายน้อยกว่า HTTP ที่ทำงานบน TCP จึงเหมาะกับอุปกรณ์ IoT ที่มีพลังงาน หน่วยความจำ และแบนด์วิดท์จำกัด
+```
