@@ -611,6 +611,15 @@ if __name__ == "__main__":
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
 
+<img width="1085" height="680" alt="image" src="https://github.com/user-attachments/assets/a978786f-4b38-47e9-8ee4-75e567d360a6" />
+
+
+<img width="650" height="308" alt="image" src="https://github.com/user-attachments/assets/2851657c-ec9b-4a71-a38d-d6d6e81a363b" />
+
+
+```
+พบว่าระบบสามารถอ่านค่า Potentiometer ผ่าน GET /sensor/pot และควบคุม LED ผ่านคำสั่ง PUT ได้
+```
 
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
 ```
