@@ -168,6 +168,15 @@ Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0
 
 ---
 
+<img width="747" height="375" alt="image" src="https://github.com/user-attachments/assets/ce4dedfc-6cb9-499e-8d9d-5db57da89784" />
+
+
+<img width="776" height="417" alt="image" src="https://github.com/user-attachments/assets/23178871-bff9-4387-b64d-98d2014fe8e4" />
+
+
+<img width="730" height="382" alt="image" src="https://github.com/user-attachments/assets/4bd146c8-f7f4-4dc2-9108-2c73581e5308" />
+
+
 ### กิจกรรมที่ 10-4.3 การตรวจสอบหน่วยความจำบน ESP32 (RAM Footprint)
 
 ตรวจสอบการใช้ทรัพยากรแรมบนบอร์ด ESP32 โดยสังเกตค่า `free_heap` จาก Log Monitor (`idf.py monitor`) หรือจาก HTTP JSON Response (`/api/status`)
