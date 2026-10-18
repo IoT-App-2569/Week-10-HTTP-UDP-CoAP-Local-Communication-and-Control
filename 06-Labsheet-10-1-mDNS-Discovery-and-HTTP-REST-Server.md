@@ -620,6 +620,8 @@ ping esp32-node.local
 ```
 *(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
 
+<img width="972" height="611" alt="ภาพถ่ายหน้าจอ 2569-10-19 เวลา 00 44 43" src="https://github.com/user-attachments/assets/47edd6fb-e20f-42fd-b549-5d6d4d08dc46" />
+
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
 > 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network"**
@@ -636,6 +638,7 @@ curl.exe -X GET http://esp32-node.local/api/status
 ```json
 {"pot_raw":15,"free_heap":213848,"led":true}
 ```
+<img width="972" height="611" alt="ภาพถ่ายหน้าจอ 2569-10-19 เวลา 00 47 44" src="https://github.com/user-attachments/assets/f683ac78-250b-43f7-baeb-a5e91445fd6a" />
 
 #### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
 
@@ -643,11 +646,14 @@ curl.exe -X GET http://esp32-node.local/api/status
 ```powershell
 # สั่งเปิดไฟ LED (GPIO 2)
 curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
-
+curl http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
 # สั่งปิดไฟ LED (GPIO 2)
 curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": false}'
+curl http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": false}'
 ```
 การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
+
+<img width="1049" height="611" alt="ภาพถ่ายหน้าจอ 2569-10-19 เวลา 00 49 38" src="https://github.com/user-attachments/assets/787ba07a-d551-448f-b3d9-d56f9316b344" />
 
 
 **วิธีที่ 2 ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows)**
@@ -670,5 +676,25 @@ success
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
+
+<img width="1049" height="611" alt="ภาพถ่ายหน้าจอ 2569-10-19 เวลา 00 51 59" src="https://github.com/user-attachments/assets/ef016245-f9e4-4979-a782-3496ea0878ec" />
+
+```
+HTTP Header	71 ไบต์
+JSON Body	44 ไบต์
+```
+
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
+
+```
+ถ้าเครื่องไม่รองรับ mDNS หรือบล็อก UDP 5353 จะ resolve esp32-node.local ไม่ได้ ping กับ curl ก็จะขึ้น could not find host ทั้งที่ ESP32 กับ HTTP Server ยังทำงานปกติ เพราะ mDNS ส่ง query แบบ multicast ไปที่ 224.0.0.251 พอร์ต 5353 ถ้าโดนบล็อก query กับ response ก็ไม่ถึงกัน
+
+วิธีแก้ ใช้ IP ตรงๆ แทนชื่อ เช่น curl http://192.168.1.181/api/status, เปลี่ยน Wi-Fi เป็น Private network, เปิด Firewall ให้ UDP 5353, ถอดสาย LAN ที่ต่อซ้อนอยู่ หรือลง Bonjour หรือ Avahi ให้เครื่องที่ไม่รองรับ
+```
+
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+```
+เพราะ cJSON จองหน่วยความจำบน heap ด้วย malloc และไม่มีตัวเก็บกวาดให้ ใครจองต้องคืนเอง ถ้าไม่คืนจะเกิด memory leak
+cJSON_Delete(root) คืน tree JSON ทั้งหมด ส่วน cJSON_free(resp) คืนสตริงที่ cJSON_PrintUnformatted จองไว้ ซึ่งเป็นคนละก้อนกับ root เลยต้องคืนแยกกัน ถ้าไม่คืน ทุกครั้งที่เรียก /api/status heap จะลดลงเรื่อยๆ พอram หมดก็ malloc ไม่ได้ แล้วบอร์ดค้างหรือรีบูต ต้องคืนหลัง httpd_resp_send เท่านั้น เพราะตอนส่งยังต้องอ่านข้อมูลใน resp อยู่
+```
