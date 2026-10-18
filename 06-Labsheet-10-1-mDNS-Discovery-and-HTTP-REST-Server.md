@@ -623,6 +623,9 @@ ping esp32-node.local
 <img width="611" height="355" alt="image" src="https://github.com/user-attachments/assets/955d70c9-3272-461b-8c9a-cac83cad86b2" />
 
 
+<img width="932" height="757" alt="image" src="https://github.com/user-attachments/assets/58e2eda0-9a2c-4fe3-af33-1ed3501e3869" />
+
+
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
 > 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network"**
