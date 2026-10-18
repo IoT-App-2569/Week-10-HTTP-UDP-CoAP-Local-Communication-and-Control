@@ -547,6 +547,9 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 2MB --flash_freq 40m 0x1000 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/Lab10-3_CoAP_Server.bin
 ```
 
+<img width="922" height="610" alt="image" src="https://github.com/user-attachments/assets/8427136b-cf79-4808-8a5c-8935d7141609" />
+
+
 ---
 
 ### กิจกรรมที่ 10-3.5 การทดสอบด้วย Python aiocoap Script บนคอมพิวเตอร์
