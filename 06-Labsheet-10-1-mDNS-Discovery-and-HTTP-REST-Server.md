@@ -652,6 +652,9 @@ curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: applicatio
 ```
 การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
 
+<img width="1487" height="366" alt="image" src="https://github.com/user-attachments/assets/3cdb4687-2b3a-4725-9888-bc9231d73d68" />
+
+
 
 **วิธีที่ 2 ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows)**
 ```powershell
