@@ -32,3 +32,29 @@ $$\text{Payload Efficiency Ratio} = \frac{\text{Payload Size (Bytes)}}{\text{Tot
 ```bash
 python benchmark_protocols.py --target 10.21.109.134 --protocol coap --rounds 50
 ```
+
+## ผลลัพธ์
+```
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+CoAP (RFC7252) | 50/50      |   0.0% |    13.52 |     28.28 |   220.97 |      42.58
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
+
+[✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
+```
