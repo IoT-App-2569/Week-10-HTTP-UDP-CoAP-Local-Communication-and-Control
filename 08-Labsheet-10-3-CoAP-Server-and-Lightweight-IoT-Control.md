@@ -602,7 +602,22 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+```
+PS C:\Users\hp\Lab10-3_CoAP_Server\Lab10-3_CoAP_Server> python test_coap.py 172.20.10.3 
 
+--- 1. Testing CoAP Resource Discovery (/.well-known/core) ---
+Resource Directory (CoRE Link Format):
+</sensor/pot>,</actuator/led>
+
+--- 2. Testing CoAP GET /sensor/pot ---
+Potentiometer Value: 2559 (Code: 2.05 Content)
+
+--- 3. Testing CoAP PUT /actuator/led (Turn ON) ---
+LED ON Response Code: 2.04 Changed
+
+--- 4. Testing CoAP PUT /actuator/led (Turn OFF) ---
+LED OFF Response Code: 2.04 Changed
+```
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
