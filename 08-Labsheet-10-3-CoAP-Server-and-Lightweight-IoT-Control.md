@@ -602,6 +602,8 @@ async def main():
 if __name__ == "__main__":
     asyncio.run(main())
 ```
+
+## ผลลัพธ์
 ```
 PS C:\Users\hp\Lab10-3_CoAP_Server\Lab10-3_CoAP_Server> python test_coap.py 172.20.10.3 
 
