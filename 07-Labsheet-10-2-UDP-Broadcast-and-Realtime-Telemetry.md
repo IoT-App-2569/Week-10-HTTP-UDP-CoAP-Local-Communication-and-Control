@@ -585,6 +585,52 @@ if rtt_list:
 
 ---
 
+```
+S C:\Users\hp\Lab10-2_UDP_Telemetry_Socket\Lab10-2_UDP_Telemetry_Socket> python python\udp_listener.py
+Listening for UDP Broadcast on port 3334... (Ctrl+C เพื่อหยุดและดูสถิติ)
+[172.20.10.3] Seq: 6010   | Potentiometer: 2582  | Total Lost: 0
+[172.20.10.3] Seq: 6011   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6012   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6013   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6014   | Potentiometer: 2582  | Total Lost: 0
+[172.20.10.3] Seq: 6015   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6016   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6017   | Potentiometer: 2582  | Total Lost: 0
+[172.20.10.3] Seq: 6018   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6019   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6020   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6021   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6022   | Potentiometer: 2582  | Total Lost: 0
+[172.20.10.3] Seq: 6023   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6024   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6025   | Potentiometer: 2587  | Total Lost: 0
+[172.20.10.3] Seq: 6026   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6027   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6028   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6029   | Potentiometer: 2583  | Total Lost: 0
+[172.20.10.3] Seq: 6030   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6031   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6032   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6033   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6034   | Potentiometer: 2580  | Total Lost: 0
+[172.20.10.3] Seq: 6035   | Potentiometer: 2580  | Total Lost: 0
+[172.20.10.3] Seq: 6036   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6037   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6038   | Potentiometer: 2579  | Total Lost: 0
+[172.20.10.3] Seq: 6039   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6040   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6041   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6042   | Potentiometer: 2582  | Total Lost: 0
+[172.20.10.3] Seq: 6043   | Potentiometer: 2581  | Total Lost: 0
+[172.20.10.3] Seq: 6044   | Potentiometer: 2559  | Total Lost: 0
+[172.20.10.3] Seq: 6045   | Potentiometer: 2582  | Total Lost: 0
+
+--- Statistics ---
+Received: 36 packets
+Lost: 0 packets
+Packet Loss Rate: 0.00%
+```
+
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง 
 1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
 2. รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi
