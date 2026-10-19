@@ -637,6 +637,7 @@ curl.exe -X GET http://esp32-node.local/api/status
 ```json
 {"pot_raw":15,"free_heap":213848,"led":true}
 ```
+<img width="853" height="73" alt="image" src="https://github.com/user-attachments/assets/c6107cc8-a81b-4459-90e1-ed919707b8ed" />
 
 #### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
 
