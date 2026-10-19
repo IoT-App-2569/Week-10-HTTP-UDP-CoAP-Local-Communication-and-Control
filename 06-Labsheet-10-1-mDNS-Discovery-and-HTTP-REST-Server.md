@@ -618,7 +618,8 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 ```powershell
 ping esp32-node.local
 ```
-*(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
+<img width="747" height="692" alt="image" src="https://github.com/user-attachments/assets/8c59b51d-45be-41e5-bcd0-6fcf6e54e565" />
+
 
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
