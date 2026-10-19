@@ -667,6 +667,7 @@ result
 ------
 success
 ```
+<img width="980" height="132" alt="image" src="https://github.com/user-attachments/assets/e93f1647-9381-4a98-9af3-5092e2232a7f" />
 
 ---
 
