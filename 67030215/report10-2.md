@@ -10,6 +10,8 @@
 ```bash
 python3 -u "udp_listener.py"
 ```
+
+## ผลลัพธ์
 ```
 PS C:\Users\hp\Lab10-2_UDP_Telemetry_Socket\Lab10-2_UDP_Telemetry_Socket> python python\udp_listener.py
 Listening for UDP Broadcast on port 3334... (Ctrl+C เพื่อหยุดและดูสถิติ)
