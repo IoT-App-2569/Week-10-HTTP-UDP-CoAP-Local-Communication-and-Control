@@ -675,6 +675,7 @@ success
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
 
 <img width="486" height="140" alt="Screenshot 2026-10-22 213031" src="https://github.com/user-attachments/assets/9042b138-6ae2-4a48-bc1c-2e1451d6c011" />
+
 ```
 วิเคราะห์
 - ข้อมูลรวมในชั้น HTTP = 71 + 47 = 118 ไบต์
@@ -687,6 +688,7 @@ success
 - ยังไม่รวมฝั่ง Request ที่ curl ส่งไป (เช่น Host, User-Agent, Accept)
   และแพ็กเก็ต TCP Handshake ซึ่งเพิ่มภาระอีกหลายแพ็กเก็ต
 ```
+
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
 ```
 ผลกระทบ
@@ -708,6 +710,7 @@ success
 - ข้อสังเกต mDNS ข้าม Router/Subnet ไม่ได้ และ AP ที่เปิด Client Isolation
   หรือบล็อก multicast ก็ทำให้ใช้ไม่ได้เช่นกัน
 ```
+
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
 ```
 - ภาษา C ไม่มี Garbage Collector ที่คืนหน่วยความจำให้อัตโนมัติ
