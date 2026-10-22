@@ -16,9 +16,9 @@
 
 #define TAG "HTTP_REST_LAB"
 
-// กำหนดชื่อและรหัสผ่าน Wi-Fi (แก้ไขให้ตรงกับ Access Point ของตนเอง)
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
+// ⚠️ กำหนด SSID และ Password ของ Wi-Fi ที่ต้องการเชื่อมต่อ
+#define CONFIG_WIFI_SSID      "YOUR_WIFI_SSID"
+#define CONFIG_WIFI_PASSWORD  "YOUR_WIFI_PASSWORD"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -55,27 +55,14 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
     }
 }
 
-// กำหนดค่าเริ่มต้นให้กับ mDNS
-static void initialise_mdns(void)
-{
-    ESP_ERROR_CHECK(mdns_init());
-    ESP_ERROR_CHECK(mdns_hostname_set("esp32-node"));
-    ESP_ERROR_CHECK(mdns_instance_name_set("ESP32 RESTful Controller"));
-
-    mdns_txt_item_t serviceTxtData[] = {
-        {"board", "esp32"},
-        {"role", "actuator"}
-    };
-    ESP_ERROR_CHECK(mdns_service_add("ESP32-WebControl", "_http", "_tcp", 80, serviceTxtData, 2));
-    ESP_LOGI(TAG, "mDNS initialized! Hostname: http://esp32-node.local");
-}
-
 // เริ่มต้นระบบเชื่อมต่อ Wi-Fi Station
 static bool wifi_init_sta(void)
 {
     s_wifi_event_group = xEventGroupCreate();
 
-    esp_netif_t *sta_netif = esp_netif_create_default_wifi_sta();
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+    esp_netif_create_default_wifi_sta();
 
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK(esp_wifi_init(&cfg));
@@ -105,7 +92,6 @@ static bool wifi_init_sta(void)
     size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
     if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
     memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
-
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
@@ -120,14 +106,26 @@ static bool wifi_init_sta(void)
 
     if (bits & WIFI_CONNECTED_BIT) {
         ESP_LOGI(TAG, "Connected to AP successfully!");
-        if (sta_netif) {
-            mdns_netif_action(sta_netif, MDNS_EVENT_ENABLE_IP4 | MDNS_EVENT_ANNOUNCE_IP4);
-        }
         return true;
     } else {
         ESP_LOGE(TAG, "Failed to connect to AP");
         return false;
     }
+}
+
+// กำหนดค่าเริ่มต้นให้กับ mDNS
+static void initialise_mdns(void)
+{
+    ESP_ERROR_CHECK(mdns_init());
+    ESP_ERROR_CHECK(mdns_hostname_set("esp32-node"));
+    ESP_ERROR_CHECK(mdns_instance_name_set("ESP32 RESTful Controller"));
+
+    mdns_txt_item_t serviceTxtData[] = {
+        {"board", "esp32"},
+        {"role", "actuator"}
+    };
+    ESP_ERROR_CHECK(mdns_service_add("ESP32-WebControl", "_http", "_tcp", 80, serviceTxtData, 2));
+    ESP_LOGI(TAG, "mDNS initialized! Hostname: http://esp32-node.local");
 }
 
 // 1. GET /api/status - อ่านค่าเซนเซอร์และสถานะระบบ
@@ -214,7 +212,7 @@ static httpd_handle_t start_webserver(void)
 
 void app_main(void)
 {
-    // 1. กำหนดค่าเริ่มต้น NVS Flash (จำเป็นสำหรับ Wi-Fi)
+    // 1. กำหนดค่าเริ่มต้น NVS Flash
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -222,18 +220,11 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
-    // 2. กำหนดค่า TCP/IP Network Interface และ Default Event Loop
-    ESP_ERROR_CHECK(esp_netif_init());
-    ESP_ERROR_CHECK(esp_event_loop_create_default());
-
-    // 3. เริ่มต้น mDNS Service Discovery (ทำก่อน Wi-Fi เชื่อมต่อเพื่อดักจับ IP Event)
-    initialise_mdns();
-
-    // 4. กำหนดค่าขา GPIO 2 เป็น Output สำหรับควบคุม LED
+    // 2. กำหนดค่าขา GPIO 2 เป็น Input/Output สำหรับควบคุม LED และอ่านสถานะ
     gpio_reset_pin(LED_GPIO_PIN);
     gpio_set_direction(LED_GPIO_PIN, GPIO_MODE_INPUT_OUTPUT);
 
-    // 5. กำหนดค่า ADC1 สำหรับ Potentiometer (GPIO 34)
+    // 3. กำหนดค่า ADC1 สำหรับ Potentiometer (GPIO 34)
     adc_oneshot_unit_init_cfg_t init_config1 = {
         .unit_id = ADC_UNIT_1,
     };
@@ -246,11 +237,14 @@ void app_main(void)
         ESP_LOGI(TAG, "ADC Initialized on GPIO 34 (Channel 6)");
     }
 
-    // 6. เชื่อมต่อระบบ Wi-Fi
+    // 4. เชื่อมต่อระบบ Wi-Fi
     if (wifi_init_sta()) {
-        // 7. เริ่มต้น HTTP RESTful Web Server
+        // 5. เริ่มต้น mDNS Service Discovery
+        initialise_mdns();
+
+        // 6. เริ่มต้น HTTP RESTful Web Server
         s_http_server = start_webserver();
-        ESP_LOGI(TAG, "Ready! Test with: curl.exe http://esp32-node.local/api/status");
+        ESP_LOGI(TAG, "Ready! Test with: curl http://esp32-node.local/api/status");
     } else {
         ESP_LOGE(TAG, "Cannot start server due to Wi-Fi connection failure.");
     }
