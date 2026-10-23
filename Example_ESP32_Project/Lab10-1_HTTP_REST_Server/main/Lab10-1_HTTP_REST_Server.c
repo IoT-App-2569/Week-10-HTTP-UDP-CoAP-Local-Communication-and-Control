@@ -17,8 +17,8 @@
 #define TAG "HTTP_REST_LAB"
 
 // ⚠️ กำหนด SSID และ Password ของ Wi-Fi ที่ต้องการเชื่อมต่อ
-#define CONFIG_WIFI_SSID      "YOUR_WIFI_SSID"
-#define CONFIG_WIFI_PASSWORD  "YOUR_WIFI_PASSWORD"
+#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
+#define CONFIG_WIFI_PASSWORD  "50769475"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
