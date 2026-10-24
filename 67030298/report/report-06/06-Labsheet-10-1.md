@@ -47,15 +47,17 @@
   ```powershell
   curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
   ```
-  - **ข้อความตอบกลับ:** `....................................................`
-  - **สถานะหลอดไฟ LED บนบอร์ดจริง:** [ ] ติด (ON)  [ ] ดับ (OFF)
+  - **ข้อความตอบกลับ:** `{"result":"success"}`
+  - **สถานะหลอดไฟ LED บนบอร์ดจริง:** [✅] ติด (ON)  [ ] ดับ (OFF)
+![alt text](<image (1).png>)
 
 - **คำสั่งสั่งปิดไฟ LED (`state: false`):**
   ```powershell
   curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": false}'
   ```
-  - **ข้อความตอบกลับ:** `....................................................`
-  - **สถานะหลอดไฟ LED บนบอร์ดจริง:** [ ] ติด (ON)  [ ] ดับ (OFF)
+  - **ข้อความตอบกลับ:** `{"result":"success"}`
+  - **สถานะหลอดไฟ LED บนบอร์ดจริง:** [ ] ติด (ON)  [✅] ดับ (OFF)
+![alt text](<image (2).png>)
 
 ---
 
