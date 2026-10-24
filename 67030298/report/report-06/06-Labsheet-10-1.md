@@ -36,7 +36,7 @@
   ```
 - **ผลลัพธ์ JSON Payload:**
   ```json
-
+  {"pot_raw":4095,"free_heap":213176,"led":false}
   ```
 
 ---
