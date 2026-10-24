@@ -34,12 +34,23 @@
   ```
 - **ผลลัพธ์จาก Terminal (10 รอบ):**
   ```text
-
+  PS C:\Users\tulbp\Desktop\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control\67030298\Lab10-2_UDP_Telemetry_Socket> python udp_controller.py
+  Sending control commands to 192.168.1.X:3333...
+  Round 01: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 48.83 ms
+  Round 02: Request timed out!
+  Round 03: Request timed out!
+  Round 04: Request timed out!
+  Round 05: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.07 ms
+  Round 06: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.07 ms
+  Round 07: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.08 ms
+  Round 08: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.08 ms
+  Round 09: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.09 ms
+  Round 10: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.08 ms
   ```
 - **สถิติค่า Round-Trip Time (RTT):**
-  - **Minimum RTT:** `.........` ms
-  - **Maximum RTT:** `.........` ms
-  - **Average RTT:** `.........` ms
+  - **Minimum RTT:** `0.07` ms
+  - **Maximum RTT:** `48.83` ms
+  - **Average RTT:** `7.04` ms
 
 ---
 
