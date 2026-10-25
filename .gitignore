@@ -13,3 +13,9 @@ dependencies.lock
 managed_components/
 *.old
 sdkconfig
+
+build/
+managed_components/
+.obsidian/
+sdkconfig.old
+__pycache__/
