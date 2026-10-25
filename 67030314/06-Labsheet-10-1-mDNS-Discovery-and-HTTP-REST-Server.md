@@ -670,5 +670,39 @@ success
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
+
+```text
+> curl.exe -i http://esp32-node.local/api/status
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 47
+
+{"pot_raw":1890,"free_heap":213848,"led":false}
+```
+
+```text
+> curl.exe -i -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 20
+
+{"result":"success"}
+```
+
+*(ผลจาก mock ESP32 บนโน้ตบุ๊กที่ตอบ Header แบบเดียวกับ `esp_http_server` เพราะไม่มีบอร์ด ESP32)*
+
+- **คำตอบ**
+
+| รายการ | GET `/api/status` | POST `/api/led` |
+| :--- | :---: | :---: |
+| HTTP Request Header | 90 ไบต์ | 155 ไบต์ |
+| HTTP Response Header | 71 ไบต์ | 71 ไบต์ |
+| ข้อมูล JSON (Response Body) | 47 ไบต์ | 20 ไบต์ |
+
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
+
+- **คำตอบ** เครื่องนั้นจะ resolve ชื่อ `esp32-node.local` ไม่ได้ (`could not find host`) วิธีแก้คือเปลี่ยน Wi-Fi บน Windows เป็น Private network หรือเปิดพอร์ต UDP 5353 ใน Firewall หรือเข้าด้วย IP ตรง ๆ หรือตั้ง DHCP Reservation / Static IP ให้ ESP32
+
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+- **คำตอบ** เพื่อคืนหน่วยความจำ Heap ที่ cJSON จองไว้ ถ้าไม่คืนจะเกิด Memory Leak จน Heap หมดและบอร์ดรีบูต

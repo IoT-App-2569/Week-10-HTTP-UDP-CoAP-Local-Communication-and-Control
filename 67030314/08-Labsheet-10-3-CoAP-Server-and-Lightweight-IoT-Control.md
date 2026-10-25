@@ -607,5 +607,31 @@ if __name__ == "__main__":
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
+
+```text
+--- 1. Testing CoAP Resource Discovery (/.well-known/core) ---
+Resource Directory (CoRE Link Format):
+</actuator/led>,</sensor/pot>
+
+--- 2. Testing CoAP GET /sensor/pot ---
+Potentiometer Value: 1569 (Code: 2.05 Content)
+
+--- 3. Testing CoAP PUT /actuator/led (Turn ON) ---
+LED ON Response Code: 2.04 Changed
+
+--- 4. Testing CoAP PUT /actuator/led (Turn OFF) ---
+LED OFF Response Code: 2.04 Changed
+```
+*(ผลจาก `test_coap.py` กับ mock ESP32 บนโน้ตบุ๊ก เพราะไม่มีบอร์ด ESP32)*
+
+- **คำตอบ** แต่ละ Resource อยู่ในรูป `<URI>` คั่นด้วยเครื่องหมาย `,` และใส่ Attribute ต่อท้ายด้วย `;` ได้ เช่น `</sensor/pot>;rt="sensor";if="core.s";obs` ในแล็บนี้ไม่ได้กำหนด Attribute จึงแสดงแค่ URI 2 ตัว
+
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
+
+- **คำตอบ**
+  - **CON (Type = 0):** ผู้รับต้องตอบ ACK ถ้าไม่ได้ ACK จะส่งซ้ำอัตโนมัติ (เริ่ม 2–3 วินาที, เพิ่มเป็นสองเท่า, สูงสุด 4 ครั้ง) คำสั่งไปถึงแน่นอนแต่ RTT สูงขึ้นเมื่อมีการรบกวน
+  - **NON (Type = 1):** ส่งครั้งเดียวไม่มี ACK และไม่ส่งซ้ำ เร็วกว่าแต่แพ็กเก็ตหายได้เมื่อมีการรบกวน
+
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+- **คำตอบ** CoAP ใช้ Header แบบไบนารีขนาด 4 ไบต์บน UDP ไม่ต้องทำ TCP Handshake แพ็กเก็ตจึงเล็กพอสำหรับเฟรม 127 ไบต์ของ IEEE 802.15.4 ประหยัดพลังงานและดาต้า รองรับ Multicast และ Observe และแปลงไปเป็น HTTP ผ่าน Proxy ได้
