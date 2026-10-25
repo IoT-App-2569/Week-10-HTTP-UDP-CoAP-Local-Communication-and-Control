@@ -28,14 +28,27 @@
 
 ## 2. ลิงก์วิดีโอสาธิตการทำงาน (Video Demonstration Links)
 
-> ให้นักศึกษาอัปโหลดคลิปวิดีโอสาธิตการทำงานลงใน YouTube (Unlisted) หรือ Google Drive แล้วแนบลิงก์ที่นี่
+| การทดลอง | รายละเอียดคลิปสาธิต | ลิงก์วิดีโอ (YouTube) |
+| :--- | :--- | :--- |
+| **ใบงานที่ 10.1** | mDNS Discovery & HTTP REST Server Control | [https://youtube.com/shorts/vVX-l8ySeqQ](https://youtube.com/shorts/vVX-l8ySeqQ?si=4MZqfVZWWyO-KtRQ) |
+| **ใบงานที่ 10.2 (ตอนที่ 1)** | UDP Broadcast Telemetry Streaming (10 Hz) | [https://youtube.com/shorts/x7IncT1Qv9Y](https://youtube.com/shorts/x7IncT1Qv9Y?si=6jm_Q2RneU4oq4QC) |
+| **ใบงานที่ 10.2 (ตอนที่ 2)** | UDP Unicast Two-Way LED Remote Control | [https://youtube.com/shorts/cpBeD5y-rUI](https://youtube.com/shorts/cpBeD5y-rUI?si=yRoa8Evp2b6eo5vk) |
+| **ใบงานที่ 10.3** | CoAP Server Resource Discovery & Actuator Control | [https://youtube.com/shorts/RaNCV8KuDtQ](https://youtube.com/shorts/RaNCV8KuDtQ?si=phAw2jzRSb2hQbxj) |
+| **ใบงานที่ 10.4** | Protocol Performance Benchmarking (50 Rounds) | [https://youtube.com/shorts/BdiO67Y8lxI](https://youtube.com/shorts/BdiO67Y8lxI?si=Af-E67UZ1_Qcbzro) |
 
-* **ลิงก์วิดีโอรวมทุกการทดลอง (หรือระบุแยกตามแล็บ):**  
-  `URL: .................................................................................................`
+* **รายการลิงก์แบบเต็ม:**
+  * **Lab 10.1:** `https://youtube.com/shorts/vVX-l8ySeqQ?si=4MZqfVZWWyO-KtRQ`
+  * **Lab 10.2 (Broadcast):** `https://youtube.com/shorts/x7IncT1Qv9Y?si=6jm_Q2RneU4oq4QC`
+  * **Lab 10.2 (Control):** `https://youtube.com/shorts/cpBeD5y-rUI?si=yRoa8Evp2b6eo5vk`
+  * **Lab 10.3:** `https://youtube.com/shorts/RaNCV8KuDtQ?si=phAw2jzRSb2hQbxj`
+  * **Lab 10.4:** `https://youtube.com/shorts/BdiO67Y8lxI?si=Af-E67UZ1_Qcbzro`
+
 
 ---
 
 ## 3. ผลการทดลอง ใบงานที่ 10.1: mDNS Discovery & HTTP REST Server
+
+> 📺 **วิดีโอสาธิตการทดลอง (10.1):** [https://youtube.com/shorts/vVX-l8ySeqQ](https://youtube.com/shorts/vVX-l8ySeqQ?si=4MZqfVZWWyO-KtRQ)
 
 ### 3.1 บันทึกผลการทดสอบการทำงาน
 1. **การ Resolve ชื่อ mDNS (`ping esp32-node.local`)**
@@ -108,6 +121,10 @@
 ---
 
 ## 4. ผลการทดลอง ใบงานที่ 10.2: UDP Socket & Real-time Telemetry
+
+> 📺 **วิดีโอสาธิตการทดลอง (10.2):**  
+> * **ตอนที่ 1 (Broadcast Telemetry):** [https://youtube.com/shorts/x7IncT1Qv9Y](https://youtube.com/shorts/x7IncT1Qv9Y?si=6jm_Q2RneU4oq4QC)  
+> * **ตอนที่ 2 (Unicast LED Control):** [https://youtube.com/shorts/cpBeD5y-rUI](https://youtube.com/shorts/cpBeD5y-rUI?si=yRoa8Evp2b6eo5vk)
 
 ### 4.1 บันทึกผลการทดสอบ Telemetry Broadcast (`udp_listener.py`)
 * ระยะเวลาที่รันดักฟัง: **1 นาที (60 วินาที)**
@@ -194,6 +211,8 @@ Average UDP RTT Latency: 30.89 ms (Min: 5.27 ms, Max: 124.10 ms)
 
 ## 5. ผลการทดลอง ใบงานที่ 10.3: CoAP Server & Lightweight Control
 
+> 📺 **วิดีโอสาธิตการทดลอง (10.3):** [https://youtube.com/shorts/RaNCV8KuDtQ](https://youtube.com/shorts/RaNCV8KuDtQ?si=phAw2jzRSb2hQbxj)
+
 ### 5.1 บันทึกผลการทดสอบด้วย `test_coap.py`
 1. **ผลลัพธ์ Resource Discovery (`/.well-known/core`):**
    ```text
@@ -244,6 +263,8 @@ LED OFF Response Code: 2.04 Changed
 ---
 
 ## 6. ผลการทดลอง ใบงานที่ 10.4: Protocol Benchmark & Network Forensics
+
+> 📺 **วิดีโอสาธิตการทดลอง (10.4):** [https://youtube.com/shorts/BdiO67Y8lxI](https://youtube.com/shorts/BdiO67Y8lxI?si=Af-E67UZ1_Qcbzro)
 
 ### 6.1 ตารางบันทึกการคำนวณสัดส่วนประสิทธิภาพข้อมูล (Payload Efficiency)
 
