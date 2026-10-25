@@ -620,6 +620,9 @@ ping esp32-node.local
 ```
 *(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
 
+### ภาพผลการ Ping และหมายเลข IP
+<img width="1292" height="315" alt="image" src="https://github.com/user-attachments/assets/1dd89303-5a27-4777-825d-5fd3af77164b" />
+
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
 > 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network"**
@@ -670,5 +673,18 @@ success
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
+
+<img width="1137" height="143" alt="image" src="https://github.com/user-attachments/assets/76f58afa-a536-47ce-8da4-421d62471750" />
+
+- Content-Length 46 ไบต์
+- HTTP Header 60ไบต์
+
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
+
+ผลกระทบที่จะเกิดคือคอมจะหาชื่อ esp32-node.local ไม่เจอส่งคำสั่งไปแล้วจะ error ว่า could not find host 
+แก้ พิมพ์เป็นหมายเลข ip ตรงๆเลยหรือปิด firewallเปิดพอร์ตที่ยอมรับ UDPในเครื่อง
+
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+เพื่อ คืนแรมชไม่ให้แรม leak
+คำสั่ง cJSON จะไปจองพื้นที่ใน Heap ของบอร์ด ถ้า cilentยิงrequest มาเรื่อยๆ แล้วไม่ยอมเคลียร์ทิ้ง แรมของ ESP32 จะหมดเกลี้ยงจนบอร์ดค้างแล้วรีสตาร์ตตัวเองวนลูป
