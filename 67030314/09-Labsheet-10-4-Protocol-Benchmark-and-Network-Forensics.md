@@ -186,10 +186,10 @@ CoAP (RFC7252) | 50/50      |   0.0% |     0.98 |      1.24 |     2.10 |       0
 
 | สถานะการทำงานของ ESP32                                 | หน่วยความจำแรมคงเหลือ (Free Heap) | ปริมาณแรมที่ใช้ไปโดยประมาณ |
 | :----------------------------------------------------- | :-------------------------------: | :------------------------: |
-| **Baseline หลังต่อ Wi-Fi สำเร็จ** (ก่อนรันเซิร์ฟเวอร์) |           ~ 248 KB            |       อ้างอิง (0 KB)       |
-| **HTTP REST Server (`esp_http_server`)**               |           ~ 214 KB            |         ~ 34 KB         |
-| **UDP Socket Server (LwIP Raw Socket)**                |           ~ 241 KB            |       **~ 7 KB**        |
-| **CoAP Server (`espressif/coap` / `libcoap`)**         |           ~ 204 KB            |         ~ 44 KB         |
+| **Baseline หลังต่อ Wi-Fi สำเร็จ** (ก่อนรันเซิร์ฟเวอร์) |             ~ 248 KB              |       อ้างอิง (0 KB)       |
+| **HTTP REST Server (`esp_http_server`)**               |             ~ 214 KB              |          ~ 34 KB           |
+| **UDP Socket Server (LwIP Raw Socket)**                |             ~ 241 KB              |           ~ 7 KB           |
+| **CoAP Server (`espressif/coap` / `libcoap`)**         |             ~ 204 KB              |          ~ 44 KB           |
 
 *(ค่าประมาณ ไม่มีบอร์ด ESP32)*
 
