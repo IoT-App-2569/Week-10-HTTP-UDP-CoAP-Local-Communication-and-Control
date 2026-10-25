@@ -265,7 +265,7 @@ $$\text{Payload Efficiency Ratio} = \frac{\text{Payload Size (Bytes)}}{\text{Tot
 
 | โปรโตคอล | จำนวนรอบที่สำเร็จ | Packet Loss (%) | Min RTT (ms) | Mean RTT (ms) | Max RTT (ms) | Jitter / StdDev (ms) |
 | :--- | :---: | :---: | :---: | :---: | :---: | :---: |
-| **HTTP REST (`/api/led`)** | 50 / 50 | 0.0 % | 28.97 ms | 198.58 ms | 1007.70 ms | 229.46 ms |
+| **HTTP REST (`/api/led`)** | 50 / 50 | 0.0 % | 29.10 ms | 62.20 ms | 207.75 ms | 45.70 ms |
 | **UDP Socket (Port 3333)** | 50 / 50 | 0.0 % | 5.09 ms | 22.83 ms | 409.16 ms | 58.10 ms |
 | **CoAP PUT (`/actuator/led`)** | 50 / 50 | 0.0 % | 9.35 ms | 28.51 ms | 180.43 ms | 35.65 ms |
 
@@ -276,7 +276,7 @@ $$\text{Payload Efficiency Ratio} = \frac{\text{Payload Size (Bytes)}}{\text{Tot
 ================================================================================
 Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
 --------------------------------------------------------------------------------
-HTTP (REST)  | 50/50     |   0.0%  |    28.97  |    198.58  |  1007.70  |     229.46
+HTTP (REST)  | 50/50     |   0.0%  |    29.10  |     62.20  |   207.75  |      45.70
 UDP Socket   | 50/50     |   0.0%  |     5.09  |     22.83  |   409.16  |      58.10
 CoAP (PUT)   | 50/50     |   0.0%  |     9.35  |     28.51  |   180.43  |      35.65
 ================================================================================
@@ -300,6 +300,11 @@ CoAP (PUT)   | 50/50     |   0.0%  |     9.35  |     28.51  |   180.43  |      3
 [Lab 10.2 UDP Socket]      I (3310) udp_server: Listening on port 3333. Free Heap: ~248,512 bytes
 [Lab 10.3 CoAP Server]     I (3520) coap_server: Server started on port 5683. Free Heap: ~205,320 bytes
 ```
+
+* **ภาพหน้าจอการตรวจสอบค่า Free Heap ผ่านคำสั่ง `curl -i http://192.168.100.46/api/status`:**
+
+![ESP32 Free Heap Status](images/free_heap_status.png)
+
 
 ---
 
