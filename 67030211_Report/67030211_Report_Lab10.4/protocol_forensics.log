@@ -1,0 +1,4 @@
+Protocol Performance Analyzer Benchmark Summary:
+1. HTTP REST: Best for web browser compatibility, highest header overhead.
+2. UDP Broadcast: Fastest streaming speed, ideal for real-time sensor waveforms.
+3. CoAP: Optimal balance of low overhead (4-byte header) and reliability (CON/ACK).

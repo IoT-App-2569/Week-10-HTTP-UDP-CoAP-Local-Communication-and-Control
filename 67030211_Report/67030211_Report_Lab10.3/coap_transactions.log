@@ -1,0 +1,6 @@
+CoAP Transaction Log:
+CON (Confirmable) GET /sensor [MID: 0x1A2B]
+-> Binary Header Size: 4 bytes
+ACK 2.05 Content [MID: 0x1A2B]
+Payload: {"v": 1.65, "r": 2048}
+Total transaction time: 3.8 ms | Packet overhead: 85% smaller than HTTP.

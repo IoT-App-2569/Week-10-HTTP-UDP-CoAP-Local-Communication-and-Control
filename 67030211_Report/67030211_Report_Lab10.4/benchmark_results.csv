@@ -1,0 +1,4 @@
+Protocol,Transport,Header_Overhead_Bytes,Latency_ms,Throughput_req_per_sec,Packet_Loss_Pct
+HTTP/1.1 REST,TCP,240,18.5,54,0.0
+UDP Broadcast,UDP,8,1.2,850,0.2
+CoAP,UDP,4,3.5,280,0.0
