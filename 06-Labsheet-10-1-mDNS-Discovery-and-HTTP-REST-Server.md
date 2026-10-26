@@ -1,4 +1,4 @@
-# ใบงานการทดลองที่ 10.1
+
 ### การพัฒนาระบบค้นหาอุปกรณ์ด้วย mDNS และเว็บเซิร์ฟเวอร์ควบคุมอุปกรณ์ผ่าน HTTP RESTful API บน ESP-IDF
 
 > [!NOTE] **คำชี้แจง**
@@ -668,7 +668,20 @@ success
 
 ---
 
+ตรวจสอบ mDNS ด้วยคำสั่ง ping
+<img width="1470" height="956" alt="ตรวจสอบ mDNS ด้วยคำสั่ง ping" src="https://github.com/user-attachments/assets/0bbb7f77-a079-425c-81b7-cfaf73455509" />
+
+
+ทดสอบอ่านค่าเซนเซอร์ผ่าน cURL
+<img width="1470" height="956" alt="ทดสอบอ่านค่าเซนเซอร์ผ่าน cURL" src="https://github.com/user-attachments/assets/0ada9781-c9de-40cd-b7bc-e13fa674c101" />
+
+
+ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
+<img width="1470" height="956" alt="ทดสอบสั่งเปิด-ปิด LED" src="https://github.com/user-attachments/assets/d42b1589-8c46-4723-af91-aa04db147a08" />
+
+
+
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
-1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
-2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
-3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+1. นำผลการรัน curl -i (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์ ตอบ:ใช้คำสั่ง curl -i เพื่อดู HTTP Response Header และ JSON Body โดยขนาดไบต์ต้องวัดจากผลลัพธ์จริง ค่า Content-Length ระบุขนาด Body
+2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร? ตอบ:หากไม่รองรับ mDNS หรือถูกบล็อก UDP Port 5353 จะไม่สามารถค้นหา ESP32 ผ่านชื่อ esp32-node.local ได้ ควรเข้าผ่าน IP Address โดยตรง หรืออนุญาต UDP Port 5353
+3. เหตุใดจึงต้องเรียกคำสั่ง cJSON_Delete(root) และ cJSON_free(resp) เสมอหลังจากประมวลผลเสร็จสิ้น? ตอบ:cJSON_Delete(root) ใช้คืนหน่วยความจำของโครงสร้าง JSON ส่วน cJSON_free(resp) ใช้คืนหน่วยความจำของข้อความ JSON เพื่อป้องกัน Memory Leak และช่วยให้ ESP32 ทำงานได้อย่างมีเสถียรภาพ

@@ -605,7 +605,23 @@ if __name__ == "__main__":
 
 ---
 
+คำสั่ง Build และ Flash โปรเจกต์
+<img width="1470" height="956" alt="คำสั่ง Build และ Flash โปรเจกต์" src="https://github.com/user-attachments/assets/c5a5f07b-203d-4c2d-b007-8fe365ed5297" />
+
+
+ติดตั้งไลบรารี aiocoap
+<img width="1470" height="956" alt="ติดตั้งไลบรารี aiocoap" src="https://github.com/user-attachments/assets/b980ff7f-e15c-4b33-9aca-2ed8b998c743" />
+
+
+สคริปต์ทดสอบ CoAP Client (`test_coap.py`)
+<img width="1470" height="956" alt="สคริปต์ทดสอบ CoAP Client" src="https://github.com/user-attachments/assets/39dd7955-1962-461c-98e5-2ee1e3338365" />
+
+
+
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
-1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
-2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
+1. นำผลการ Query /.well-known/core มาแสดงในรายงาน พร้อมอธิบายรูปแบบ CoRE Link Format (RFC 6690) ว่าแสดงข้อมูลทรัพยากรอย่างไร
+ตอบ:ผลการ Query /.well-known/core จะแสดงรายการทรัพยากรที่ CoAP Server รองรับ โดยใช้รูปแบบ CoRE Link Format (RFC 6690) เช่น </sensor/pot>;rt="sensor";if="sensor" ซึ่งระบุ URI ของทรัพยากรและคุณสมบัติเพิ่มเติม เช่น ประเภทและรูปแบบการใช้งาน
+2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง CON (Confirmable) และ NON (Non-confirmable) เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
+ตอบ:CON (Confirmable) ต้องได้รับ ACK จากผู้รับ หากไม่ได้รับจะส่งซ้ำ จึงช่วยเพิ่มความน่าเชื่อถือแต่มีความล่าช้า ส่วน NON (Non-confirmable) ไม่ต้องได้รับ ACK และไม่ส่งซ้ำโดยอัตโนมัติ จึงรวดเร็วกว่าแต่มีโอกาสสูญหายเมื่อสัญญาณรบกวน
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+ตอบ:CoAP เหมาะกับเครือข่าย Thread, Zigbee IP และ NB-IoT เพราะใช้ UDP มีส่วนหัวขนาดเล็ก ใช้แบนด์วิดท์และพลังงานน้อยกว่า HTTP ที่มักใช้ TCP จึงเหมาะกับอุปกรณ์ IoT ที่มีทรัพยากรและพลังงานจำกัด
