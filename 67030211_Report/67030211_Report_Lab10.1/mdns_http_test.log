@@ -1,6 +1,0 @@
-$ ping esp32-node.local
-PING esp32-node.local (192.168.1.105): 56 data bytes
-64 bytes from 192.168.1.105: icmp_seq=0 ttl=64 time=4.2 ms
-
-$ curl http://esp32-node.local/api/status
-{"device":"esp32-node","temp":26.5,"led":"OFF"}

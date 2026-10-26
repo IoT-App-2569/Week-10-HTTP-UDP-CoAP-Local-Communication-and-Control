@@ -1,5 +1,0 @@
-Listening for ESP32 UDP Telemetry Broadcast on port 3333...
-From ('192.168.1.105', 51234): {"node": 1, "voltage": 1.65, "raw": 2048}
-From ('192.168.1.105', 51234): {"node": 1, "voltage": 1.66, "raw": 2060}
-From ('192.168.1.105', 51234): {"node": 1, "voltage": 1.65, "raw": 2048}
-Average transmission latency: < 1.5 ms.
