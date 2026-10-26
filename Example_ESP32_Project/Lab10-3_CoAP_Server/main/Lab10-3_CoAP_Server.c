@@ -14,10 +14,6 @@
 
 #define TAG "COAP_LAB"
 
-// กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
-#define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
 #define POT_ADC_CHANNEL       ADC_CHANNEL_6 // GPIO 34 (ADC1 Channel 6)
