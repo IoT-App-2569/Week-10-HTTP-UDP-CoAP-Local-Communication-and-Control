@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include "sdkconfig.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
@@ -15,9 +16,6 @@
 
 #define TAG "UDP_LAB"
 
-// กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -56,6 +54,22 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 
 static bool wifi_init_sta(void)
 {
+    wifi_config_t wifi_config = {
+        .sta = {
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        },
+    };
+    size_t ssid_len = strlen(CONFIG_LAB_WIFI_SSID);
+    size_t pass_len = strlen(CONFIG_LAB_WIFI_PASSWORD);
+    if (ssid_len == 0 || ssid_len > sizeof(wifi_config.sta.ssid)) {
+        ESP_LOGE(TAG, "Invalid Wi-Fi SSID. Set it in Lab 10-2 Wi-Fi Configuration.");
+        return false;
+    }
+    if (pass_len < 8 || pass_len >= sizeof(wifi_config.sta.password)) {
+        ESP_LOGE(TAG, "Invalid WPA2 password length. Set it in Lab 10-2 Wi-Fi Configuration.");
+        return false;
+    }
+
     s_wifi_event_group = xEventGroupCreate();
 
     esp_netif_create_default_wifi_sta();
@@ -66,24 +80,14 @@ static bool wifi_init_sta(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
 
-    wifi_config_t wifi_config = {
-        .sta = {
-            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-        },
-    };
-    size_t ssid_len = strlen(CONFIG_WIFI_SSID);
-    if (ssid_len > sizeof(wifi_config.sta.ssid)) ssid_len = sizeof(wifi_config.sta.ssid);
-    memcpy(wifi_config.sta.ssid, CONFIG_WIFI_SSID, ssid_len);
-
-    size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
-    if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
-    memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
+    memcpy(wifi_config.sta.ssid, CONFIG_LAB_WIFI_SSID, ssid_len);
+    memcpy(wifi_config.sta.password, CONFIG_LAB_WIFI_PASSWORD, pass_len);
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(TAG, "Connecting to AP: %s...", CONFIG_WIFI_SSID);
+    ESP_LOGI(TAG, "Connecting to configured Wi-Fi network...");
 
     EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
     return (bits & WIFI_CONNECTED_BIT) != 0;

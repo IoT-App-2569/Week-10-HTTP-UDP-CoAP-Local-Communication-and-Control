@@ -1,7 +1,11 @@
 import socket
+import sys
 import time
 
-ESP32_IP = "192.168.1.181"  # ระบุ IP ของบอร์ด ESP32
+if len(sys.argv) != 2:
+    raise SystemExit("Usage: python udp_controller.py <ESP32_IP>")
+
+ESP32_IP = sys.argv[1]
 CMD_PORT = 3333
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

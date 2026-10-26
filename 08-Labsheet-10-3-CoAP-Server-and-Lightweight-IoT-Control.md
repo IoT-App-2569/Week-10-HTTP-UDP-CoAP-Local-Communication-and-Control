@@ -19,13 +19,59 @@
 
 | Resource URI        | Method | คำอธิบาย                           |   ชนิด Payload   | ตัวอย่างคำสั่ง CoAP Client                                       |
 | :------------------ | :----: | :--------------------------------- | :--------------: | :--------------------------------------------------------------- |
-| `/.well-known/core` |  GET   | แสดงรายการ Resource ทั้งหมดของโหนด | CoRE Link Format | `coap-client -m get coap://esp32-node.local/.well-known/core`    |
-| `/sensor/pot`       |  GET   | อ่านค่าอนาล็อก Potentiometer       |   Text / JSON    | `coap-client -m get coap://esp32-node.local/sensor/pot`          |
-| `/actuator/led`     |  PUT   | สั่งเปิด/ปิดไฟ LED (1 หรือ 0)      |  Text (`1`/`0`)  | `coap-client -m put -e "1" coap://esp32-node.local/actuator/led` |
+| `/.well-known/core` |  GET   | แสดงรายการ Resource ทั้งหมดของโหนด | CoRE Link Format | `coap-client -m get coap://<ESP32_IP>/.well-known/core`    |
+| `/sensor/pot`       |  GET   | อ่านค่าอนาล็อก Potentiometer       |   Text / JSON    | `coap-client -m get coap://<ESP32_IP>/sensor/pot`          |
+| `/actuator/led`     |  PUT   | สั่งเปิด/ปิดไฟ LED (1 หรือ 0)      |  Text (`1`/`0`)  | `coap-client -m put -e "1" coap://<ESP32_IP>/actuator/led` |
 
 ---
 
 ## 3. ขั้นตอนการทดลอง
+
+### เริ่มต้นใช้งานโปรเจกต์ตัวอย่างใน Repository (แนะนำ)
+
+ถ้าใช้โปรเจกต์ตัวอย่างที่เตรียมไว้แล้ว ไม่ต้องสร้างโปรเจกต์ใหม่หรือคัดลอกโค้ดจากกิจกรรมด้านล่าง ให้ทำตามขั้นตอนนี้:
+
+1. ใช้บอร์ด ESP32 รุ่นดั้งเดิมที่รองรับ GPIO 34 (ADC1) และต่อ LED กับ potentiometer ตามวงจรของแล็บ
+2. ให้คอมพิวเตอร์และ ESP32 เชื่อม Wi-Fi **2.4 GHz วงเดียวกัน** และตรวจสอบว่า AP/client isolation ปิดอยู่
+3. เปิด **ESP-IDF PowerShell** แล้วเข้าโฟลเดอร์โปรเจกต์:
+
+   ```powershell
+   cd Example_ESP32_Project\Lab10-3_CoAP_Server
+   ```
+
+4. ตั้ง target แล้วตั้งค่า SSID และรหัสผ่าน Wi-Fi ในเมนู **Lab 10-3 Wi-Fi Configuration**:
+
+   ```powershell
+   idf.py set-target esp32
+   idf.py menuconfig
+   ```
+
+   กด `s` เพื่อบันทึก แล้ว `q` เพื่อออก ค่า Wi-Fi จะอยู่ใน `sdkconfig` เฉพาะเครื่องและไม่ต้องฝังลงในซอร์สโค้ด อย่าลบหรือเขียนทับ `sdkconfig.defaults` เพราะไฟล์นั้นเปิดการตั้งค่า DTLS ที่จำเป็นต่อการ build component
+
+5. Build, flash และเปิด Serial Monitor (เปลี่ยน `COM5` เป็นพอร์ตของบอร์ด):
+
+   ```powershell
+   idf.py build
+   idf.py -p COM5 flash monitor
+   ```
+
+   เมื่อเชื่อม Wi-Fi สำเร็จ Serial Monitor จะแสดง `Connected! IP Address: ...` และ `CoAP Server listening on port 5683...` จด IP address นั้นไว้ หาก flash ไม่เริ่ม ให้กดปุ่ม BOOT ค้างไว้ขณะเริ่ม flash แล้วปล่อยเมื่อเริ่มเขียนเฟิร์มแวร์
+
+6. เปิด PowerShell อีกหน้าต่างในโฟลเดอร์โปรเจกต์ แล้วติดตั้งไลบรารี Python:
+
+   ```powershell
+   python -m pip install aiocoap
+   ```
+
+7. เรียกใช้ client โดยแทน IP ตัวอย่างด้วย IP ที่แสดงใน Serial Monitor:
+
+   ```powershell
+   python test_coap.py 172.20.10.2
+   ```
+
+   สคริปต์ทดสอบ Resource Discovery, อ่าน potentiometer และสั่งเปิด/ปิด LED ผ่าน CoAP/UDP พอร์ต 5683 หาก Windows Firewall ถาม ให้เลือกอนุญาต Python บนเครือข่าย Private เท่านั้น โปรเจกต์นี้ไม่ได้ตั้ง mDNS hostname จึงให้ใช้ IP address โดยตรง
+
+กด `Ctrl+]` เพื่อออกจาก Serial Monitor หลังทดสอบเสร็จ
 
 ### กิจกรรมที่ 10-3.1 สร้างโปรเจกต์และเพิ่ม CoAP Component
 
@@ -79,7 +125,25 @@ idf_component_register(SRCS "Lab10-3_CoAP_Server.c"
                        REQUIRES esp_wifi esp_event nvs_flash coap esp_adc esp_driver_gpio)
 ```
 
-#### 5. สร้างไฟล์ `sdkconfig.defaults` เพื่อเปิดใช้ฟีเจอร์ DTLS Cookie ใน mbedTLS
+#### 5. เพิ่มเมนูตั้งค่า Wi-Fi
+
+สร้างไฟล์ `main/Kconfig.projbuild` เพื่อให้ตั้งค่าเครือข่ายผ่าน `idf.py menuconfig` โดยไม่ต้องฝังรหัสผ่านในซอร์สโค้ด:
+
+```kconfig
+menu "Lab 10-3 Wi-Fi Configuration"
+
+config LAB_WIFI_SSID
+    string "Wi-Fi SSID (2.4 GHz)"
+    default ""
+
+config LAB_WIFI_PASSWORD
+    string "Wi-Fi password (WPA2-Personal)"
+    default ""
+
+endmenu
+```
+
+#### 6. สร้างไฟล์ `sdkconfig.defaults` เพื่อเปิดใช้ฟีเจอร์ DTLS Cookie ใน mbedTLS
 > [!IMPORTANT] **ข้อกำหนดสำคัญสำหรับ `espressif/coap`**
 > ไลบรารี `libcoap` มีการเรียกใช้ฟังก์ชัน DTLS cookie (`mbedtls_ssl_cookie_*`) ซึ่งค่าเริ่มต้นของ ESP-IDF จะปิดใช้งาน DTLS ไว้ หากไม่เปิดใช้งานจะเกิด Linker Error (`undefined reference to mbedtls_ssl_cookie_init`)
 >
@@ -89,7 +153,7 @@ idf_component_register(SRCS "Lab10-3_CoAP_Server.c"
 > CONFIG_MBEDTLS_SSL_COOKIE_C=y
 > ```
 
-#### 6. ทดสอบ Reconfigure ระบบบิลด์
+#### 7. ทดสอบ Reconfigure ระบบบิลด์
 ทดสอบรันคำสั่ง Reconfigure เพื่อให้ระบบดาวน์โหลดคอมโพเนนต์และสร้างบิลด์ไฟล์
 ```powershell
 idf.py reconfigure
@@ -226,6 +290,19 @@ static void coap_server_task(void *pvParameters)
 ```c
 static bool wifi_init_sta(void)
 {
+    wifi_config_t wifi_config = {
+        .sta = {
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        },
+    };
+    size_t ssid_len = strlen(CONFIG_LAB_WIFI_SSID);
+    size_t pass_len = strlen(CONFIG_LAB_WIFI_PASSWORD);
+    if (ssid_len == 0 || ssid_len > sizeof(wifi_config.sta.ssid) ||
+        pass_len < 8 || pass_len > sizeof(wifi_config.sta.password)) {
+        ESP_LOGE(TAG, "Invalid Wi-Fi credentials. Set them in Lab 10-3 Wi-Fi Configuration.");
+        return false;
+    }
+
     s_wifi_event_group = xEventGroupCreate();
 
     esp_netif_create_default_wifi_sta();
@@ -236,24 +313,14 @@ static bool wifi_init_sta(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
 
-    wifi_config_t wifi_config = {
-        .sta = {
-            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-        },
-    };
-    size_t ssid_len = strlen(CONFIG_WIFI_SSID);
-    if (ssid_len > sizeof(wifi_config.sta.ssid)) ssid_len = sizeof(wifi_config.sta.ssid);
-    memcpy(wifi_config.sta.ssid, CONFIG_WIFI_SSID, ssid_len);
-
-    size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
-    if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
-    memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
+    memcpy(wifi_config.sta.ssid, CONFIG_LAB_WIFI_SSID, ssid_len);
+    memcpy(wifi_config.sta.password, CONFIG_LAB_WIFI_PASSWORD, pass_len);
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(TAG, "Connecting to AP: %s...", CONFIG_WIFI_SSID);
+    ESP_LOGI(TAG, "Connecting to configured Wi-Fi network...");
 
     EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
     return (bits & WIFI_CONNECTED_BIT) != 0;
@@ -321,6 +388,7 @@ void app_main(void)
 ```c
 #include <stdio.h>
 #include <string.h>
+#include "sdkconfig.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
@@ -335,9 +403,6 @@ void app_main(void)
 
 #define TAG "COAP_LAB"
 
-// กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "YOUR_WIFI_SSID"
-#define CONFIG_WIFI_PASSWORD  "YOUR_WIFI_PASSWORD"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -373,6 +438,19 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 
 static bool wifi_init_sta(void)
 {
+    wifi_config_t wifi_config = {
+        .sta = {
+            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
+        },
+    };
+    size_t ssid_len = strlen(CONFIG_LAB_WIFI_SSID);
+    size_t pass_len = strlen(CONFIG_LAB_WIFI_PASSWORD);
+    if (ssid_len == 0 || ssid_len > sizeof(wifi_config.sta.ssid) ||
+        pass_len < 8 || pass_len > sizeof(wifi_config.sta.password)) {
+        ESP_LOGE(TAG, "Invalid Wi-Fi credentials. Set them in Lab 10-3 Wi-Fi Configuration.");
+        return false;
+    }
+
     s_wifi_event_group = xEventGroupCreate();
 
     esp_netif_create_default_wifi_sta();
@@ -383,24 +461,14 @@ static bool wifi_init_sta(void)
     ESP_ERROR_CHECK(esp_event_handler_instance_register(WIFI_EVENT, ESP_EVENT_ANY_ID, &wifi_event_handler, NULL, NULL));
     ESP_ERROR_CHECK(esp_event_handler_instance_register(IP_EVENT, IP_EVENT_STA_GOT_IP, &wifi_event_handler, NULL, NULL));
 
-    wifi_config_t wifi_config = {
-        .sta = {
-            .threshold.authmode = WIFI_AUTH_WPA2_PSK,
-        },
-    };
-    size_t ssid_len = strlen(CONFIG_WIFI_SSID);
-    if (ssid_len > sizeof(wifi_config.sta.ssid)) ssid_len = sizeof(wifi_config.sta.ssid);
-    memcpy(wifi_config.sta.ssid, CONFIG_WIFI_SSID, ssid_len);
-
-    size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
-    if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
-    memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
+    memcpy(wifi_config.sta.ssid, CONFIG_LAB_WIFI_SSID, ssid_len);
+    memcpy(wifi_config.sta.password, CONFIG_LAB_WIFI_PASSWORD, pass_len);
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(TAG, "Connecting to AP: %s...", CONFIG_WIFI_SSID);
+    ESP_LOGI(TAG, "Connecting to configured Wi-Fi network...");
 
     EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT | WIFI_FAIL_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
     return (bits & WIFI_CONNECTED_BIT) != 0;
@@ -540,34 +608,37 @@ void app_main(void)
 
 #### คำสั่ง Build และ Flash โปรเจกต์
 ```powershell
-# คอมไพล์โปรเจกต์ผ่าน Docker
-docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspace" -w /workspace espressif/idf:release-v6.1 idf.py build
-
-# แฟลชลงบอร์ด ESP32
-python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --after hard_reset write_flash --flash_mode dio --flash_size 2MB --flash_freq 40m 0x1000 build/bootloader/bootloader.bin 0x8000 build/partition_table/partition-table.bin 0x10000 build/Lab10-3_CoAP_Server.bin
+idf.py build
+idf.py -p COM5 flash monitor
 ```
+แทน `COM5` ด้วยพอร์ต COM ของบอร์ดใน Device Manager
 
 ---
 
 ### กิจกรรมที่ 10-3.5 การทดสอบด้วย Python aiocoap Script บนคอมพิวเตอร์
 
 #### 1. ติดตั้งไลบรารี aiocoap
-เปิด PowerShell บนเครื่องคอมพิวเตอร์
+เปิด PowerShell บนเครื่องคอมพิวเตอร์ (แนะนำให้เปิด virtual environment ก่อน เพื่อไม่ปะปนกับ Python ของ ESP-IDF)
 ```powershell
-pip install aiocoap
+python -m pip install aiocoap
 ```
 
 #### 2. สคริปต์ทดสอบ CoAP Client (`test_coap.py`)
-สร้างไฟล์ `test_coap.py` บนเครื่องคอมพิวเตอร์ เพื่อทดสอบ 3 การทำงานหลัก
+ใช้ไฟล์ `test_coap.py` ในโฟลเดอร์โปรเจกต์ตัวอย่าง แล้วส่ง IP ของ ESP32 เป็นอาร์กิวเมนต์ เพื่อทดสอบ 3 การทำงานหลัก
 1. **Resource Discovery (`/.well-known/core`)** ค้นหารายการ Resource ทั้งหมดบน ESP32
 2. **GET `/sensor/pot`** อ่านค่าเซนเซอร์อนาล็อก
 3. **PUT `/actuator/led`** สั่งเปิด-ปิดหลอดไฟ LED
 
 ```python
 import asyncio
+import sys
+
+if len(sys.argv) != 2:
+    raise SystemExit("Usage: python test_coap.py <ESP32_IP>")
+
 from aiocoap import Context, Message, Code
 
-ESP32_IP = "192.168.1.181"  # แก้ไขให้ตรงกับหมายเลข IP ของ ESP32
+ESP32_IP = sys.argv[1]
 
 async def main():
     protocol = await Context.create_client_context()
@@ -603,9 +674,56 @@ if __name__ == "__main__":
     asyncio.run(main())
 ```
 
+รันจาก PowerShell ในโฟลเดอร์โปรเจกต์ โดยเปลี่ยน IP ตัวอย่างเป็น IP ที่เห็นใน Serial Monitor:
+
+```powershell
+python test_coap.py 172.20.10.2
+```
+
+```powershell
+I (1938) COAP_LAB: Connected! IP Address: 172.20.10.2
+I (1938) COAP_LAB: CoAP Server listening on port 5683...
+I (1938) COAP_LAB: Ready! Test CoAP with: python test_coap.py
+I (1948) main_task: Returned from app_main()
+I (48498) wifi:<ba-add>idx:0 (ifx:0, 06:cb:db:b9:0c:bb), tid:0, ssn:2, winSize:64
+I (48538) COAP_LAB: GET /sensor/pot -> 4095
+I (48578) COAP_LAB: LED turned ON via CoAP PUT
+I (50638) COAP_LAB: LED turned OFF via CoAP PUT
+I (184908) COAP_LAB: GET /sensor/pot -> 2047
+I (184918) COAP_LAB: LED turned ON via CoAP PUT
+I (187038) COAP_LAB: LED turned OFF via CoAP PUT
+```
+![alt text](image-5.png)
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
-1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
-2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
-3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+1. **นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ CoRE Link Format (RFC 6690) ว่าแสดงข้อมูลทรัพยากรอย่างไร**
+
+   **คำตอบ:** ผลจาก ESP32:
+
+   ```text
+   </sensor/pot>,</actuator/led>
+   ```
+
+   CoRE Link Format แสดงรายการ resource เป็นลิงก์ โดยแต่ละรายการอยู่ในเครื่องหมาย `< >` และคั่นรายการด้วยเครื่องหมายจุลภาค ดังนั้นตัวอย่างนี้หมายถึงเซิร์ฟเวอร์มี resource `/sensor/pot` สำหรับอ่านค่า potentiometer และ `/actuator/led` สำหรับควบคุม LED แต่ละลิงก์สามารถมี attribute ต่อท้าย เช่น `;rt` (resource type) หรือ `;if` (interface description) เพื่อบอกชนิดหรือรูปแบบการใช้งานเพิ่มเติมได้ ผลลัพธ์นี้แสดง URI ของ resource ที่ค้นพบได้
+
+2. **อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง CON (Confirmable) และ NON (Non-confirmable) เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ**
+
+   **คำตอบ:** แพ็กเก็ต **CON** ต้องได้รับ ACK จากผู้รับ หาก ACK ไม่กลับเพราะแพ็กเก็ตหรือ ACK สูญหาย ผู้ส่งจะส่งซ้ำตามช่วงเวลาที่กำหนดจนกว่าจะได้รับ ACK หรือครบจำนวนครั้งที่อนุญาต จึงเพิ่มความน่าเชื่อถือ แต่ใช้แพ็กเก็ตและแบนด์วิดท์เพิ่ม และอาจเพิ่ม latency ในเครือข่ายที่มีสัญญาณรบกวน ส่วนแพ็กเก็ต **NON** ไม่ต้องมี ACK และไม่ส่งซ้ำ หากสูญหายข้อมูลหรือการแจ้งเตือนนั้นก็หายไป จึงมี overhead และ latency ต่ำกว่า แต่ความน่าเชื่อถือน้อยกว่า
+
+   เลือก CON สำหรับคำสั่งหรือข้อมูลสำคัญที่ต้องการยืนยันการรับ และเลือก NON สำหรับ telemetry ที่ส่งบ่อยและค่าถัดไปจะมาแทนค่าเดิมได้ ทั้งนี้ ACK ของ CoAP ยืนยันการรับแพ็กเก็ตตามโปรโตคอล ไม่ได้ยืนยันด้วยตัวเองว่าการกระทำทางกายภาพ (เช่น LED ติดจริง) สำเร็จแล้ว
+
+3. **ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?**
+
+   **ผลการทดลองจากบอร์ด ESP32 ของฉัน** (ทดสอบด้วย `python test_coap.py 172.20.10.2`):
+
+   | การทดสอบ | ผลตอบกลับที่สังเกตได้ |
+   | :--- | :--- |
+   | Resource Discovery `/.well-known/core` | พบ `/sensor/pot` และ `/actuator/led` |
+   | GET `/sensor/pot` | `2.05 Content`; อ่านค่าได้ `4095` และอีกครั้งได้ `2047` |
+   | PUT `/actuator/led` ส่ง `1` | `2.04 Changed`; Serial Monitor แสดง `LED turned ON via CoAP PUT` |
+   | PUT `/actuator/led` ส่ง `0` | `2.04 Changed`; Serial Monitor แสดง `LED turned OFF via CoAP PUT` |
+
+   **คำตอบ:** CoAP เหมาะกับเครือข่าย IoT ที่มีแบนด์วิดท์ พลังงาน และหน่วยความจำจำกัด เพราะทำงานบน UDP และมี header ขั้นต่ำ 4 ไบต์ จึงมี overhead น้อยกว่า HTTP ซึ่งใช้ TCP และมี header แบบข้อความที่ยาวกว่า CoAP ยังมีรูปแบบ REST เช่น GET/PUT, การค้นหา resource ด้วย `/.well-known/core` และเลือกความน่าเชื่อถือได้ด้วยข้อความ CON/NON จึงเหมาะกับการอ่านเซนเซอร์และควบคุมอุปกรณ์ผ่านเครือข่ายจำกัดทรัพยากร
+
+   จากผลทดลองนี้ client ค้นพบ resource ได้ อ่านค่า sensor และได้รับ response `2.04 Changed` เมื่อสั่ง LED แสดงว่า CoAP ให้ทั้งการเข้าถึง resource และการควบคุมที่มี overhead ต่ำ อย่างไรก็ตาม ไม่ได้หมายความว่า CoAP ดีกว่า HTTP ในทุกกรณี: HTTP ยังเหมาะกับระบบที่ต้องการความเข้ากันได้กับ browser, proxy หรือ infrastructure เว็บที่มีอยู่แล้ว และ CoAP แบบ UDP เองก็ต้องออกแบบเรื่องความปลอดภัยและการจัดการการสูญหายให้เหมาะกับการใช้งาน
