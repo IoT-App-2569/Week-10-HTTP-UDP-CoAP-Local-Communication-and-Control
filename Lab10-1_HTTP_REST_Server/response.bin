@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 47
+
+{"pot_raw":4095,"free_heap":215880,"led":false}
