@@ -13,3 +13,5 @@ dependencies.lock
 managed_components/
 *.old
 sdkconfig
+
+.vscode/
