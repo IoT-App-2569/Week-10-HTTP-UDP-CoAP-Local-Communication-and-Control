@@ -637,6 +637,9 @@ curl.exe -X GET http://esp32-node.local/api/status
 {"pot_raw":15,"free_heap":213848,"led":true}
 ```
 
+<img width="1075" height="337" alt="image" src="https://github.com/user-attachments/assets/bf1c7878-c02b-4e12-be86-d25166440b2f" />
+
+
 #### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
 
 **วิธีที่ 1 ใช้ `curl.exe` (ครอบสตริง JSON ด้วย Single Quote เพื่อป้องกัน PowerShell ตัดเครื่องหมายคำพูด)**
@@ -665,10 +668,44 @@ result
 ------
 success
 ```
-
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
+ผลการรันคำสั่งจริง (จากหน้าจอ Terminal)
+
+<img width="1248" height="180" alt="image" src="https://github.com/user-attachments/assets/17bfc76d-c205-4753-abf1-f204b43ef674" />
+
+~~~
+ขนาดข้อมูล JSON Payload:
+- มีขนาดเท่ากับ 47 ไบต์ (ระบุชัดเจนใน Header Content-Length: 47)
+- ข้อมูลจริง: {"pot_raw":1024,"free_heap":217868,"led":false}
+HTTP Response Header:
+- บรรทัดที่ 1: HTTP/1.1 200 OK\r\n = 17 ไบต์
+- บรรทัดที่ 2: Content-Type: application/json\r\n = 32 ไบต์
+- บรรทัดที่ 3: Content-Length: 47\r\n = 20 ไบต์
+- บรรทัดว่างคั่น Header/Body: \r\n = 2 ไบต์
+- รวมขนาด HTTP Header: ประมาณ 71 ไบต์
+ขนาดของ Header (~71 ไบต์) มีขนาดใหญ่กว่าตัวข้อมูลจริง (47 ไบต์) ยังไม่รวม TCP/IP Header อีก 40 ไบต์
+แสดงว่าโปรโตคอล HTTP มี Protocol Overhead ค่อนข้างสูงเมื่อเทียบกับปริมาณข้อมูลที่ต้องการส่งจริง
+~~~
 2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
+~~~
+ผลกระทบ
+1.คอมพิวเตอร์เจะไม่สามารถแปลงชื่อโดเมน esp32-node.local กลับมาเป็นหมายเลข IP Address ได้ ทำให้ ping esp32-node.local หรือเข้าเว็บผ่านชื่อนี้ล้มเหลว
+2.ทำให้แอปพลิเคชันหรือไคลเอนต์ไม่สามารถทำ Zero-Configuration Discovery ในการค้นหาอุปกรณ์ในวงแลนได้อัตโนมัติ
+
+แนวทางแก้ไข
+1.กำหนดให้ไคลเอนต์เรียกใช้ผ่าน IP ตรงๆ เช่น http://172.20.10.2/api/status โดยตั้งค่า Static IP ให้บอร์ด หรือตั้ง DHCP Reservation บนเราเตอร์
+2.ตั้งค่าเครือข่าย Wi-Fi ให้เป็น Private Network หรือเพิ่ม Inbound/Outbound Rule ใน Windows Firewall ให้ยอมรับแพ็กเก็ต UDP พอร์ต 5353
+3.ติดตั้ง mDNS Service เพิ่มเติม
+~~~
 3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+~~~
+1. การจองหน่วยความจำ ฟังก์ชันของไลบรารี cJSON จะทำการของจองพื้นที่ในหน่วยความจำ Heap (RAM) ผ่านคำสั่ง malloc() เพื่อสร้างโครงสร้างต้นไม้และสร้างข้อความสตริง
+2. ป้องกันปัญหาหน่วยความจำรั่วไหล
+3.หน้าที่เฉพาะของแต่ละคำสั่ง
+cJSON_Delete(root): ทำหน้าที่ไล่คืนพื้นที่หน่วยความจำของทุก Node ในโครงสร้าง Tree ของ cJSON อ็อบเจกต์นั้นทั้งหมด
+cJSON_free((void *)resp): ทำหน้าที่คืนพื้นที่หน่วยความจำของบัฟเฟอร์สตริง JSON ที่ถูกจัดสรรขึ้นมาตอนสั่ง Print ออกมาเป็นข้อความ
+
+~~~
