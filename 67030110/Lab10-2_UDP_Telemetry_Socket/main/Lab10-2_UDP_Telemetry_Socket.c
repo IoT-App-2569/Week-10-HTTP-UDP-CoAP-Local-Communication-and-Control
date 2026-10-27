@@ -16,8 +16,8 @@
 #define TAG "UDP_LAB"
 
 // กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "แมว"
-#define CONFIG_WIFI_PASSWORD  "nnnnnnnn"
+#define CONFIG_WIFI_SSID      "ESP32_LAB"
+#define CONFIG_WIFI_PASSWORD  "123456789"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
