@@ -685,6 +685,47 @@ success
 
 **หน่วยความจำ (`idf.py size`):** DRAM แบบ static 37,567 ไบต์ (20.79%), IRAM 87,815 ไบต์, Flash Code 642,998 ไบต์, Flash Data 121,944 ไบต์
 
+
+> [!IMPORTANT] **ผลการรันในส่วนนี้ทดสอบกับ "ตัวจำลองบอร์ด ESP32" ไม่ใช่บอร์ดจริง**
+> * ตอนทำรายงานไม่มีบอร์ด ESP32 จึงเขียน [esp32_mock.py](HW-67030011/esp32_mock/esp32_mock.py) ขึ้นมาจำลองพฤติกรรมฝั่งเครือข่ายของเฟิร์มแวร์ตามซอร์สใน `Lab10-*/main/*.c` ได้แก่ Endpoint/พอร์ต, รูปแบบ Payload/ACK, รูปแบบ Response Header ของ `esp_http_server` และ mDNS `esp32-node.local` (ประกาศผ่าน `dns-sd` ของ macOS โดยชี้ไปที่ `127.0.0.1`)
+> * แล้วรันเครื่องมือทดสอบของใบงาน (`curl`, `udp_listener.py`, `udp_controller.py`, `test_coap.py`, `benchmark_protocols.py`) กับตัวจำลองตามปกติ
+> * **ส่วนที่เป็นของจริง:** การ Build เฟิร์มแวร์และผล `idf.py size` (ESP-IDF v6.0.2)
+> * **ส่วนที่เป็นค่าจำลอง:**
+>   * ค่า Potentiometer เป็นคลื่น Sine 0–4095
+>   * `free_heap` = 233000 คงที่
+>   * สถานะ LED ดูได้จาก Log ของตัวจำลองแทนหลอดไฟจริง
+>   * RTT และ Packet Loss วัดบน localhost จึงไม่มีผลของ Wi-Fi และต่ำกว่าบอร์ดจริงมาก
+
+**Build และ `idf.py size` (ของจริง):** Build ผ่าน ได้ไฟล์แอป 0xd4940 ไบต์ (เหลือพื้นที่ใน Partition 17%) และตัวเลขหน่วยความจำตรงกับที่สรุปไว้ด้านบน
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-1-build-size.png" alt="Lab 10.1 idf.py build และ size">
+</p>
+
+**mDNS (กิจกรรม 10-1.5 ข้อ 1):** รันตัวจำลองโหมด `--lab http` แล้วผลเป็นดังนี้
+* `ping -c 4 esp32-node.local` Resolve ชื่อได้ทันที (ตัวจำลองชี้ไปที่ `127.0.0.1`) Packet loss 0%
+* `dns-sd -L ESP32-WebControl _http._tcp local` พบบริการ `_http._tcp` พอร์ต 80 พร้อม TXT `board=esp32 path=/` ตรงกับ `mdns_service_add()` ในเฟิร์มแวร์
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-1-mdns.png" alt="mDNS: ping และ dns-sd">
+</p>
+
+**REST API (กิจกรรม 10-1.5 ข้อ 2–3):**
+* `GET /api/status` ได้ JSON ที่มี `student_id` = `67030011`
+* `POST /api/led` ด้วย `{"state": true}` / `{"state": false}` ได้ `{"result":"success"}`
+* `GET` ครั้งที่สองเห็น `"led":true` ตามคำสั่ง และ Log ของตัวจำลองบันทึก `LED (GPIO 2) switched to: ON/OFF` (แทนการดูหลอดไฟจริง)
+* Response Header มีแค่ 3 บรรทัด (`HTTP/1.1 200 OK`, `Content-Type`, `Content-Length`) ตามรูปแบบของ `esp_http_server` ที่วิเคราะห์ในคำตอบข้อ 1
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-1-curl.png" alt="curl GET /api/status และ POST /api/led">
+</p>
+
+`curl -v` แสดง Request header ฝั่ง Client ที่ส่งจริง (`Host`, `User-Agent`, `Accept`, `Content-Type`, `Content-Length`) และ Body 15 ไบต์ ใช้ประกอบการนับขนาด Request ในคำตอบข้อ 1
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-1-curl-verbose.png" alt="curl -v POST /api/led">
+</p>
+
 ### คำตอบคำถามท้ายการทดลอง
 
 1. **นำผลการรัน `curl -i` มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์**
@@ -696,6 +737,7 @@ success
 
      {"student_id":"67030011","pot_raw":2048,"free_heap":215000,"led":false}
      ```
+     ผลรันกับตัวจำลองได้ `Content-Length: 71` ตรงตามที่วิเคราะห์ (ดูภาพ `curl` ด้านบน)
      | ส่วน | ขนาด (ไบต์) | วิธีนับ |
      | :--- | ---: | :--- |
      | Status Line `HTTP/1.1 200 OK\r\n` | 17 | |

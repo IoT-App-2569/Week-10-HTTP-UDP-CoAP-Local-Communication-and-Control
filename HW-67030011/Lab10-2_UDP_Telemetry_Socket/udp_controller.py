@@ -1,7 +1,8 @@
+import os
 import socket
 import time
 
-ESP32_IP = "192.168.1.181"  # ระบุ IP ของบอร์ด ESP32
+ESP32_IP = os.environ.get("ESP32_IP", "192.168.1.181")  # ระบุ IP ของบอร์ด ESP32 (หรือตั้ง env ESP32_IP)
 CMD_PORT = 3333
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)

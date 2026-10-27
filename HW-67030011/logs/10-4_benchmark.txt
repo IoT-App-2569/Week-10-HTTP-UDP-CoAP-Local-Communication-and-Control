@@ -1,0 +1,187 @@
+
+================================================================================
+   ESP32 Local Protocol Benchmark: HTTP vs UDP vs CoAP
+   Industrial IoT Systems Engineering - Real-time Performance Lab
+================================================================================
+
+
+[*] Starting HTTP REST Benchmark -> http://esp32-node.local/api/led (50 rounds)...
+  [HTTP Round 001/050] RTT:   7.32 ms | Status: 200
+  [HTTP Round 002/050] RTT:   3.73 ms | Status: 200
+  [HTTP Round 003/050] RTT:   3.23 ms | Status: 200
+  [HTTP Round 004/050] RTT:   4.59 ms | Status: 200
+  [HTTP Round 005/050] RTT:   3.05 ms | Status: 200
+  [HTTP Round 006/050] RTT:   5.08 ms | Status: 200
+  [HTTP Round 007/050] RTT:   5.66 ms | Status: 200
+  [HTTP Round 008/050] RTT:   6.45 ms | Status: 200
+  [HTTP Round 009/050] RTT:   4.62 ms | Status: 200
+  [HTTP Round 010/050] RTT:   4.36 ms | Status: 200
+  [HTTP Round 011/050] RTT:   5.61 ms | Status: 200
+  [HTTP Round 012/050] RTT:   3.45 ms | Status: 200
+  [HTTP Round 013/050] RTT:   4.84 ms | Status: 200
+  [HTTP Round 014/050] RTT:   4.57 ms | Status: 200
+  [HTTP Round 015/050] RTT:   4.27 ms | Status: 200
+  [HTTP Round 016/050] RTT:   3.48 ms | Status: 200
+  [HTTP Round 017/050] RTT:   3.51 ms | Status: 200
+  [HTTP Round 018/050] RTT:   3.80 ms | Status: 200
+  [HTTP Round 019/050] RTT:   3.62 ms | Status: 200
+  [HTTP Round 020/050] RTT:   4.64 ms | Status: 200
+  [HTTP Round 021/050] RTT:   3.40 ms | Status: 200
+  [HTTP Round 022/050] RTT:   4.45 ms | Status: 200
+  [HTTP Round 023/050] RTT:   5.45 ms | Status: 200
+  [HTTP Round 024/050] RTT:   3.70 ms | Status: 200
+  [HTTP Round 025/050] RTT:   4.70 ms | Status: 200
+  [HTTP Round 026/050] RTT:   3.10 ms | Status: 200
+  [HTTP Round 027/050] RTT:   2.85 ms | Status: 200
+  [HTTP Round 028/050] RTT:   2.66 ms | Status: 200
+  [HTTP Round 029/050] RTT:   2.73 ms | Status: 200
+  [HTTP Round 030/050] RTT:   3.84 ms | Status: 200
+  [HTTP Round 031/050] RTT:   3.64 ms | Status: 200
+  [HTTP Round 032/050] RTT:   4.19 ms | Status: 200
+  [HTTP Round 033/050] RTT:   4.04 ms | Status: 200
+  [HTTP Round 034/050] RTT:   2.97 ms | Status: 200
+  [HTTP Round 035/050] RTT:   3.16 ms | Status: 200
+  [HTTP Round 036/050] RTT:   3.91 ms | Status: 200
+  [HTTP Round 037/050] RTT:   4.73 ms | Status: 200
+  [HTTP Round 038/050] RTT:   5.29 ms | Status: 200
+  [HTTP Round 039/050] RTT:   4.57 ms | Status: 200
+  [HTTP Round 040/050] RTT:   4.83 ms | Status: 200
+  [HTTP Round 041/050] RTT:   3.88 ms | Status: 200
+  [HTTP Round 042/050] RTT:   4.25 ms | Status: 200
+  [HTTP Round 043/050] RTT:   3.68 ms | Status: 200
+  [HTTP Round 044/050] RTT:   3.84 ms | Status: 200
+  [HTTP Round 045/050] RTT:   4.73 ms | Status: 200
+  [HTTP Round 046/050] RTT:   4.86 ms | Status: 200
+  [HTTP Round 047/050] RTT:   5.04 ms | Status: 200
+  [HTTP Round 048/050] RTT:   5.64 ms | Status: 200
+  [HTTP Round 049/050] RTT:   8.03 ms | Status: 200
+  [HTTP Round 050/050] RTT:   5.19 ms | Status: 200
+
+[*] Starting UDP Socket Benchmark -> esp32-node.local:3333 (50 rounds)...
+  [UDP Round  001/050] RTT:   2.34 ms | Recv: ACK:LED_ON
+  [UDP Round  002/050] RTT:   1.52 ms | Recv: ACK:LED_OFF
+  [UDP Round  003/050] RTT:   2.52 ms | Recv: ACK:LED_ON
+  [UDP Round  004/050] RTT:   1.89 ms | Recv: ACK:LED_OFF
+  [UDP Round  005/050] RTT:   2.81 ms | Recv: ACK:LED_ON
+  [UDP Round  006/050] RTT:   5.01 ms | Recv: ACK:LED_OFF
+  [UDP Round  007/050] RTT:   2.99 ms | Recv: ACK:LED_ON
+  [UDP Round  008/050] RTT:   2.33 ms | Recv: ACK:LED_OFF
+  [UDP Round  009/050] RTT:   2.47 ms | Recv: ACK:LED_ON
+  [UDP Round  010/050] RTT:   2.73 ms | Recv: ACK:LED_OFF
+  [UDP Round  011/050] RTT:   2.67 ms | Recv: ACK:LED_ON
+  [UDP Round  012/050] RTT:   4.95 ms | Recv: ACK:LED_OFF
+  [UDP Round  013/050] RTT:   2.21 ms | Recv: ACK:LED_ON
+  [UDP Round  014/050] RTT:   2.67 ms | Recv: ACK:LED_OFF
+  [UDP Round  015/050] RTT:   1.93 ms | Recv: ACK:LED_ON
+  [UDP Round  016/050] RTT:   2.86 ms | Recv: ACK:LED_OFF
+  [UDP Round  017/050] RTT:   2.23 ms | Recv: ACK:LED_ON
+  [UDP Round  018/050] RTT:   2.76 ms | Recv: ACK:LED_OFF
+  [UDP Round  019/050] RTT:   1.79 ms | Recv: ACK:LED_ON
+  [UDP Round  020/050] RTT:   1.54 ms | Recv: ACK:LED_OFF
+  [UDP Round  021/050] RTT:   1.67 ms | Recv: ACK:LED_ON
+  [UDP Round  022/050] RTT:   1.86 ms | Recv: ACK:LED_OFF
+  [UDP Round  023/050] RTT:   2.26 ms | Recv: ACK:LED_ON
+  [UDP Round  024/050] RTT:   2.07 ms | Recv: ACK:LED_OFF
+  [UDP Round  025/050] RTT:   2.23 ms | Recv: ACK:LED_ON
+  [UDP Round  026/050] RTT:   2.22 ms | Recv: ACK:LED_OFF
+  [UDP Round  027/050] RTT:   2.19 ms | Recv: ACK:LED_ON
+  [UDP Round  028/050] RTT:   2.73 ms | Recv: ACK:LED_OFF
+  [UDP Round  029/050] RTT:   3.14 ms | Recv: ACK:LED_ON
+  [UDP Round  030/050] RTT:   2.97 ms | Recv: ACK:LED_OFF
+  [UDP Round  031/050] RTT:   2.15 ms | Recv: ACK:LED_ON
+  [UDP Round  032/050] RTT:   3.46 ms | Recv: ACK:LED_OFF
+  [UDP Round  033/050] RTT:   1.70 ms | Recv: ACK:LED_ON
+  [UDP Round  034/050] RTT:   2.65 ms | Recv: ACK:LED_OFF
+  [UDP Round  035/050] RTT:   2.03 ms | Recv: ACK:LED_ON
+  [UDP Round  036/050] RTT:   1.98 ms | Recv: ACK:LED_OFF
+  [UDP Round  037/050] RTT:   2.36 ms | Recv: ACK:LED_ON
+  [UDP Round  038/050] RTT:   3.41 ms | Recv: ACK:LED_OFF
+  [UDP Round  039/050] RTT:   3.77 ms | Recv: ACK:LED_ON
+  [UDP Round  040/050] RTT:   3.11 ms | Recv: ACK:LED_OFF
+  [UDP Round  041/050] RTT:   3.78 ms | Recv: ACK:LED_ON
+  [UDP Round  042/050] RTT:   2.22 ms | Recv: ACK:LED_OFF
+  [UDP Round  043/050] RTT:   7.44 ms | Recv: ACK:LED_ON
+  [UDP Round  044/050] RTT:   2.53 ms | Recv: ACK:LED_OFF
+  [UDP Round  045/050] RTT:   2.57 ms | Recv: ACK:LED_ON
+  [UDP Round  046/050] RTT:   2.74 ms | Recv: ACK:LED_OFF
+  [UDP Round  047/050] RTT:   2.91 ms | Recv: ACK:LED_ON
+  [UDP Round  048/050] RTT:   2.88 ms | Recv: ACK:LED_OFF
+  [UDP Round  049/050] RTT:   2.04 ms | Recv: ACK:LED_ON
+  [UDP Round  050/050] RTT:   2.26 ms | Recv: ACK:LED_OFF
+
+[*] Starting CoAP Benchmark -> coap://esp32-node.local:5683/actuator/led (50 rounds)...
+  [CoAP Round 001/050] RTT:  10.62 ms | Code: 2.04 Changed
+  [CoAP Round 002/050] RTT:   1.40 ms | Code: 2.04 Changed
+  [CoAP Round 003/050] RTT:   2.36 ms | Code: 2.04 Changed
+  [CoAP Round 004/050] RTT:   1.11 ms | Code: 2.04 Changed
+  [CoAP Round 005/050] RTT:   1.42 ms | Code: 2.04 Changed
+  [CoAP Round 006/050] RTT:   3.49 ms | Code: 2.04 Changed
+  [CoAP Round 007/050] RTT:   2.73 ms | Code: 2.04 Changed
+  [CoAP Round 008/050] RTT:   3.44 ms | Code: 2.04 Changed
+  [CoAP Round 009/050] RTT:   3.03 ms | Code: 2.04 Changed
+  [CoAP Round 010/050] RTT:   1.38 ms | Code: 2.04 Changed
+  [CoAP Round 011/050] RTT:   1.11 ms | Code: 2.04 Changed
+  [CoAP Round 012/050] RTT:   1.75 ms | Code: 2.04 Changed
+  [CoAP Round 013/050] RTT:   1.37 ms | Code: 2.04 Changed
+  [CoAP Round 014/050] RTT:   1.12 ms | Code: 2.04 Changed
+  [CoAP Round 015/050] RTT:   1.91 ms | Code: 2.04 Changed
+  [CoAP Round 016/050] RTT:   2.89 ms | Code: 2.04 Changed
+  [CoAP Round 017/050] RTT:   4.83 ms | Code: 2.04 Changed
+  [CoAP Round 018/050] RTT:   2.09 ms | Code: 2.04 Changed
+  [CoAP Round 019/050] RTT:   1.50 ms | Code: 2.04 Changed
+  [CoAP Round 020/050] RTT:   1.66 ms | Code: 2.04 Changed
+  [CoAP Round 021/050] RTT:   1.10 ms | Code: 2.04 Changed
+  [CoAP Round 022/050] RTT:   1.47 ms | Code: 2.04 Changed
+  [CoAP Round 023/050] RTT:   1.18 ms | Code: 2.04 Changed
+  [CoAP Round 024/050] RTT:   1.81 ms | Code: 2.04 Changed
+  [CoAP Round 025/050] RTT:   1.67 ms | Code: 2.04 Changed
+  [CoAP Round 026/050] RTT:   1.18 ms | Code: 2.04 Changed
+  [CoAP Round 027/050] RTT:   1.27 ms | Code: 2.04 Changed
+  [CoAP Round 028/050] RTT:   1.74 ms | Code: 2.04 Changed
+  [CoAP Round 029/050] RTT:   2.28 ms | Code: 2.04 Changed
+  [CoAP Round 030/050] RTT:   1.37 ms | Code: 2.04 Changed
+  [CoAP Round 031/050] RTT:   1.33 ms | Code: 2.04 Changed
+  [CoAP Round 032/050] RTT:   1.09 ms | Code: 2.04 Changed
+  [CoAP Round 033/050] RTT:   1.17 ms | Code: 2.04 Changed
+  [CoAP Round 034/050] RTT:   1.39 ms | Code: 2.04 Changed
+  [CoAP Round 035/050] RTT:   1.11 ms | Code: 2.04 Changed
+  [CoAP Round 036/050] RTT:   1.13 ms | Code: 2.04 Changed
+  [CoAP Round 037/050] RTT:   2.99 ms | Code: 2.04 Changed
+  [CoAP Round 038/050] RTT:   1.19 ms | Code: 2.04 Changed
+  [CoAP Round 039/050] RTT:   1.47 ms | Code: 2.04 Changed
+  [CoAP Round 040/050] RTT:   1.50 ms | Code: 2.04 Changed
+  [CoAP Round 041/050] RTT:   1.09 ms | Code: 2.04 Changed
+  [CoAP Round 042/050] RTT:   1.07 ms | Code: 2.04 Changed
+  [CoAP Round 043/050] RTT:   1.07 ms | Code: 2.04 Changed
+  [CoAP Round 044/050] RTT:   2.27 ms | Code: 2.04 Changed
+  [CoAP Round 045/050] RTT:   7.79 ms | Code: 2.04 Changed
+  [CoAP Round 046/050] RTT:   1.81 ms | Code: 2.04 Changed
+  [CoAP Round 047/050] RTT:   2.03 ms | Code: 2.04 Changed
+  [CoAP Round 048/050] RTT:   1.26 ms | Code: 2.04 Changed
+  [CoAP Round 049/050] RTT:   1.97 ms | Code: 2.04 Changed
+  [CoAP Round 050/050] RTT:   2.78 ms | Code: 2.04 Changed
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+HTTP (REST)  | 50/50      |   0.0% |     2.66 |      4.35 |     8.03 |       1.09
+UDP (Socket) | 50/50      |   0.0% |     1.52 |      2.67 |     7.44 |       0.99
+CoAP (RFC7252) | 50/50      |   0.0% |     1.07 |      2.08 |    10.62 |       1.67
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
+
+[✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
+

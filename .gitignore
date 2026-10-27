@@ -16,3 +16,4 @@ sdkconfig
 
 # Wi-Fi credentials
 **/wifi_credentials.h
+.venv/

@@ -180,9 +180,33 @@ Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0
 
 | โปรโตคอล                       | จำนวนรอบที่สำเร็จ | Packet Loss (%) | Min RTT (ms) | Mean RTT (ms) | Max RTT (ms) | Jitter / StdDev (ms) |
 | :----------------------------- | :---------------: | :-------------: | :----------: | :-----------: | :----------: | :------------------: |
-| **HTTP REST (`/api/led`)**     |  ......... / 50   |   ......... %   | ......... ms | ......... ms  | ......... ms |     ......... ms     |
-| **UDP Socket (`พอร์ต 3333`)**  |  ......... / 50   |   ......... %   | ......... ms | ......... ms  | ......... ms |     ......... ms     |
-| **CoAP PUT (`/actuator/led`)** |  ......... / 50   |   ......... %   | ......... ms | ......... ms  | ......... ms |     ......... ms     |
+| **HTTP REST (`/api/led`)**     |  50 / 50   |   0.0 %   | 2.66 ms | 4.35 ms  | 8.03 ms |     1.09 ms     |
+| **UDP Socket (`พอร์ต 3333`)**  |  50 / 50   |   0.0 %   | 1.52 ms | 2.67 ms  | 7.44 ms |     0.99 ms     |
+| **CoAP PUT (`/actuator/led`)** |  50 / 50   |   0.0 %   | 1.07 ms | 2.08 ms  | 10.62 ms |     1.67 ms     |
+
+> [!IMPORTANT] **ผลการรันในส่วนนี้ทดสอบกับ "ตัวจำลองบอร์ด ESP32" ไม่ใช่บอร์ดจริง**
+> * ตอนทำรายงานไม่มีบอร์ด ESP32 จึงเขียน [esp32_mock.py](HW-67030011/esp32_mock/esp32_mock.py) ขึ้นมาจำลองพฤติกรรมฝั่งเครือข่ายของเฟิร์มแวร์ตามซอร์สใน `Lab10-*/main/*.c` ได้แก่ Endpoint/พอร์ต, รูปแบบ Payload/ACK, รูปแบบ Response Header ของ `esp_http_server` และ mDNS `esp32-node.local` (ประกาศผ่าน `dns-sd` ของ macOS โดยชี้ไปที่ `127.0.0.1`)
+> * แล้วรันเครื่องมือทดสอบของใบงาน (`curl`, `udp_listener.py`, `udp_controller.py`, `test_coap.py`, `benchmark_protocols.py`) กับตัวจำลองตามปกติ
+> * **ส่วนที่เป็นของจริง:** การ Build เฟิร์มแวร์และผล `idf.py size` (ESP-IDF v6.0.2)
+> * **ส่วนที่เป็นค่าจำลอง:**
+>   * ค่า Potentiometer เป็นคลื่น Sine 0–4095
+>   * `free_heap` = 233000 คงที่
+>   * สถานะ LED ดูได้จาก Log ของตัวจำลองแทนหลอดไฟจริง
+>   * RTT และ Packet Loss วัดบน localhost จึงไม่มีผลของ Wi-Fi และต่ำกว่าบอร์ดจริงมาก
+
+ค่าในตารางมาจากการรัน `benchmark_protocols.py --target esp32-node.local --protocol all --rounds 50` กับตัวจำลองโหมด `--lab all`
+
+**ข้อสังเกตจากผลวัด:**
+* **HTTP ช้าที่สุด** (Mean 4.35 ms) ตามทฤษฎี เพราะทุกรอบ `urllib` เปิด TCP Connection ใหม่ (`Connection: close`) และ Parse Header เต็มชุด
+* **UDP (2.67 ms) ช้ากว่า CoAP (2.08 ms)** ซึ่งกลับกับที่ทฤษฎีคาด ไม่ได้เกิดจากโปรโตคอล แต่เกิดจากสคริปต์:
+  * ฟังก์ชัน `benchmark_udp()` ส่ง `sock.sendto(..., (target, port))` โดยใช้ชื่อ `esp32-node.local` ทุกรอบ จึงต้อง Resolve mDNS ใหม่ทุกครั้ง
+  * ฝั่ง CoAP ของ aiocoap Resolve ชื่อครั้งเดียวแล้วใช้ซ้ำ
+  * ถ้าระบุเป็น IP ตรง ๆ UDP จะเร็วที่สุดตามที่วัดได้จาก `udp_controller.py` (เฉลี่ย 0.93 ms)
+* ทุกโปรโตคอลมี Loss 0% เพราะเป็น localhost ถ้ารันบน Wi-Fi จริง ความต่างระหว่างโปรโตคอลจะชัดกว่านี้มาก เพราะ HTTP ต้องจ่าย RTT ของอากาศเพิ่มอีกอย่างน้อย 1 รอบสำหรับ TCP Handshake
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-4-benchmark.png" alt="benchmark_protocols.py ช่วงเริ่มและตารางสรุป">
+</p>
 
 ---
 
@@ -206,6 +230,8 @@ Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0
 | Lab 10.3 CoAP (`libcoap` + DTLS) | 48,439 B (26.80%) | 132,297 B | 87,795 B | 840,522 B | +12,976 B DRAM, +166 KB Flash |
 
 ตารางนี้นับเฉพาะตัวแปร Global/Static ที่ Linker จัดสรรไว้ตอน Build ลำดับเดียวกับตารางอ้างอิง (UDP < HTTP < CoAP) ส่วน Task Stack, Connection Slot ของ httpd และ PDU ของ libcoap จะถูกจองบน Heap ตอนรัน ซึ่งดูได้จาก `free_heap` บนบอร์ด
+
+ภาพผล `idf.py size` จริงของแต่ละโปรเจกต์อยู่ในรายงานใบงาน [10.1](06-Labsheet-10-1-mDNS-Discovery-and-HTTP-REST-Server.md), [10.2](07-Labsheet-10-2-UDP-Broadcast-and-Realtime-Telemetry.md) และ [10.3](08-Labsheet-10-3-CoAP-Server-and-Lightweight-IoT-Control.md) ค่า `free_heap` ขณะทำงานในตารางด้านบนวัดไม่ได้ เพราะไม่มีบอร์ดจริง (ตัวจำลองตอบเป็นค่าคงที่)
 
 > [!NOTE] **วิเคราะห์เชิงสถาปัตยกรรม:**
 > * **UDP Socket** ใช้แรมน้อยที่สุดเนื่องจากเป็นเพียง Socket FD ธรรมดาบน LwIP ไม่ต้องมี State Machine หรือ Context Complex

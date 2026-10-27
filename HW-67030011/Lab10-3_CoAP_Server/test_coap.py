@@ -1,7 +1,8 @@
+import os
 import asyncio
 from aiocoap import Context, Message, Code
 
-ESP32_IP = "192.168.1.181"  # แก้ไขให้ตรงกับหมายเลข IP ของ ESP32
+ESP32_IP = os.environ.get("ESP32_IP", "192.168.1.181")  # แก้ไขให้ตรงกับหมายเลข IP ของ ESP32 (หรือตั้ง env ESP32_IP)
 
 async def main():
     protocol = await Context.create_client_context()

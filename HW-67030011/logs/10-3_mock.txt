@@ -1,0 +1,7 @@
+================================================================
+ ESP32 MOCK (Week 10) - simulated board, no hardware attached
+================================================================
+I (4) COAP_SERVER: CoAP Server listening on port 5683...
+I (2987) COAP_SERVER: GET /sensor/pot -> 3698
+I (2988) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (4991) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT

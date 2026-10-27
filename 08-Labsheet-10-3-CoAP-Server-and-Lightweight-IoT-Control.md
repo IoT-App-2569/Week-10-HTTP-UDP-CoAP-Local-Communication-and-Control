@@ -635,6 +635,33 @@ Header        Token   Uri-Path "actuator" (1+8)    "led" (1+3)  Marker Payload
 ACK 2.04 Changed (token 2 ไบต์) = 6 ไบต์ : 62 44 12 34 01 02
 ```
 
+
+> [!IMPORTANT] **ผลการรันในส่วนนี้ทดสอบกับ "ตัวจำลองบอร์ด ESP32" ไม่ใช่บอร์ดจริง**
+> * ตอนทำรายงานไม่มีบอร์ด ESP32 จึงเขียน [esp32_mock.py](HW-67030011/esp32_mock/esp32_mock.py) ขึ้นมาจำลองพฤติกรรมฝั่งเครือข่ายของเฟิร์มแวร์ตามซอร์สใน `Lab10-*/main/*.c` ได้แก่ Endpoint/พอร์ต, รูปแบบ Payload/ACK, รูปแบบ Response Header ของ `esp_http_server` และ mDNS `esp32-node.local` (ประกาศผ่าน `dns-sd` ของ macOS โดยชี้ไปที่ `127.0.0.1`)
+> * แล้วรันเครื่องมือทดสอบของใบงาน (`curl`, `udp_listener.py`, `udp_controller.py`, `test_coap.py`, `benchmark_protocols.py`) กับตัวจำลองตามปกติ
+> * **ส่วนที่เป็นของจริง:** การ Build เฟิร์มแวร์และผล `idf.py size` (ESP-IDF v6.0.2)
+> * **ส่วนที่เป็นค่าจำลอง:**
+>   * ค่า Potentiometer เป็นคลื่น Sine 0–4095
+>   * `free_heap` = 233000 คงที่
+>   * สถานะ LED ดูได้จาก Log ของตัวจำลองแทนหลอดไฟจริง
+>   * RTT และ Packet Loss วัดบน localhost จึงไม่มีผลของ Wi-Fi และต่ำกว่าบอร์ดจริงมาก
+
+**Build และ `idf.py size` (ของจริง):** Build ผ่าน และ DRAM แบบ Static 48,439 ไบต์ (26.8%) มากที่สุดในสามโปรเจกต์
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-3-build-size.png" alt="Lab 10.3 idf.py build และ size">
+</p>
+
+**ทดสอบด้วย `test_coap.py`:** รันตัวจำลองโหมด `--lab coap` (ใช้ aiocoap ฝั่ง Server และลงทะเบียน Resource พร้อมแอตทริบิวต์ชุดเดียวกับเฟิร์มแวร์)
+* **Discovery:** `/.well-known/core` ตอบในรูปแบบ CoRE Link Format `</sensor/pot>;ct="0";rt="sensor.pot";if="core.s",</actuator/led>;rt="actuator.led";if="core.a"` และมี Link ของ `/.well-known/core` เอง (`ct="40"`) ด้วย
+* **`GET /sensor/pot`:** ได้ `2.05 Content`
+* **`PUT /actuator/led` ด้วย `1`/`0`:** ได้ `2.04 Changed` ทั้งสองครั้ง และ Log ของตัวจำลองบันทึก LED ON/OFF
+* **กรองด้วย Query:** `aiocoap-client "coap://127.0.0.1/.well-known/core?rt=sensor.pot"` ได้เฉพาะ `</sensor/pot>` ยืนยันการกรองตามคำตอบข้อ 1
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-3-coap.png" alt="ตัวจำลองโหมด CoAP และ test_coap.py">
+</p>
+
 ### คำตอบคำถามท้ายบท
 
 1. **ผลการ Query `/.well-known/core` และรูปแบบ CoRE Link Format (RFC 6690)**

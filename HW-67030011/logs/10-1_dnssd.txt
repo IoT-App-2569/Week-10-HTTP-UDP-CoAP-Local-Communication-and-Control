@@ -1,0 +1,11 @@
+Lookup ESP32-WebControl._http._tcp.local
+DATE: ---Tue 27 Oct 2026---
+10:18:27.686  ...STARTING...
+10:18:27.686  ESP32-WebControl._http._tcp.local. can be reached at esp32-node.local.:80 (interface 1) Flags: 1
+ board=esp32 path=/
+10:18:27.686  ESP32-WebControl._http._tcp.local. can be reached at esp32-node.local.:80 (interface 20) Flags: 1
+ board=esp32 path=/
+10:18:27.686  ESP32-WebControl._http._tcp.local. can be reached at esp32-node.local.:80 (interface 22) Flags: 1
+ board=esp32 path=/
+10:18:27.686  ESP32-WebControl._http._tcp.local. can be reached at esp32-node.local.:80 (interface 11)
+ board=esp32 path=/

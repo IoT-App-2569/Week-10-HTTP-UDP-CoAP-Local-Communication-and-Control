@@ -1,0 +1,13 @@
+Sending control commands to 127.0.0.1:3333...
+Round 01: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.23 ms
+Round 02: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.51 ms
+Round 03: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.42 ms
+Round 04: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 1.15 ms
+Round 05: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.87 ms
+Round 06: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.40 ms
+Round 07: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 3.52 ms
+Round 08: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.67 ms
+Round 09: Sent 'LED_ON' -> Reply 'ACK:LED_ON' | RTT: 0.71 ms
+Round 10: Sent 'LED_OFF' -> Reply 'ACK:LED_OFF' | RTT: 0.86 ms
+
+Average UDP RTT Latency: 0.93 ms (Min: 0.23 ms, Max: 3.52 ms)

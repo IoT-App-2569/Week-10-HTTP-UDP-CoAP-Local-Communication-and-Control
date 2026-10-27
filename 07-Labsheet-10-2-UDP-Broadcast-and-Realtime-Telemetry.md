@@ -605,6 +605,41 @@ if rtt_list:
 | PC → ESP32 คำสั่ง | 3333 | `LED_ON` / `LED_OFF` | 6 / 7 ไบต์ |
 | ESP32 → PC ตอบรับ | 3333 → พอร์ตต้นทาง | `ACK:LED_ON` / `ACK:LED_OFF` | 10 / 11 ไบต์ |
 
+
+> [!IMPORTANT] **ผลการรันในส่วนนี้ทดสอบกับ "ตัวจำลองบอร์ด ESP32" ไม่ใช่บอร์ดจริง**
+> * ตอนทำรายงานไม่มีบอร์ด ESP32 จึงเขียน [esp32_mock.py](HW-67030011/esp32_mock/esp32_mock.py) ขึ้นมาจำลองพฤติกรรมฝั่งเครือข่ายของเฟิร์มแวร์ตามซอร์สใน `Lab10-*/main/*.c` ได้แก่ Endpoint/พอร์ต, รูปแบบ Payload/ACK, รูปแบบ Response Header ของ `esp_http_server` และ mDNS `esp32-node.local` (ประกาศผ่าน `dns-sd` ของ macOS โดยชี้ไปที่ `127.0.0.1`)
+> * แล้วรันเครื่องมือทดสอบของใบงาน (`curl`, `udp_listener.py`, `udp_controller.py`, `test_coap.py`, `benchmark_protocols.py`) กับตัวจำลองตามปกติ
+> * **ส่วนที่เป็นของจริง:** การ Build เฟิร์มแวร์และผล `idf.py size` (ESP-IDF v6.0.2)
+> * **ส่วนที่เป็นค่าจำลอง:**
+>   * ค่า Potentiometer เป็นคลื่น Sine 0–4095
+>   * `free_heap` = 233000 คงที่
+>   * สถานะ LED ดูได้จาก Log ของตัวจำลองแทนหลอดไฟจริง
+>   * RTT และ Packet Loss วัดบน localhost จึงไม่มีผลของ Wi-Fi และต่ำกว่าบอร์ดจริงมาก
+
+**Build และ `idf.py size` (ของจริง):** Build ผ่าน และ DRAM แบบ Static 35,463 ไบต์ (19.62%) น้อยที่สุดในสามโปรเจกต์
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-2-build-size.png" alt="Lab 10.2 idf.py build และ size">
+</p>
+
+**คำสั่งควบคุม (`udp_controller.py`):** รันตัวจำลองโหมด `--lab udp` แล้วส่ง `LED_ON`/`LED_OFF` สลับกัน 10 รอบไปที่พอร์ต 3333
+* ได้ `ACK:LED_ON` / `ACK:LED_OFF` ครบทุกรอบ
+* RTT เฉลี่ย **0.93 ms** (Min 0.23, Max 3.52 ms) เป็นค่าบน localhost
+* สคริปต์ปรับให้รับ IP จาก Environment variable `ESP32_IP` แทนการแก้ค่าในโค้ด
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-2-udp.png" alt="ตัวจำลองโหมด UDP และ udp_controller.py">
+</p>
+
+**Broadcast Telemetry 1 นาที (`udp_listener.py`):** รับต่อเนื่องประมาณ 60 วินาทีแล้วกด Ctrl+C
+* ได้ **591 แพ็กเก็ต** (SEQ 19–609) **Lost 0 (0.00%)** ซึ่งเท่ากับ 609 − 19 + 1 = 591 พอดี
+* อัตราใกล้ 10 Hz ตามที่ออกแบบ
+* Broadcast ถูกส่งออกทาง Interface จริงของเครื่อง (`10.15.6.149`) แล้ววนกลับเข้ามา แต่ไม่ได้ผ่านอากาศแบบ Wi-Fi จึงไม่เห็นการสูญหายตามสาเหตุที่วิเคราะห์ในคำตอบข้อ 2
+
+<p align="center">
+<img src="HW-67030011/Images/lab10-2-listener.png" alt="udp_listener.py ช่วงเริ่มและสถิติตอนจบ">
+</p>
+
 ### คำตอบคำถามท้ายการทดลอง
 
 1. **เปรียบเทียบ RTT ของ UDP กับ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง**

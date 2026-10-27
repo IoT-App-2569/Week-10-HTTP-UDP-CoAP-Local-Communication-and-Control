@@ -1,0 +1,13 @@
+
+--- 1. Testing CoAP Resource Discovery (/.well-known/core) ---
+Resource Directory (CoRE Link Format):
+</.well-known/core>;ct="40",</sensor/pot>;ct="0";rt="sensor.pot";if="core.s",</actuator/led>;rt="actuator.led";if="core.a"
+
+--- 2. Testing CoAP GET /sensor/pot ---
+Potentiometer Value: 3698 (Code: 2.05 Content)
+
+--- 3. Testing CoAP PUT /actuator/led (Turn ON) ---
+LED ON Response Code: 2.04 Changed
+
+--- 4. Testing CoAP PUT /actuator/led (Turn OFF) ---
+LED OFF Response Code: 2.04 Changed
