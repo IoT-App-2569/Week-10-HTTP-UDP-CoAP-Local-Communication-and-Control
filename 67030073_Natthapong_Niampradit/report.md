@@ -2,7 +2,7 @@
 ## Local Control Protocols (HTTP, UDP, CoAP) & Edge Device Discovery
 
 **รหัสนักศึกษา:** 67030073  
-**ชื่อ-นามสกุล:** นายณัฐพงศ์ เนียมประดิษฐ์ (Natthaphong Niampradit)  
+**ชื่อ-นามสกุล:** นายณัฐพงศ์ เนียมประดิษฐ (Natthapong Niampradit)  
 
 ---
 
