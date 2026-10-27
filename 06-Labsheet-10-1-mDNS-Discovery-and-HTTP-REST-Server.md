@@ -19,7 +19,7 @@
 <p align="center">
 <img src="Images/lab10_1_wiring.svg" width="600"> 
 </p>
-<p align="center">
+<!-- <p าlign="center"> -->
 <b> รูปที่ L10-1 </b> แผนภาพการต่อสาย ESP32 เข้ากับ LED (GPIO 2) และ Potentiometer (GPIO 34)
 </p>
 
@@ -31,7 +31,59 @@
 
 ---
 
-## 3. ขั้นตอนการทดลอง (Deconstructed Activities)
+## 3. การตั้งค่าและรันโปรเจกต์ตัวอย่างบนบอร์ด ESP32
+
+ขั้นตอนนี้ใช้โปรเจกต์ตัวอย่างที่อยู่ใน repository นี้ โดยต้องใช้บอร์ด **ESP32 รุ่นดั้งเดิม (เช่น ESP32-WROOM-32/DevKit)** เพราะโค้ดใช้ GPIO 34 เป็น ADC และใช้ Wi-Fi ย่าน 2.4 GHz
+
+### 3.1 เตรียมเครื่องมือและเครือข่าย
+
+1. ติดตั้ง **ESP-IDF v5.3 หรือ v6.x** พร้อม ESP-IDF PowerShell/Command Prompt ตามคู่มือ Espressif และตรวจสอบว่าเรียก `idf.py` ได้
+2. เชื่อมต่อคอมพิวเตอร์และ ESP32 เข้ากับ Wi-Fi วงเดียวกัน ใช้เครือข่าย **2.4 GHz ที่รองรับ WPA2-Personal** และไม่มี Client/AP Isolation
+3. เสียบ ESP32 เข้ากับคอมพิวเตอร์ด้วยสาย USB ที่ส่งข้อมูลได้ แล้วตรวจสอบหมายเลขพอร์ต COM ใน Device Manager
+4. เปิด **ESP-IDF PowerShell** แล้วเข้าโฟลเดอร์โปรเจกต์:
+
+```powershell
+cd Example_ESP32_Project\Lab10-1_HTTP_REST_Server
+```
+
+### 3.2 ตั้งค่า Wi-Fi ในเครื่อง
+
+ค่าของ SSID และรหัสผ่านจะถูกบันทึกใน `sdkconfig` เฉพาะเครื่อง ไม่ได้ฝังไว้ในซอร์สโค้ดหรือ commit ลง repository
+
+```powershell
+idf.py set-target esp32
+idf.py menuconfig
+```
+
+ในเมนู เลือก **Lab 10-1 Wi-Fi Configuration** แล้วกรอก **Wi-Fi SSID (2.4 GHz)** และ **Wi-Fi password (WPA2-Personal)** จากนั้นเลือก **Save** และออกจากเมนู ห้ามแชร์หรือ commit ไฟล์ `sdkconfig` เพราะมีรหัสผ่าน Wi-Fi อยู่
+
+### 3.3 Build, Flash และเปิด Serial Monitor
+
+```powershell
+idf.py build
+idf.py -p COMx flash monitor
+```
+
+แทน `COMx` ด้วยพอร์ตจริง เช่น `COM5` หากการแฟลชอัตโนมัติไม่เริ่ม ให้กดปุ่ม **BOOT** ค้างไว้ระหว่างเริ่ม flash แล้วปล่อยเมื่อเริ่มเขียนเฟิร์มแวร์ ใน Serial Monitor ควรเห็นข้อความว่าเชื่อมต่อ Wi-Fi สำเร็จ พร้อม IP address และ HTTP server เริ่มทำงาน กด `Ctrl+]` เพื่อออกจาก monitor
+
+### 3.4 ทดสอบ API จากคอมพิวเตอร์
+
+ขณะคอมพิวเตอร์และบอร์ดยังอยู่ใน Wi-Fi วงเดียวกัน ให้รันทดสอบจาก PowerShell:
+
+```powershell
+ping esp32-node.local
+curl.exe http://esp32-node.local/api/status
+curl.exe -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{"state":true}'
+curl.exe -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{"state":false}'
+```
+
+คำสั่งสถานะควรตอบ JSON ที่มี `pot_raw`, `free_heap` และ `led`; คำสั่ง POST ควรสลับ LED บน GPIO 2 และตอบ `{"result":"success"}` หมุน potentiometer แล้วเรียก `/api/status` ซ้ำเพื่อตรวจว่า `pot_raw` เปลี่ยนตาม
+
+หากชื่อ `esp32-node.local` ใช้ไม่ได้ ให้ดู IP address ใน Serial Monitor แล้วลองเรียก `http://<IP-ADDRESS>/api/status` ก่อน หากใช้ IP ได้แต่ชื่อไม่ได้ ให้ตรวจสอบ mDNS/UDP 5353, การตั้งค่าเครือข่าย Windows และการตั้งค่า AP Isolation ตามหัวข้อแก้ปัญหาด้านล่าง
+
+---
+
+## 4. ขั้นตอนการทดลอง (Deconstructed Activities)
 
 ### กิจกรรมที่ 10-1.1 การสร้างโปรเจกต์ใหม่และตั้งค่าโครงสร้าง Dependency
 
@@ -77,7 +129,7 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 
 ```powershell
 idf.py add-dependency "espressif/mdns"
-idf.py add-dependency "espressif/cjson"
+idf.py add-dependency "espressif/cjson"1
 ```
 
 **หรือรันผ่าน Docker (จากภายในโฟลเดอร์โปรเจกต์)**
@@ -274,6 +326,9 @@ void app_main(void)
     }
     ESP_ERROR_CHECK(ret);
 
+    ESP_ERROR_CHECK(esp_netif_init());
+    ESP_ERROR_CHECK(esp_event_loop_create_default());
+
     // 2. กำหนดค่าขา GPIO 2 สำหรับ LED Output (เปิดโหมด INPUT_OUTPUT เพื่อให้อ่านสถานะได้)
     gpio_reset_pin(GPIO_NUM_2);
     gpio_set_direction(GPIO_NUM_2, GPIO_MODE_INPUT_OUTPUT);
@@ -291,12 +346,12 @@ void app_main(void)
         ESP_LOGI("ADC", "ADC1 Initialized on GPIO 34 (Channel 6)");
     }
 
+    // เริ่มต้น mDNS ก่อนเชื่อมต่อ Wi-Fi เพื่อให้พร้อมรับเหตุการณ์เมื่อได้รับ IP
+    initialise_mdns();
+
     // 4. เริ่มต้นเชื่อมต่อ Wi-Fi
     if (wifi_init_sta()) {
-        // 5. เริ่มต้น mDNS Service Discovery (http://esp32-node.local)
-        initialise_mdns();
-
-        // 6. เริ่มต้น HTTP RESTful Web Server
+        // 5. เริ่มต้น HTTP RESTful Web Server
         s_http_server = start_webserver();
         ESP_LOGI("MAIN", "Ready! Test with: curl http://esp32-node.local/api/status");
     } else {
@@ -332,6 +387,7 @@ void app_main(void)
 ```c
 #include <stdio.h>
 #include <string.h>
+#include "sdkconfig.h"
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
@@ -349,8 +405,6 @@ void app_main(void)
 #define TAG "HTTP_REST_LAB"
 
 // กำหนดชื่อและรหัสผ่าน Wi-Fi (แก้ไขให้ตรงกับ Access Point ของตนเอง)
-#define CONFIG_WIFI_SSID      "YOUR_WIFI_SSID"
-#define CONFIG_WIFI_PASSWORD  "YOUR_WIFI_PASSWORD"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -390,6 +444,17 @@ static void wifi_event_handler(void* arg, esp_event_base_t event_base,
 // เริ่มต้นระบบเชื่อมต่อ Wi-Fi Station
 static bool wifi_init_sta(void)
 {
+    size_t ssid_len = strlen(CONFIG_LAB_WIFI_SSID);
+    size_t pass_len = strlen(CONFIG_LAB_WIFI_PASSWORD);
+    if (ssid_len == 0 || ssid_len > sizeof(((wifi_config_t *)0)->sta.ssid)) {
+        ESP_LOGE(TAG, "Invalid Wi-Fi SSID. Set it in Lab 10-1 Wi-Fi Configuration.");
+        return false;
+    }
+    if (pass_len < 8 || pass_len > sizeof(((wifi_config_t *)0)->sta.password)) {
+        ESP_LOGE(TAG, "Invalid WPA2 password length. Set it in Lab 10-1 Wi-Fi Configuration.");
+        return false;
+    }
+
     s_wifi_event_group = xEventGroupCreate();
 
     ESP_ERROR_CHECK(esp_netif_init());
@@ -417,18 +482,13 @@ static bool wifi_init_sta(void)
             .threshold.authmode = WIFI_AUTH_WPA2_PSK,
         },
     };
-    size_t ssid_len = strlen(CONFIG_WIFI_SSID);
-    if (ssid_len > sizeof(wifi_config.sta.ssid)) ssid_len = sizeof(wifi_config.sta.ssid);
-    memcpy(wifi_config.sta.ssid, CONFIG_WIFI_SSID, ssid_len);
-
-    size_t pass_len = strlen(CONFIG_WIFI_PASSWORD);
-    if (pass_len > sizeof(wifi_config.sta.password)) pass_len = sizeof(wifi_config.sta.password);
-    memcpy(wifi_config.sta.password, CONFIG_WIFI_PASSWORD, pass_len);
+    memcpy(wifi_config.sta.ssid, CONFIG_LAB_WIFI_SSID, ssid_len);
+    memcpy(wifi_config.sta.password, CONFIG_LAB_WIFI_PASSWORD, pass_len);
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config));
     ESP_ERROR_CHECK(esp_wifi_start());
 
-    ESP_LOGI(TAG, "Connecting to SSID: %s ...", CONFIG_WIFI_SSID);
+    ESP_LOGI(TAG, "Connecting to configured Wi-Fi network...");
 
     EventBits_t bits = xEventGroupWaitBits(s_wifi_event_group,
             WIFI_CONNECTED_BIT | WIFI_FAIL_BIT,
@@ -569,12 +629,12 @@ void app_main(void)
         ESP_LOGI(TAG, "ADC Initialized on GPIO 34 (Channel 6)");
     }
 
+    // เริ่มต้น mDNS ก่อนเชื่อมต่อ Wi-Fi เพื่อให้พร้อมรับเหตุการณ์เมื่อได้รับ IP
+    initialise_mdns();
+
     // 4. เชื่อมต่อระบบ Wi-Fi
     if (wifi_init_sta()) {
-        // 5. เริ่มต้น mDNS Service Discovery
-        initialise_mdns();
-
-        // 6. เริ่มต้น HTTP RESTful Web Server
+        // 5. เริ่มต้น HTTP RESTful Web Server
         s_http_server = start_webserver();
         ESP_LOGI(TAG, "Ready! Test with: curl http://esp32-node.local/api/status");
     } else {
@@ -620,6 +680,9 @@ ping esp32-node.local
 ```
 *(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
 
+บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้
+![alt text](image.png)
+
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
 > 1. **เปลี่ยนสถานะ Wi-Fi บน Windows เป็น "Private Network"**
@@ -636,16 +699,17 @@ curl.exe -X GET http://esp32-node.local/api/status
 ```json
 {"pot_raw":15,"free_heap":213848,"led":true}
 ```
+![alt text](image-1.png)
 
 #### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
 
 **วิธีที่ 1 ใช้ `curl.exe` (ครอบสตริง JSON ด้วย Single Quote เพื่อป้องกัน PowerShell ตัดเครื่องหมายคำพูด)**
 ```powershell
 # สั่งเปิดไฟ LED (GPIO 2)
-curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
+curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{"state": true}'
 
 # สั่งปิดไฟ LED (GPIO 2)
-curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": false}'
+curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{"state": false}'
 ```
 การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
 
@@ -666,9 +730,55 @@ result
 success
 ```
 
+# สั่งเปิดไฟ LED (GPIO 2)
+![alt text](image-2.png)
+
+
+# สั่งปิดไฟ LED (GPIO 2)
+![alt text](image-3.png)
+
+![alt text](image-4.png)
 ---
 
-## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
-1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
-2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
-3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+## 5. บันทึกผลการทดลองและคำถามท้ายการทดลอง
+1. **นำผลการรัน `curl -i` มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์**
+
+   **คำตอบ:** ใช้ `curl.exe -i` เพื่อแสดง HTTP Response Header และ JSON body ที่ได้รับจริง:
+
+   ```powershell
+   curl.exe -i http://esp32-node.local/api/status
+   ```
+    ตัวอย่างผลลัพธ์จากบอร์ด:
+
+    ```text
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+    Content-Length: 47
+
+    {"pot_raw":4095,"free_heap":215836,"led":false}
+    ```
+
+    จากผลตัวอย่างนี้ JSON body มีขนาด **47 ไบต์** ตามค่า `Content-Length: 47` (ข้อความ JSON ใช้อักขระ ASCII ซึ่งมีขนาด 1 ไบต์ต่ออักขระ) ส่วน HTTP Header มีขนาด **71 ไบต์** เมื่อนับรวม CRLF (`\r\n`) ปิดท้ายแต่ละบรรทัดและ CRLF ว่างคั่นระหว่าง Header กับ body:
+
+    - `HTTP/1.1 200 OK` = 15 ไบต์ + CRLF 2 ไบต์
+    - `Content-Type: application/json` = 30 ไบต์ + CRLF 2 ไบต์
+    - `Content-Length: 47` = 18 ไบต์ + CRLF 2 ไบต์
+    - บรรทัดว่างคั่น Header กับ body = 2 ไบต์
+    - รวม Header = **71 ไบต์**; รวม response เฉพาะ Header และ body = **118 ไบต์**
+
+    จำนวน Header นี้อ้างอิง response ตัวอย่างที่มี Header ทั้งสามบรรทัดข้างต้นเท่านั้น หากผลจากบอร์ดมี Header เพิ่มเติม ให้นับ Header ที่ปรากฏจริงด้วยคำสั่งด้านล่าง:
+
+   ```powershell
+   curl.exe -sS -i http://esp32-node.local/api/status -o response.bin
+   python -c "from pathlib import Path; b=Path('response.bin').read_bytes(); h, body=b.split(b'\r\n\r\n',1); print('Header:',len(h)+4,'bytes'); print('JSON body:',len(body),'bytes'); print(body.decode())"
+   ```
+
+   `Header` ในผลสคริปต์นับตั้งแต่บรรทัดสถานะจนถึง CRLF ว่างที่คั่น Header กับ body ส่วน `JSON body` นับเฉพาะข้อมูล JSON ที่ตอบกลับ ให้นำค่าที่ได้จริงไปเขียนรายงาน โดย Header ใช้บอกสถานะและข้อมูลกำกับการตอบกลับ ส่วน body คือข้อมูลสถานะของอุปกรณ์
+
+2. **หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?**
+
+   **คำตอบ:** เครื่องนั้นจะค้นหาชื่อ `esp32-node.local` หรือแปลงชื่อนี้เป็น IP ไม่ได้ จึงเรียก API ด้วย hostname ไม่สำเร็จ แม้ HTTP server บน ESP32 ยังทำงานอยู่ หากเครื่องลูกข่ายกับ ESP32 อยู่ในเครือข่ายที่ติดต่อถึงกันได้ ยังเรียก API โดยใช้ IP address ที่แสดงใน Serial Monitor ได้ เช่น `http://192.168.1.181/api/status` (เปลี่ยนเป็น IP จริงของบอร์ด) วิธีแก้คืออนุญาต mDNS/UDP 5353 และ multicast ในเครือข่าย ตรวจว่าไม่ได้เปิด AP/client isolation หรือใช้ IP address โดยตรง หากต้องการใช้ชื่อข้าม subnet ให้ตั้ง DNS record ใน DNS server ของเครือข่ายแทน mDNS
+
+3. **เหตุใดจึงต้องเรียก `cJSON_Delete(root)` และ `cJSON_free(resp)` หลังประมวลผลเสร็จ?**
+
+   **คำตอบ:** `root` และสมาชิกภายใน JSON object ใช้หน่วยความจำ heap ที่ cJSON จองไว้ ส่วน `resp` จาก `cJSON_PrintUnformatted` เป็นหน่วยความจำอีกก้อนสำหรับข้อความ JSON ที่ส่งกลับ หลังส่ง response แล้วจึงต้องคืนหน่วยความจำทั้งสองส่วน โดย `cJSON_Delete(root)` คืนหน่วยความจำของ object และสมาชิกทั้งหมด ส่วน `cJSON_free(resp)` คืนหน่วยความจำของข้อความ หากไม่คืนหน่วยความจำจะเกิด memory leak และ heap ของ ESP32 ลดลงเรื่อย ๆ จนอาจทำให้ระบบทำงานผิดพลาดหรือรีสตาร์ตได้

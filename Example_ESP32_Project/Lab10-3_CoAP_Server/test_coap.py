@@ -1,7 +1,12 @@
 import asyncio
+import sys
+
+if len(sys.argv) != 2:
+    raise SystemExit("Usage: python test_coap.py <ESP32_IP>")
+
 from aiocoap import Context, Message, Code
 
-ESP32_IP = "192.168.1.181"  # แก้ไขให้ตรงกับหมายเลข IP ของ ESP32
+ESP32_IP = sys.argv[1]
 
 async def main():
     protocol = await Context.create_client_context()

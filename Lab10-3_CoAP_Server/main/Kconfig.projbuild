@@ -1,0 +1,11 @@
+menu "Lab 10-3 Wi-Fi Configuration"
+
+config LAB_WIFI_SSID
+    string "Wi-Fi SSID (2.4 GHz)"
+    default ""
+
+config LAB_WIFI_PASSWORD
+    string "Wi-Fi password (WPA2-Personal)"
+    default ""
+
+endmenu
