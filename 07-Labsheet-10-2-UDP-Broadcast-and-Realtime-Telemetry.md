@@ -25,6 +25,18 @@
          | --- (UDP Unicast ACK: "STATUS:OK") ------------------------>| (วัด RTT Latency)
 ```
 
+```mermaid
+sequenceDiagram
+    participant ESP32 as ESP32 Node
+    participant PC as PC Client / Python
+    ESP32->>PC: UDP Broadcast: pot_raw, seq_no (Port 3334)
+    Note right of PC: รับค่าแสดงผลกราฟ
+    Note right of PC: ส่งคำสั่งควบคุมและเริ่มวัด RTT
+    PC->>ESP32: UDP Unicast Command: "LED_ON" / "LED_OFF" (Port 3333)
+    ESP32->>PC: UDP Unicast ACK: "STATUS:OK"
+    Note right of PC: วัด RTT Latency
+```
+
 ---
 
 ## 3. ขั้นตอนการทดลอง

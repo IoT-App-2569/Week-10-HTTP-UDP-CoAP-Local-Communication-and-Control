@@ -22,19 +22,8 @@
 
 ## 2. แผนผังเนื้อหาการเรียนรู้ประจำสัปดาห์ (Lesson Roadmap)
 
-```mermaid
-flowchart LR
-    A["<b>สัปดาห์ที่ 10</b><br> Local Control Protocols (HTTP, UDP, CoAP)"] --> B["1. สถาปัตยกรรม Local Control & Device Discovery<br/>(Local vs Cloud, Broadcast, Multicast, mDNS)"]
-    A --> C["2. HTTP Server & RESTful API บน ESP-IDF<br/>(esp_http_server, REST Endpoints, cJSON)"]
-    A --> D["3. UDP Socket & Real-time Telemetry<br/>(LwIP BSD Socket, Unicast, Broadcast, Low Latency)"]
-    A --> E["4. CoAP Protocol สำหรับ Constrained IoT<br/>(RFC 7252, 4-Byte Header, CON/NON, Observe RFC 7641)"]
-
-    B --> F["<b>06-Labsheet-10-1</b><br> mDNS Discovery & HTTP REST Server"]
-    C --> F
-    D --> G["<b>07-Labsheet-10-2</b><br> UDP Socket & Real-time Telemetry Broadcast"]
-    E --> H["<b>08-Labsheet-10-3</b><br> CoAP Server & Lightweight IoT Control"]
-    A --> I["<b>09-Labsheet-10-4</b><br> Protocol Benchmark & Performance Analyzer (Python Suite)"]
-```
+<p align="center"><img src="Images/Fig_Readme_2026-10-27T09-42-24_academic.svg" alt="Readme"  ></p>
+<p align="center">  2. แผนผังเนื้อหาการเรียนรู้ประจำสัปดาห์ (Lesson Roadmap)</p>
 
 ---
 
