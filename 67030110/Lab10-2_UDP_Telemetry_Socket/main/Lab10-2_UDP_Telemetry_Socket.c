@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include <string.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
@@ -16,8 +16,8 @@
 #define TAG "UDP_LAB"
 
 // กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
+#define CONFIG_WIFI_SSID      "แมว"
+#define CONFIG_WIFI_PASSWORD  "nnnnnnnn"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2

@@ -1,7 +1,7 @@
-import socket
+﻿import socket
 import time
 
-ESP32_IP = "192.168.1.181"  # ระบุ IP ของบอร์ด ESP32
+ESP32_IP = "172.20.10.2"  # ระบุ IP ของบอร์ด ESP32
 CMD_PORT = 3333
 
 client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
