@@ -670,5 +670,21 @@ success
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
 1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
-2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
-3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+```
+$ curl -i http://esp32.local/status
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 45
+
+{"temp":28.5,"humidity":60,"led":true}
+```
+3. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
+```
+resolve ชื่อ esp32.local ไม่ได้ (Could not resolve host) ทั้งที่ ESP32 ทำงานปกติ แก้โดยใช้ IP ตรงๆ, ติดตั้ง Bonjour/Avahi หรือเปิดพอร์ต UDP 5353 ใน Firewall
+```
+
+5. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+```
+cJSON จัดสรรหน่วยความจำบน heap ถ้าไม่คืนด้วย cJSON_Delete(root) และ cJSON_free(resp) จะเกิด memory leak สะสมทุก request จน heap ของ ESP32 หมดและระบบค้างหรือรีสตาร์ต
+```
+
