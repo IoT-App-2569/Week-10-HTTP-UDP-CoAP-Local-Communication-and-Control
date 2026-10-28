@@ -1,0 +1,5 @@
+HTTP/1.1 200 OK
+[1mContent-Type[0m: application/json
+[1mContent-Length[0m: 71
+
+{"student_id":"67030011","pot_raw":2007,"free_heap":233000,"led":false}

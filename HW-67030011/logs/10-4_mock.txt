@@ -1,0 +1,158 @@
+================================================================
+ ESP32 MOCK (Week 10) - simulated board, no hardware attached
+================================================================
+I (1) HTTP_SERVER: HTTP Server started on port 80
+I (3) MDNS: mDNS initialized! Hostname: http://esp32-node.local (-> 127.0.0.1)
+I (3) UDP_SERVER: Control Server listening on UDP Port 3333...
+I (5) UDP_BROADCAST: Broadcasting Telemetry to Port 3334 (10 Hz)...
+I (6) COAP_SERVER: CoAP Server listening on port 5683...
+I (3047) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3075) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3104) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3129) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3157) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3186) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3214) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3246) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3274) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3299) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3329) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3353) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3382) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3411) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3441) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3467) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3495) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3520) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3545) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3575) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3603) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3630) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3661) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3690) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3715) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3744) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3770) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3797) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3824) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3848) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3874) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3903) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3932) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (3959) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (3984) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4014) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4042) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4070) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4099) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4126) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4155) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4180) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4209) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4238) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4265) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4295) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4325) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4356) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4389) HTTP_SERVER: LED (GPIO 2) switched to: ON
+I (4419) HTTP_SERVER: LED (GPIO 2) switched to: OFF
+I (4445) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4470) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4495) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4522) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4550) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4580) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4608) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4635) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4663) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4690) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4718) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4746) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4770) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4798) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4824) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4850) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4877) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4905) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4928) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (4953) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (4977) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5002) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5028) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5053) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5080) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5103) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5128) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5154) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5182) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5208) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5235) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5263) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5290) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5318) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5344) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5370) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5396) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5424) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5453) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5480) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5509) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5536) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5565) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5591) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5619) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5647) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5673) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5701) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5727) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:54122)
+I (5754) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:54122)
+I (5794) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (5817) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (5840) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (5863) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (5885) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (5909) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (5934) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (5957) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (5983) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6005) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6028) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6051) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6074) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6096) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6119) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6144) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6168) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6193) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6216) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6239) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6261) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6284) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6306) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6329) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6352) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6375) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6397) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6420) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6443) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6466) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6489) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6511) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6533) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6556) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6578) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6600) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6625) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6647) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6670) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6693) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6715) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6737) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6759) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6782) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6812) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6835) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6859) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6882) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT
+I (6905) COAP_SERVER: LED (GPIO 2) switched to: ON via CoAP PUT
+I (6929) COAP_SERVER: LED (GPIO 2) switched to: OFF via CoAP PUT

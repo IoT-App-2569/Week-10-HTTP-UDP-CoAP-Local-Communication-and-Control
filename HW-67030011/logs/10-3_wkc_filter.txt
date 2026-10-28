@@ -1,0 +1,1 @@
+</sensor/pot>;ct="0";rt="sensor.pot";if="core.s"

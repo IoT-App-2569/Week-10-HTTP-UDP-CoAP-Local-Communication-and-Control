@@ -1,0 +1,15 @@
+================================================================
+ ESP32 MOCK (Week 10) - simulated board, no hardware attached
+================================================================
+I (1) UDP_SERVER: Control Server listening on UDP Port 3333...
+I (1) UDP_BROADCAST: Broadcasting Telemetry to Port 3334 (10 Hz)...
+I (6918) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:64174)
+I (7424) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:64174)
+I (7926) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:64174)
+I (8430) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:64174)
+I (8937) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:64174)
+I (9442) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:64174)
+I (9949) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:64174)
+I (10451) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:64174)
+I (10953) UDP_SERVER: LED (GPIO 2) switched to: ON (from 127.0.0.1:64174)
+I (11457) UDP_SERVER: LED (GPIO 2) switched to: OFF (from 127.0.0.1:64174)

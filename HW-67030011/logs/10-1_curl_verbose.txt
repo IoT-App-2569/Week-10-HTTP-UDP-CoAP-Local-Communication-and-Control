@@ -1,0 +1,21 @@
+* Uses proxy env variable no_proxy == '127.0.0.1,localhost,::1'
+* Host esp32-node.local:80 was resolved.
+* IPv6: (none)
+* IPv4: 127.0.0.1, 127.0.0.1, 127.0.0.1, 127.0.0.1
+*   Trying 127.0.0.1:80...
+* Connected to esp32-node.local (127.0.0.1) port 80
+> POST /api/led HTTP/1.1
+> Host: esp32-node.local
+> User-Agent: curl/8.7.1
+> Accept: */*
+> Content-Type: application/json
+> Content-Length: 15
+> 
+} [15 bytes data]
+* upload completely sent off: 15 bytes
+< HTTP/1.1 200 OK
+< Content-Type: application/json
+< Content-Length: 20
+< 
+{ [20 bytes data]
+* Connection #0 to host esp32-node.local left intact
