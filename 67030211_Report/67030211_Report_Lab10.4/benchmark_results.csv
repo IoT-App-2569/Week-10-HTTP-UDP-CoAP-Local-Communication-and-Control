@@ -1,0 +1,4 @@
+Protocol,Transport,Header_Overhead_Bytes,Min_RTT_ms,Mean_RTT_ms,Max_RTT_ms,Packet_Loss_Pct
+HTTP REST,TCP,224,28.52,42.84,85.20,0.0
+UDP Socket,UDP,8,2.15,3.07,12.80,2.0
+CoAP PUT,UDP,12,7.85,11.64,45.20,0.0
