@@ -2,7 +2,7 @@
 ## Local Control Protocols (HTTP, UDP, CoAP) & Edge Device Discovery
 
 **รหัสนักศึกษา:** 67030299  
-**ชื่อ-นามสกุล:** นางสาวธนพร พิสมัย (Thanaporn Pitsamai)  
+**ชื่อ-นามสกุล:** นางสาวธนพร พิศมัย (Thanaporn Pitsamai)  
 
 ---
 
