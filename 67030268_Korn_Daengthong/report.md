@@ -106,7 +106,8 @@ Header & Overhead Metrics:
        Minimum = 34ms, Maximum = 38ms, Average = 36ms
    ```
    * **ภาพบันทึกผลการ Resolve ชื่อด้วย mDNS (`ping esp32-node.local`):**
-   ![Lab 10.1 Ping mDNS](lab10_1_ping_mdns.png)
+   ![Lab 10.1 Ping mDNS]<img width="683" height="280" alt="image" src="https://github.com/user-attachments/assets/599fc604-4ea3-4af0-bc8b-cf8411425163" />
+
 
 2. **การอ่านสถานะเซนเซอร์ผ่าน HTTP GET (`curl.exe -i http://esp32-node.local/api/status`)**
    * ข้อความตอบกลับ (HTTP Header + JSON Payload):
@@ -226,7 +227,8 @@ Packet Delivery: 50/50 ACK received (0.0% Packet Loss)
 ====================================================================
 ```
 * **ภาพบันทึกผลการทดสอบ UDP Socket Telemetry & Control (50 Rounds):**
-![Lab 10.2 UDP Telemetry & Socket Control](lab10_2_udp_socket.png)
+![Lab 10.2 UDP Telemetry & Socket Control]<img width="778" height="209" alt="image" src="https://github.com/user-attachments/assets/c88687bc-f502-4389-8cb1-0e70a9d3eb3a" />
+
 
 ### 4.3 ตอบคำถามท้ายการทดลอง ใบงาน 10.2
 1. **นำผลการวัดค่า RTT Latency ของ UDP มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง:**  
@@ -288,7 +290,8 @@ LED OFF Response Code: 2.04 Changed
 [COAP] Type: CON | Message ID: 18933 | Response: 2.04 Changed | RTT: 11.20 ms
 ```
 * **ภาพบันทึกผลการทดสอบ CoAP Server Resource Discovery & Control:**
-![Lab 10.3 CoAP Server Resource Discovery](lab10_3_coap_server.png)
+![Lab 10.3 CoAP Server Resource Discovery]<img width="780" height="316" alt="image" src="https://github.com/user-attachments/assets/16e97c3b-f016-4f5d-a4be-e90d5f9f5311" />
+
 
 ### 5.2 ตอบคำถามท้ายการทดลอง ใบงาน 10.3
 1. **อธิบายรูปแบบ CoRE Link Format (RFC 6690) จากผลการค้นหา `/.well-known/core` ว่าแสดงข้อมูลทรัพยากรอย่างไร:**  
@@ -352,7 +355,8 @@ CoAP (PUT)   | 50/50     |   0.0%  |     7.80  |     11.20  |    33.60  |       
 ================================================================================
 ```
 * **ภาพบันทึกผลการรัน `benchmark_protocols.py` เปรียบเทียบทั้ง 3 โปรโตคอล (50 รอบ):**
-![Lab 10.4 Protocol Benchmark Analysis](lab10_4_protocol_benchmark.png)
+![Lab 10.4 Protocol Benchmark Analysis]<img width="838" height="322" alt="image" src="https://github.com/user-attachments/assets/8a0add5e-a32c-45ed-bd91-bcb313c3605c" />
+
 
 ---
 
