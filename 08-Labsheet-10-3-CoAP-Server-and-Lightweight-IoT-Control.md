@@ -607,5 +607,14 @@ if __name__ == "__main__":
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
 1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
+ได้ผลลัพธ์ </sensor/pot>,</actuator/led>
+CoRE Link Format (RFC 6690) เป็นรูปแบบการแสดงรายการทรัพยากรที่อุปกรณ์ CoAP เปิดให้ใช้งาน โดยแสดงชื่อเส้นทางของแต่ละ Resource ภายในเครื่องหมาย < >
+- /sensor/pot ใช้อ่านค่า Potentiometer
+- /actuator/led ใช้ควบคุม LED
 2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
+- CON (Confirmable): ต้องมีการตอบกลับ ACK หากไม่ได้รับการยืนยันจะส่งข้อมูลซ้ำ จึงมีความน่าเชื่อถือสูง
+- NON (Non-confirmable): ไม่ต้องมี ACK และไม่มีการส่งซ้ำอัตโนมัติ ทำให้ประหยัดเวลาและทรัพยากร แต่ข้อมูลอาจสูญหายได้
 3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+เพราะ CoAP ใช้ UDP มีขนาดข้อมูลเล็ก ใช้ทรัพยากรและพลังงานน้อยกว่า HTTP จึงเหมาะกับอุปกรณ์ IoT ที่มีหน่วยความจำและแบนด์วิดท์จำกัด เช่น Thread, Zigbee IP และ NB-IoT
+
+<img width="2940" height="1912" alt="image" src="https://github.com/user-attachments/assets/0163669e-b6c5-46a6-a6e6-262829e95fe8" />
