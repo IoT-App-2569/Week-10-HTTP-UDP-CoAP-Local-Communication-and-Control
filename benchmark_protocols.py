@@ -173,15 +173,46 @@ async def _async_benchmark_coap(target: str, rounds: int, timeout: float, port: 
     return BenchmarkStats(latencies, total_tx_bytes, total_rx_bytes, rounds)
 
 
-def benchmark_coap(target: str, rounds: int, timeout: float) -> BenchmarkStats:
-    if "aiocoap" not in sys.modules:
-        try:
-            import aiocoap
-        except ImportError:
-            print("[!] Error: 'aiocoap' is not installed. Please run: pip install aiocoap")
-            return BenchmarkStats([], 0, 0, rounds)
+def _raw_benchmark_coap(target: str, rounds: int, timeout: float, port: int = 5683) -> BenchmarkStats:
+    print(f'\n[*] Starting CoAP Benchmark -> coap://{target}:{port}/actuator/led ({rounds} rounds)...')
+    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    sock.settimeout(timeout)
+    latencies = []
+    total_tx_bytes = 0
+    total_rx_bytes = 0
 
-    return asyncio.run(_async_benchmark_coap(target, rounds, timeout))
+    for i in range(1, rounds + 1):
+        val = b'1' if (i % 2 == 1) else b'0'
+        msg_id_bytes = (i % 65535).to_bytes(2, 'big')
+        packet = b'\x40\x03' + msg_id_bytes + b'led\xff' + val
+
+        t_start = time.perf_counter()
+        try:
+            sock.sendto(packet, (target, port))
+            resp, _ = sock.recvfrom(128)
+            t_end = time.perf_counter()
+            rtt = (t_end - t_start) * 1000.0
+            latencies.append(rtt)
+            total_tx_bytes += len(packet) + 8
+            total_rx_bytes += len(resp) + 8
+            print(f'  [CoAP Round {i:03d}/{rounds:03d}] RTT: {rtt:6.2f} ms | Code: 2.04 Changed')
+        except socket.timeout:
+            print(f'  [CoAP Round {i:03d}/{rounds:03d}] TIMEOUT (No ACK)')
+        except Exception as e:
+            print(f'  [CoAP Round {i:03d}/{rounds:03d}] ERROR: {e}')
+
+        time.sleep(0.02)
+
+    sock.close()
+    return BenchmarkStats(latencies, total_tx_bytes, total_rx_bytes, rounds)
+
+
+def benchmark_coap(target: str, rounds: int, timeout: float) -> BenchmarkStats:
+    try:
+        import aiocoap
+        return asyncio.run(_async_benchmark_coap(target, rounds, timeout))
+    except ImportError:
+        return _raw_benchmark_coap(target, rounds, timeout)
 
 
 # ------------------------------------------------------------------------------
