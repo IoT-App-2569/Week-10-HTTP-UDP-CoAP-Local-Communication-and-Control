@@ -13,3 +13,5 @@ dependencies.lock
 managed_components/
 *.old
 sdkconfig
+# Private Wi-Fi credentials
+wifi_config.h
