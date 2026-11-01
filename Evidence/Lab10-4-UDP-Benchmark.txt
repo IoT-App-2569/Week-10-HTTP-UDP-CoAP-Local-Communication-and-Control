@@ -1,0 +1,81 @@
+
+================================================================================
+   ESP32 Local Protocol Benchmark: HTTP vs UDP vs CoAP
+   Industrial IoT Systems Engineering - Real-time Performance Lab
+================================================================================
+
+
+[*] Starting UDP Socket Benchmark -> 192.168.1.33:3333 (50 rounds)...
+  [UDP Round  001/050] TIMEOUT (Packet Dropped)
+  [UDP Round  002/050] TIMEOUT (Packet Dropped)
+  [UDP Round  003/050] RTT:  11.86 ms | Recv: ACK:LED_ON
+  [UDP Round  004/050] RTT:   4.93 ms | Recv: ACK:LED_OFF
+  [UDP Round  005/050] RTT:   3.94 ms | Recv: ACK:LED_ON
+  [UDP Round  006/050] RTT:   3.84 ms | Recv: ACK:LED_OFF
+  [UDP Round  007/050] RTT:   3.29 ms | Recv: ACK:LED_ON
+  [UDP Round  008/050] RTT:   7.03 ms | Recv: ACK:LED_OFF
+  [UDP Round  009/050] RTT:   3.84 ms | Recv: ACK:LED_ON
+  [UDP Round  010/050] RTT:   4.15 ms | Recv: ACK:LED_OFF
+  [UDP Round  011/050] RTT:   4.36 ms | Recv: ACK:LED_ON
+  [UDP Round  012/050] RTT:   8.32 ms | Recv: ACK:LED_OFF
+  [UDP Round  013/050] RTT:   4.40 ms | Recv: ACK:LED_ON
+  [UDP Round  014/050] RTT:   3.58 ms | Recv: ACK:LED_OFF
+  [UDP Round  015/050] RTT:   5.20 ms | Recv: ACK:LED_ON
+  [UDP Round  016/050] RTT:   8.03 ms | Recv: ACK:LED_OFF
+  [UDP Round  017/050] RTT:   3.64 ms | Recv: ACK:LED_ON
+  [UDP Round  018/050] RTT:   3.32 ms | Recv: ACK:LED_OFF
+  [UDP Round  019/050] RTT:   3.70 ms | Recv: ACK:LED_ON
+  [UDP Round  020/050] RTT:   6.35 ms | Recv: ACK:LED_OFF
+  [UDP Round  021/050] RTT:   2.68 ms | Recv: ACK:LED_ON
+  [UDP Round  022/050] RTT:   6.23 ms | Recv: ACK:LED_OFF
+  [UDP Round  023/050] RTT:   7.50 ms | Recv: ACK:LED_ON
+  [UDP Round  024/050] RTT:   7.99 ms | Recv: ACK:LED_OFF
+  [UDP Round  025/050] RTT:   2.56 ms | Recv: ACK:LED_ON
+  [UDP Round  026/050] RTT:   3.05 ms | Recv: ACK:LED_OFF
+  [UDP Round  027/050] RTT:   7.49 ms | Recv: ACK:LED_ON
+  [UDP Round  028/050] RTT:   7.13 ms | Recv: ACK:LED_OFF
+  [UDP Round  029/050] RTT:   3.65 ms | Recv: ACK:LED_ON
+  [UDP Round  030/050] RTT:  16.77 ms | Recv: ACK:LED_OFF
+  [UDP Round  031/050] RTT:   3.22 ms | Recv: ACK:LED_ON
+  [UDP Round  032/050] RTT:  11.25 ms | Recv: ACK:LED_OFF
+  [UDP Round  033/050] RTT:   7.94 ms | Recv: ACK:LED_ON
+  [UDP Round  034/050] RTT:   4.34 ms | Recv: ACK:LED_OFF
+  [UDP Round  035/050] RTT:   4.74 ms | Recv: ACK:LED_ON
+  [UDP Round  036/050] RTT:   4.26 ms | Recv: ACK:LED_OFF
+  [UDP Round  037/050] RTT:   8.41 ms | Recv: ACK:LED_ON
+  [UDP Round  038/050] RTT:   4.85 ms | Recv: ACK:LED_OFF
+  [UDP Round  039/050] RTT:   4.18 ms | Recv: ACK:LED_ON
+  [UDP Round  040/050] RTT:   3.71 ms | Recv: ACK:LED_OFF
+  [UDP Round  041/050] RTT:  14.62 ms | Recv: ACK:LED_ON
+  [UDP Round  042/050] RTT:   4.08 ms | Recv: ACK:LED_OFF
+  [UDP Round  043/050] RTT:   6.79 ms | Recv: ACK:LED_ON
+  [UDP Round  044/050] RTT:   5.15 ms | Recv: ACK:LED_OFF
+  [UDP Round  045/050] RTT:   3.29 ms | Recv: ACK:LED_ON
+  [UDP Round  046/050] RTT:   2.89 ms | Recv: ACK:LED_OFF
+  [UDP Round  047/050] RTT:  21.86 ms | Recv: ACK:LED_ON
+  [UDP Round  048/050] RTT:  11.83 ms | Recv: ACK:LED_OFF
+  [UDP Round  049/050] RTT:   2.73 ms | Recv: ACK:LED_ON
+  [UDP Round  050/050] RTT:   2.81 ms | Recv: ACK:LED_OFF
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+UDP (Socket) | 48/50      |   4.0% |     2.56 |      6.08 |    21.86 |       3.89
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
+
+[✔] Benchmark Complete! Copy the metrics above into your Lab 10.4 Report.
+

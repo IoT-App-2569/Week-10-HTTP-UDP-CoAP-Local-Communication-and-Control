@@ -1,0 +1,78 @@
+
+================================================================================
+   ESP32 Local Protocol Benchmark: HTTP vs UDP vs CoAP
+   Industrial IoT Systems Engineering - Real-time Performance Lab
+================================================================================
+
+
+[*] Starting CoAP Benchmark -> coap://192.168.1.33:5683/actuator/led (50 rounds)...
+  [CoAP Round 001/050] RTT:  49.30 ms | Code: 2.04 Changed
+  [CoAP Round 002/050] RTT:   7.63 ms | Code: 2.04 Changed
+  [CoAP Round 003/050] RTT:  12.46 ms | Code: 2.04 Changed
+  [CoAP Round 004/050] RTT:   7.25 ms | Code: 2.04 Changed
+  [CoAP Round 005/050] RTT:   8.62 ms | Code: 2.04 Changed
+  [CoAP Round 006/050] RTT:   8.94 ms | Code: 2.04 Changed
+  [CoAP Round 007/050] RTT:  12.37 ms | Code: 2.04 Changed
+  [CoAP Round 008/050] RTT:   8.06 ms | Code: 2.04 Changed
+  [CoAP Round 009/050] RTT:   9.11 ms | Code: 2.04 Changed
+  [CoAP Round 010/050] RTT:   8.82 ms | Code: 2.04 Changed
+  [CoAP Round 011/050] RTT:   7.74 ms | Code: 2.04 Changed
+  [CoAP Round 012/050] RTT:  12.95 ms | Code: 2.04 Changed
+  [CoAP Round 013/050] RTT:   9.87 ms | Code: 2.04 Changed
+  [CoAP Round 014/050] RTT:   9.70 ms | Code: 2.04 Changed
+  [CoAP Round 015/050] RTT:   6.80 ms | Code: 2.04 Changed
+  [CoAP Round 016/050] RTT:   8.79 ms | Code: 2.04 Changed
+  [CoAP Round 017/050] RTT:   8.30 ms | Code: 2.04 Changed
+  [CoAP Round 018/050] RTT:  10.01 ms | Code: 2.04 Changed
+  [CoAP Round 019/050] RTT:  12.03 ms | Code: 2.04 Changed
+  [CoAP Round 020/050] RTT:   9.92 ms | Code: 2.04 Changed
+  [CoAP Round 021/050] RTT:   6.49 ms | Code: 2.04 Changed
+  [CoAP Round 022/050] RTT:   6.91 ms | Code: 2.04 Changed
+  [CoAP Round 023/050] RTT:   8.09 ms | Code: 2.04 Changed
+  [CoAP Round 024/050] RTT:  11.41 ms | Code: 2.04 Changed
+  [CoAP Round 025/050] RTT:   8.25 ms | Code: 2.04 Changed
+  [CoAP Round 026/050] RTT:   9.68 ms | Code: 2.04 Changed
+  [CoAP Round 027/050] RTT:   8.74 ms | Code: 2.04 Changed
+  [CoAP Round 028/050] RTT:   7.03 ms | Code: 2.04 Changed
+  [CoAP Round 029/050] RTT:   6.62 ms | Code: 2.04 Changed
+  [CoAP Round 030/050] RTT:  11.67 ms | Code: 2.04 Changed
+  [CoAP Round 031/050] RTT:  12.76 ms | Code: 2.04 Changed
+  [CoAP Round 032/050] RTT:   8.18 ms | Code: 2.04 Changed
+  [CoAP Round 033/050] RTT:   8.75 ms | Code: 2.04 Changed
+  [CoAP Round 034/050] RTT:  11.21 ms | Code: 2.04 Changed
+  [CoAP Round 035/050] RTT:   7.82 ms | Code: 2.04 Changed
+  [CoAP Round 036/050] RTT:   8.47 ms | Code: 2.04 Changed
+  [CoAP Round 037/050] RTT:   7.70 ms | Code: 2.04 Changed
+  [CoAP Round 038/050] RTT:   7.73 ms | Code: 2.04 Changed
+  [CoAP Round 039/050] RTT:  10.41 ms | Code: 2.04 Changed
+  [CoAP Round 040/050] RTT:  10.28 ms | Code: 2.04 Changed
+  [CoAP Round 041/050] RTT:  10.96 ms | Code: 2.04 Changed
+  [CoAP Round 042/050] RTT:   9.00 ms | Code: 2.04 Changed
+  [CoAP Round 043/050] RTT:   6.73 ms | Code: 2.04 Changed
+  [CoAP Round 044/050] RTT:   8.22 ms | Code: 2.04 Changed
+  [CoAP Round 045/050] RTT:   7.54 ms | Code: 2.04 Changed
+  [CoAP Round 046/050] RTT:   6.72 ms | Code: 2.04 Changed
+  [CoAP Round 047/050] RTT:   7.34 ms | Code: 2.04 Changed
+  [CoAP Round 048/050] RTT:   8.35 ms | Code: 2.04 Changed
+  [CoAP Round 049/050] RTT:   9.93 ms | Code: 2.04 Changed
+  [CoAP Round 050/050] RTT:   8.20 ms | Code: 2.04 Changed
+
+================================================================================
+                    BENCHMARK RESULTS & METRICS SUMMARY
+================================================================================
+Protocol     | Success   | Loss %  | Min (ms)  | Mean (ms)  | Max (ms)  | Jitter (ms)
+--------------------------------------------------------------------------------
+CoAP (RFC7252) | 50/50      |   0.0% |     6.49 |      9.80 |    49.30 |       5.90
+================================================================================
+
+================================================================================
+             THEORETICAL PROTOCOL OVERHEAD ANALYSIS (Per LED Command)
+================================================================================
+Layer / Attribute              | HTTP REST (POST)  | UDP Socket    | CoAP (PUT)  
+--------------------------------------------------------------------------------
+Transport Layer (L4)           | TCP (20-32 bytes) | UDP (8 bytes) | UDP (8 bytes)
+Application Header (L7)        | ~150-250 bytes    | 0 bytes       | 4-8 bytes   
+Command Payload Size           | 14 bytes (JSON)   | 6 bytes (ASCII) | 1 byte (char)
+Est. Total Bytes per Request   | ~190-300 bytes    | ~14 bytes     | ~13-17 bytes
+Payload Efficiency Ratio       | ~4.5 - 7.0 %      | ~42.8 %       | ~7.7 - 25.0 %
+================================================================================
