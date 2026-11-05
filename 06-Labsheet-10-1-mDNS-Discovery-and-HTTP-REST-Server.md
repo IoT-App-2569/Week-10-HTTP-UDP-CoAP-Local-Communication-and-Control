@@ -135,7 +135,11 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 
 
 ---
+
+
 ### กิจกรรมที่ 10-1.2 การติดตั้งและเปิดใช้งานบริการ mDNS
+
+![การค้นหา hostname และบริการ HTTP ด้วย mDNS](Images/mDNS-SD.svg)
 
 ในไฟล์ `main/Lab10-1_HTTP_REST_Server.c` เขียนฟังก์ชันสำหรับเริ่มต้นระบบ mDNS
 
@@ -163,7 +167,10 @@ static void initialise_mdns(void)
 
 ---
 
+
 ### กิจกรรมที่ 10-1.3  การพัฒนา REST API Endpoints บน `esp_http_server`
+
+![โครงสร้าง HTTP request และ response](Images/http_request_response_structure.svg)
 
 เขียนฟังก์ชัน Handler สำหรับรองรับคำสั่ง **GET** และ **POST**
 
@@ -219,6 +226,10 @@ static esp_err_t led_post_handler(httpd_req_t *req)
 ```
 
 ---
+
+#### ผลกิจกรรม 10-1.3
+
+REST API มี `GET /api/status` สำหรับ JSON สถานะ sensor/heap/LED และ `POST /api/led` สำหรับรับ JSON `{ "state": true|false }` แล้วตอบผลลัพธ์ success เมื่อ payload ถูกต้อง ต้องตรวจ method, URI, content length และ JSON parse result ก่อนใช้ข้อมูล
 
 ### กิจกรรมที่ 10-1.4 การจัดการระบบ Wi-Fi และการเริ่มต้นระบบทั้งหมดใน `app_main()`
 
@@ -669,6 +680,9 @@ success
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
-1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
-2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
-3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+**คำถาม 1 — การวัด HTTP header และ JSON payload:** header ไม่มีขนาดคงที่ ให้นับ status line และ header fields จนถึง CRLF ว่างจาก `headers.txt` ที่ได้จากบอร์ดจริง พร้อมวัดขนาดของ JSON body ที่ตอบกลับ
+
+**คำถาม 2 — เมื่อ mDNS ใช้ไม่ได้:** client จะ resolve `esp32-node.local` ไม่ได้ แม้ HTTP server ยังทำงานอยู่ แก้โดยเข้าผ่าน IP ที่เราเตอร์แจก ตั้ง DNS/hosts mapping หรือเปิด multicast DNS UDP 5353 ใน client, AP/router และ firewall ภายใน LAN เดียวกัน
+
+**คำถาม 3 — เหตุผลที่คืนหน่วยความจำ cJSON:** `cJSON_Delete(root)` คืน tree ที่ parser จัดสรร ส่วน `cJSON_free(resp)` คืนข้อความ JSON ที่ `cJSON_Print` สร้าง หากไม่คืนหน่วยความจำเมื่อจบ request จะเกิด heap leak สะสมจน ESP32 ทำงานผิดปกติหรือ reset

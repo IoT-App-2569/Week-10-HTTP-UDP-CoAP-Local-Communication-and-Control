@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="960" height="390" viewBox="0 0 960 390" role="img" aria-labelledby="title desc">
+  <title id="title">CoAP client and ESP32 resource exchange</title>
+  <desc id="desc">Python CoAP client sends GET and PUT requests over UDP port 5683 to ESP32 CoAP resources and receives responses.</desc>
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#285f9e"/></marker>
+    <marker id="arrowBack" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#3b8b69"/></marker>
+  </defs>
+  <rect width="960" height="390" rx="22" fill="#f4f8fc"/>
+  <text x="480" y="44" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="25" font-weight="700" fill="#18324b">CoAP request / response บน ESP32</text>
+  <rect x="65" y="92" width="280" height="225" rx="18" fill="#fff" stroke="#7aa6d7" stroke-width="3"/>
+  <text x="205" y="132" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700" fill="#18324b">Python CoAP Client</text>
+  <text x="95" y="176" font-family="Consolas,monospace" font-size="17" fill="#284d70">GET /.well-known/core</text>
+  <text x="95" y="211" font-family="Consolas,monospace" font-size="17" fill="#284d70">GET /sensor/pot</text>
+  <text x="95" y="246" font-family="Consolas,monospace" font-size="17" fill="#284d70">PUT /actuator/led</text>
+  <text x="95" y="276" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#5c7085">payload: 1 (ON) / 0 (OFF)</text>
+  <rect x="615" y="92" width="280" height="225" rx="18" fill="#fff" stroke="#75b99a" stroke-width="3"/>
+  <text x="755" y="132" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="22" font-weight="700" fill="#18324b">ESP32 CoAP Server</text>
+  <text x="650" y="178" font-family="Segoe UI,Arial,sans-serif" font-size="17" fill="#284d70">UDP port 5683</text>
+  <text x="650" y="214" font-family="Consolas,monospace" font-size="16" fill="#284d70">/sensor/pot → ADC value</text>
+  <text x="650" y="248" font-family="Consolas,monospace" font-size="16" fill="#284d70">/actuator/led → GPIO 2</text>
+  <text x="650" y="281" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#5c7085">resource discovery: /.well-known/core</text>
+  <line x1="365" y1="177" x2="590" y2="177" stroke="#285f9e" stroke-width="4" marker-end="url(#arrow)"/>
+  <text x="480" y="161" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="700" fill="#285f9e">CoAP request</text>
+  <line x1="590" y1="236" x2="365" y2="236" stroke="#3b8b69" stroke-width="4" marker-end="url(#arrowBack)"/>
+  <text x="480" y="264" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="16" font-weight="700" fill="#3b8b69">2.xx response (ACK for CON)</text>
+  <text x="480" y="355" text-anchor="middle" font-family="Segoe UI,Arial,sans-serif" font-size="15" fill="#647789">ภาพแสดงเส้นทางและ resource ตามตัวอย่างในใบงาน ไม่ใช่ packet capture จากบอร์ดจริง</text>
+</svg>

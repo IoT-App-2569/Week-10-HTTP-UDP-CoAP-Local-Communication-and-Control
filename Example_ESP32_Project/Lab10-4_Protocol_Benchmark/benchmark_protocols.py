@@ -83,7 +83,7 @@ def benchmark_http(target: str, rounds: int, timeout: float) -> BenchmarkStats:
 
     for i in range(1, rounds + 1):
         state = (i % 2 == 1)
-        payload = json.dumps({"state": state}).encode("utf-8")
+        payload = json.dumps({"state": state}, separators=(",", ":")).encode("utf-8")
         req = urllib.request.Request(url, data=payload, headers=headers, method="POST")
 
         t_start = time.perf_counter()

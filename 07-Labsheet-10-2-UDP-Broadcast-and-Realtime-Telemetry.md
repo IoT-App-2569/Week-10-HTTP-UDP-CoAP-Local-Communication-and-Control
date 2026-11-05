@@ -71,6 +71,8 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 
 ---
 
+
+
 ### กิจกรรมที่ 10-2.2 พัฒนา Task รับคำสั่ง UDP Control Server (Port 3333)
 ฟังก์ชันนี้ทำหน้าที่เปิด UDP Socket ผูกเข้ากับพอร์ต 3333 (`INADDR_ANY`) เพื่อคอยรับคำสั่งควบคุม LED แบบ Unicast และตอบรับกลับ (ACK) เพื่อให้ไคลเอนต์นำไปคำนวณ Round-Trip Time (RTT)
 
@@ -127,7 +129,7 @@ void udp_control_server_task(void *pvParameters)
 }
 ```
 
----
+
 
 ### กิจกรรมที่ 10-2.3 พัฒนา Task ส่งข้อมูล Telemetry แบบ Broadcast (Port 3334)
 ฟังก์ชันนี้ทำหน้าที่อ่านค่าแอนะล็อกเซนเซอร์ Potentiometer จาก ADC1 (GPIO 34) แล้วแพ็กข้อมูลร่วมกับหมายเลขลำดับ (Sequence Number) ส่งบรอดแคสต์ไปยัง `255.255.255.255` พอร์ต 3334 ทุกๆ 100 ms (10 Hz)
@@ -178,6 +180,8 @@ void udp_telemetry_broadcast_task(void *pvParameters)
 ```
 
 ---
+
+
 
 ### กิจกรรมที่ 10-2.4 การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main()`
 
@@ -491,6 +495,10 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 
 ---
 
+#### ผลกิจกรรม 10-2.4
+
+`app_main()` เชื่อม Wi-Fi, ตั้ง GPIO2 และ ADC1 Channel 6/GPIO34, สร้าง task รับ control port 3333 และ task broadcast telemetry port 3334
+
 ### กิจกรรมที่ 10-2.5 การทดสอบด้วยสคริปต์ Python บนคอมพิวเตอร์
 
 #### 1. สคริปต์ดักฟังข้อมูล Telemetry Broadcast (`udp_listener.py`)
@@ -580,7 +588,10 @@ if rtt_list:
 
 ---
 
-## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง 
-1. นำผลการวัดค่า RTT Latency ของ UDP ในกิจกรรมที่ 10-2.5 มาเปรียบเทียบกับความหน่วงเวลาของ HTTP RESTful ในใบงาน 10.1 และวิเคราะห์ความแตกต่าง
-2. รันสคริปต์ `udp_listener.py` เป็นเวลา 1 นาที จงบันทึกค่าและคำนวณอัตราการสูญหายของแพ็กเก็ต (Packet Loss Rate) พร้อมวิเคราะห์สาเหตุที่ทำให้เกิดการสูญหายบนเครือข่าย Wi-Fi
-3. อธิบายข้อดีและข้อจำกัดของการใช้ `255.255.255.255` (UDP Broadcast) ในระบบ IoT และในสถานการณ์ใดที่ควรเปลี่ยนไปใช้ **UDP Multicast** หรือ **Unicast** แทน?
+## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
+
+**คำถาม 1 — เปรียบเทียบ RTT UDP กับ HTTP:** UDP มี header เล็กและไม่มี TCP connection semantics จึงมี overhead ต่ำกว่าและ RTT ต่ำกว่า ส่วน HTTP ให้ reliable ordered transport และใช้งานกับ REST/browser ได้ง่ายกว่า โดยแลกกับ header/connection overhead สูงขึ้น
+
+**คำถาม 2 — Packet loss ในหนึ่งนาที:** ใช้สูตร `loss% = lost / (received + lost) × 100` โดยนับจากผลรันจริงบน Wi-Fi 60 วินาที สาเหตุที่อาจทำให้เกิด loss บน Wi-Fi ได้แก่สัญญาณรบกวน, RSSI ต่ำ, AP หนาแน่น, buffer เต็ม และการพักวิทยุเพื่อประหยัดพลังงาน
+
+**คำถาม 3 — เลือก Broadcast, Multicast หรือ Unicast:** `255.255.255.255` เหมาะกับ discovery ใน subnet เมื่อยังไม่ทราบ IP ปลายทาง แต่ส่งให้ทุก host เพิ่ม traffic และ router มักไม่ forward ข้าม subnet ใช้ multicast เมื่อมี subscriber หลายตัวที่สมัครกลุ่มเดียวกัน และใช้ unicast เมื่อทราบปลายทางหรือสั่งอุปกรณ์เฉพาะตัวเพื่อลด traffic

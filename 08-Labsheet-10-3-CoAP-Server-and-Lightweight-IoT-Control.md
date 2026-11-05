@@ -23,6 +23,8 @@
 | `/sensor/pot`       |  GET   | อ่านค่าอนาล็อก Potentiometer       |   Text / JSON    | `coap-client -m get coap://esp32-node.local/sensor/pot`          |
 | `/actuator/led`     |  PUT   | สั่งเปิด/ปิดไฟ LED (1 หรือ 0)      |  Text (`1`/`0`)  | `coap-client -m put -e "1" coap://esp32-node.local/actuator/led` |
 
+![เส้นทาง CoAP request/response ระหว่าง Python client กับ resource บน ESP32](Images/Lab10-3-coap-exchange.svg)
+
 ---
 
 ## 3. ขั้นตอนการทดลอง
@@ -104,6 +106,7 @@ docker run --rm --mount "type=bind,source=$((Get-Location).Path),target=/workspa
 
 ---
 
+
 ### กิจกรรมที่ 10-3.2 การพัฒนา Handlers สำหรับ Resource `/sensor/pot` และ `/actuator/led`
 เขียนฟังก์ชัน Callback สำหรับจัดการคำขออ่านค่าเซนเซอร์ (GET) และสั่งงานควบคุม LED (PUT)
 
@@ -155,6 +158,8 @@ static void hnd_put_led(coap_resource_t *resource,
 ```
 
 ---
+
+
 
 ### กิจกรรมที่ 10-3.3 การพัฒนา CoAP Server FreeRTOS Task
 สร้าง Task สำหรับเริ่มต้น CoAP Context, ลงทะเบียน Resources, และวนลูปประมวลผล Event Loop ด้วย `coap_io_process()`
@@ -212,6 +217,10 @@ static void coap_server_task(void *pvParameters)
 ```
 
 ---
+
+#### ผลกิจกรรม 10-3.3
+
+CoAP server task สร้าง context/resource แล้ว listen บน UDP port 5683 ตามตัวอย่าง กลไกตอบ request ใช้ CoAP PDU
 
 ### กิจกรรมที่ 10-3.4 การเชื่อมโยงระบบ Wi-Fi และฟังก์ชัน `app_main(void)`
 
@@ -548,6 +557,7 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 ```
 
 ---
+ 
 
 ### กิจกรรมที่ 10-3.5 การทดสอบด้วย Python aiocoap Script บนคอมพิวเตอร์
 
@@ -605,7 +615,12 @@ if __name__ == "__main__":
 
 ---
 
+
+
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
-1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
-2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
-3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+**คำถาม 1 — Resource Discovery และ CoRE Link Format:** ผลที่คาดจาก firmware คือ `</sensor/pot>;rt="sensor",</actuator/led>;rt="actuator"` (attribute จริงขึ้นกับการลงทะเบียน resource) แต่ยัง query/capture จริงไม่ได้เพราะไม่มี CoAP server/บอร์ด CoRE Link Format เป็นรายการ URI ในวงเล็บมุม `<...>` คั่นด้วย comma และแนบ attribute เช่น `rt`, `if`, `ct` เพื่อบอกชนิด, interface และ content format
+
+**คำถาม 2 — CON กับ NON เมื่อสัญญาณรบกวน:** CON ต้องมี ACK; เมื่อ ACK หายจะ retransmit ตาม timeout/backoff จึงเพิ่มโอกาสส่งสำเร็จ แต่ใช้เวลาและ airtime มากขึ้น ส่วน NON ไม่มี ACK/retransmission จึงเร็วและประหยัดกว่า แต่ข้อมูลอาจหาย เหมาะกับ telemetry ที่ตัวอย่างใหม่จะมาแทนตัวอย่างเก่า
+
+**คำถาม 3 — เหตุผลที่ CoAP เหมาะกับเครือข่าย constrained:** CoAP ใช้ UDP และ fixed header ขั้นต่ำ 4 ไบต์ พร้อม REST methods และรองรับ CON/NON จึงลด header และสถานะการเชื่อมต่อเมื่อเทียบกับ HTTP/TCP เหมาะกับเครือข่ายแบนด์วิดท์/พลังงานจำกัด เช่น Thread หรือ NB-IoT อย่างไรก็ตามต้องออกแบบ reliability และ security ให้เหมาะ (เช่น CON และ DTLS/OSCORE ตามระบบ) และต้องตรวจสอบว่า firmware มีฟีเจอร์ที่ต้องใช้จริง: source ในชุดนี้ยังไม่พบ Observe handler แม้ objective จะกล่าวถึง Observe
