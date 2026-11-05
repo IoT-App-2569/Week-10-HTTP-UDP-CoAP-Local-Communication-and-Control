@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
@@ -15,9 +17,11 @@
 
 #define TAG "UDP_LAB"
 
-// กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
+// ==========================================
+// 1. การกำหนดค่าเครือข่าย Wi-Fi
+// ==========================================
+#define CONFIG_WIFI_SSID      "1234_2.4G"
+#define CONFIG_WIFI_PASSWORD  "123456789"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -32,6 +36,15 @@ static EventGroupHandle_t s_wifi_event_group;
 
 static int s_retry_num = 0;
 static adc_oneshot_unit_handle_t s_adc1_handle = NULL;
+
+// ==========================================
+// 2. ตัวแปร Virtual Potentiometer
+//    (จำลองค่าเซนเซอร์แอนะล็อกเนื่องจากไม่มี Potentiometer จริง)
+// ==========================================
+static int  s_virtual_pot_val = 2048; // ค่าเริ่มต้น
+static bool s_use_virtual_pot = true; // เปิดใช้งานระบบจำลองค่า
+static bool s_auto_sweep      = true; // หมุนค่าขึ้น-ลงอัตโนมัติเป็นคลื่นสามเหลี่ยม
+static int  s_sweep_dir       = 1;    // 1 = เพิ่มขึ้น, -1 = ลดลง
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data)
@@ -89,7 +102,14 @@ static bool wifi_init_sta(void)
     return (bits & WIFI_CONNECTED_BIT) != 0;
 }
 
+// =========================================================================
 // Task 1: UDP Control Server (Port 3333)
+// รองรับคำสั่ง:
+// - "LED_ON"  -> เปิดไฟ LED
+// - "LED_OFF" -> ปิดไฟ LED
+// - "POT:<val>" -> ปรับค่า Potentiometer เสมือนโดยตรง (เช่น "POT:3500")
+// - "POT_AUTO"  -> สลับโหมดปรับค่าขึ้นลงอัตโนมัติ
+// =========================================================================
 void udp_control_server_task(void *pvParameters)
 {
     char rx_buffer[128];
@@ -97,31 +117,64 @@ void udp_control_server_task(void *pvParameters)
     socklen_t client_addr_len = sizeof(client_addr);
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    if (sock < 0) {
+        ESP_LOGE(TAG, "Unable to create control socket: errno %d", errno);
+        vTaskDelete(NULL);
+        return;
+    }
+
     server_addr.sin_addr.s_addr = htonl(INADDR_ANY);
     server_addr.sin_family = AF_INET;
     server_addr.sin_port = htons(UDP_CONTROL_PORT);
 
-    bind(sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
+    if (bind(sock, (struct sockaddr *)&server_addr, sizeof(server_addr)) < 0) {
+        ESP_LOGE(TAG, "Socket unable to bind: errno %d", errno);
+        close(sock);
+        vTaskDelete(NULL);
+        return;
+    }
     ESP_LOGI(TAG, "Control Server listening on UDP Port %d...", UDP_CONTROL_PORT);
 
     while (1) {
         int len = recvfrom(sock, rx_buffer, sizeof(rx_buffer) - 1, 0, (struct sockaddr *)&client_addr, &client_addr_len);
         if (len > 0) {
             rx_buffer[len] = '\0';
+            ESP_LOGI(TAG, "Received command: %s", rx_buffer);
+
             if (strcmp(rx_buffer, "LED_ON") == 0) {
                 gpio_set_level(LED_GPIO_PIN, 1);
                 sendto(sock, "ACK:LED_ON", 10, 0, (struct sockaddr *)&client_addr, client_addr_len);
             } else if (strcmp(rx_buffer, "LED_OFF") == 0) {
                 gpio_set_level(LED_GPIO_PIN, 0);
                 sendto(sock, "ACK:LED_OFF", 11, 0, (struct sockaddr *)&client_addr, client_addr_len);
+            } else if (strncmp(rx_buffer, "POT:", 4) == 0) {
+                int val = atoi(rx_buffer + 4);
+                if (val < 0) val = 0;
+                if (val > 4095) val = 4095;
+                s_virtual_pot_val = val;
+                s_auto_sweep = false;
+                s_use_virtual_pot = true;
+                char ack_buf[32];
+                snprintf(ack_buf, sizeof(ack_buf), "ACK:POT:%d", s_virtual_pot_val);
+                sendto(sock, ack_buf, strlen(ack_buf), 0, (struct sockaddr *)&client_addr, client_addr_len);
+            } else if (strcmp(rx_buffer, "POT_AUTO") == 0) {
+                s_auto_sweep = !s_auto_sweep;
+                s_use_virtual_pot = true;
+                const char *ack = s_auto_sweep ? "ACK:AUTO_ON" : "ACK:AUTO_OFF";
+                sendto(sock, ack, strlen(ack), 0, (struct sockaddr *)&client_addr, client_addr_len);
             } else {
                 sendto(sock, "ACK:UNKNOWN", 11, 0, (struct sockaddr *)&client_addr, client_addr_len);
             }
         }
     }
+    close(sock);
+    vTaskDelete(NULL);
 }
 
+// =========================================================================
 // Task 2: UDP Telemetry Broadcast (Port 3334)
+// บรอดแคสต์ข้อมูล SEQ และค่า POT ทุกๆ 100 ms (10 Hz)
+// =========================================================================
 void udp_telemetry_broadcast_task(void *pvParameters)
 {
     struct sockaddr_in dest_addr;
@@ -130,6 +183,12 @@ void udp_telemetry_broadcast_task(void *pvParameters)
     dest_addr.sin_port = htons(UDP_BROADCAST_PORT);
 
     int sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
+    if (sock < 0) {
+        ESP_LOGE(TAG, "Unable to create broadcast socket: errno %d", errno);
+        vTaskDelete(NULL);
+        return;
+    }
+
     int broadcast_enable = 1;
     setsockopt(sock, SOL_SOCKET, SO_BROADCAST, &broadcast_enable, sizeof(broadcast_enable));
 
@@ -139,16 +198,32 @@ void udp_telemetry_broadcast_task(void *pvParameters)
     ESP_LOGI(TAG, "Broadcasting Telemetry to Port %d (10 Hz)...", UDP_BROADCAST_PORT);
 
     while (1) {
+        // หากเปิดโหมด Auto Sweep ให้ปรับค่าเสมือนขึ้นลงจำลองการหมุน
+        if (s_auto_sweep) {
+            s_virtual_pot_val += s_sweep_dir * 50;
+            if (s_virtual_pot_val >= 4095) {
+                s_virtual_pot_val = 4095;
+                s_sweep_dir = -1;
+            } else if (s_virtual_pot_val <= 0) {
+                s_virtual_pot_val = 0;
+                s_sweep_dir = 1;
+            }
+        }
+
         int pot_val = 0;
-        if (s_adc1_handle != NULL) {
+        if (s_use_virtual_pot) {
+            pot_val = s_virtual_pot_val;
+        } else if (s_adc1_handle != NULL) {
             adc_oneshot_read(s_adc1_handle, POT_ADC_CHANNEL, &pot_val);
         }
 
         snprintf(tx_buffer, sizeof(tx_buffer), "SEQ:%lu,POT:%d\n", (unsigned long)seq_no++, pot_val);
         sendto(sock, tx_buffer, strlen(tx_buffer), 0, (struct sockaddr *)&dest_addr, sizeof(dest_addr));
 
-        vTaskDelay(pdMS_TO_TICKS(100)); // 10 Hz
+        vTaskDelay(pdMS_TO_TICKS(100)); // 10 Hz (100ms)
     }
+    close(sock);
+    vTaskDelete(NULL);
 }
 
 void app_main(void)
@@ -178,6 +253,8 @@ void app_main(void)
         adc_oneshot_config_channel(s_adc1_handle, POT_ADC_CHANNEL, &chan_config);
         ESP_LOGI(TAG, "ADC Initialized on GPIO 34");
     }
+
+    ESP_LOGI(TAG, "Virtual Potentiometer Enabled (Auto sweep active)");
 
     // 4. Connect Wi-Fi
     if (wifi_init_sta()) {
