@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdlib.h>
+#include <stdbool.h>
 #include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_netif.h"
@@ -14,9 +16,11 @@
 
 #define TAG "COAP_LAB"
 
-// กำหนดชื่อและรหัสผ่าน Wi-Fi
-#define CONFIG_WIFI_SSID      "AIS 4G Hi-Speed Home WiFi_769475"
-#define CONFIG_WIFI_PASSWORD  "50769475"
+// ==========================================
+// 1. การกำหนดค่าเครือข่าย Wi-Fi
+// ==========================================
+#define CONFIG_WIFI_SSID      "1234_2.4G"
+#define CONFIG_WIFI_PASSWORD  "123456789"
 #define MAXIMUM_RETRY         5
 
 #define LED_GPIO_PIN          GPIO_NUM_2
@@ -28,6 +32,15 @@ static EventGroupHandle_t s_wifi_event_group;
 
 static int s_retry_num = 0;
 static adc_oneshot_unit_handle_t s_adc1_handle = NULL;
+
+// ==========================================
+// 2. ตัวแปร Virtual Potentiometer
+//    (จำลองค่าเซนเซอร์แอนะล็อกกรณีไม่มี Potentiometer จริง)
+// ==========================================
+static int  s_virtual_pot_val = 2048; // ค่าเริ่มต้น
+static bool s_use_virtual_pot = true; // เปิดใช้งานระบบจำลอง
+static bool s_auto_sweep      = true; // ปรับค่าจำลองขึ้น-ลงอัตโนมัติ
+static int  s_sweep_dir       = 1;
 
 static void wifi_event_handler(void* arg, esp_event_base_t event_base,
                                int32_t event_id, void* event_data)
@@ -92,8 +105,21 @@ static void hnd_get_pot(coap_resource_t *resource,
                         const coap_string_t *query,
                         coap_pdu_t *response)
 {
+    if (s_auto_sweep) {
+        s_virtual_pot_val += s_sweep_dir * 120;
+        if (s_virtual_pot_val >= 4095) {
+            s_virtual_pot_val = 4095;
+            s_sweep_dir = -1;
+        } else if (s_virtual_pot_val <= 0) {
+            s_virtual_pot_val = 0;
+            s_sweep_dir = 1;
+        }
+    }
+
     int pot_val = 0;
-    if (s_adc1_handle != NULL) {
+    if (s_use_virtual_pot) {
+        pot_val = s_virtual_pot_val;
+    } else if (s_adc1_handle != NULL) {
         adc_oneshot_read(s_adc1_handle, POT_ADC_CHANNEL, &pot_val);
     }
 
@@ -103,6 +129,34 @@ static void hnd_get_pot(coap_resource_t *resource,
     coap_pdu_set_code(response, COAP_RESPONSE_CODE_CONTENT); // 2.05 Content
     coap_add_data(response, strlen(pot_str), (const uint8_t *)pot_str);
     ESP_LOGI(TAG, "GET /sensor/pot -> %s", pot_str);
+}
+
+// Handler เสริมสำหรับ PUT /sensor/pot เพื่อให้ปรับค่า Potentiometer ได้ผ่าน CoAP
+static void hnd_put_pot(coap_resource_t *resource,
+                        coap_session_t *session,
+                        const coap_pdu_t *request,
+                        const coap_string_t *query,
+                        coap_pdu_t *response)
+{
+    size_t size;
+    const uint8_t *data;
+    coap_get_data(request, &size, &data);
+
+    if (size > 0) {
+        char buf[32];
+        size_t len = size < sizeof(buf) - 1 ? size : sizeof(buf) - 1;
+        memcpy(buf, data, len);
+        buf[len] = '\0';
+
+        int val = atoi(buf);
+        if (val >= 0 && val <= 4095) {
+            s_virtual_pot_val = val;
+            s_auto_sweep = false;
+            s_use_virtual_pot = true;
+            ESP_LOGI(TAG, "PUT /sensor/pot set to: %d", s_virtual_pot_val);
+        }
+    }
+    coap_pdu_set_code(response, COAP_RESPONSE_CODE_CHANGED); // 2.04 Changed
 }
 
 // 2. Handler สำหรับ PUT /actuator/led
@@ -159,6 +213,7 @@ static void coap_server_task(void *pvParameters)
         coap_str_const_t *r_pot_uri = coap_make_str_const("sensor/pot");
         coap_resource_t *r_pot = coap_resource_init(r_pot_uri, 0);
         coap_register_handler(r_pot, COAP_REQUEST_GET, hnd_get_pot);
+        coap_register_handler(r_pot, COAP_REQUEST_PUT, hnd_put_pot);
         coap_add_resource(ctx, r_pot);
 
         coap_str_const_t *r_led_uri = coap_make_str_const("actuator/led");
@@ -205,9 +260,11 @@ void app_main(void)
         ESP_LOGI(TAG, "ADC Initialized on GPIO 34");
     }
 
+    ESP_LOGI(TAG, "Virtual Potentiometer Enabled for CoAP Server");
+
     // 4. Connect Wi-Fi
     if (wifi_init_sta()) {
-        // 5. Create CoAP Server Task (ใช้ Stack Size 8192 ไบต์)
+        // 5. Create CoAP Server Task (Stack size 8192 bytes)
         xTaskCreate(coap_server_task, "coap_server", 8192, NULL, 5, NULL);
         ESP_LOGI(TAG, "Ready! Test CoAP with: python test_coap.py");
     } else {

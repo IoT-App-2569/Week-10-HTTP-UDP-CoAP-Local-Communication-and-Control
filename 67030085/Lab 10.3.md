@@ -1,5 +1,6 @@
 # ใบงานการทดลองที่ 10.3
 ### การพัฒนา CoAP Server สำหรับระบบฝังตัวและการควบคุมอุปกรณ์ด้วยโปรโตคอลน้ำหนักเบา
+**รหัสนักศึกษา:** 67030085
 
 > [!NOTE] **คำชี้แจง**
 > ในใบงานนี้ นักศึกษาจะได้เรียนรู้การติดตั้งและพัฒนาเซิร์ฟเวอร์ด้วยโปรโตคอล **CoAP (Constrained Application Protocol - RFC 7252)** บน ESP32 ซึ่งเป็นโปรโตคอลมาตรฐานสากลสำหรับอุปกรณ์ IoT ที่รวมข้อดีด้านความเบาของ UDP เข้ากับสถาปัตยกรรม RESTful ของ HTTP พร้อมทั้งทดสอบคุณสมบัติ **Observe (RFC 7641)** เพื่อติดตามค่าเซนเซอร์โดยอัตโนมัติ
@@ -605,7 +606,130 @@ if __name__ == "__main__":
 
 ---
 
+## 3. บันทึกผลการทดลอง (Verification & Execution Logs)
+
+### 3.1 ผลการทดสอบ CoAP Resource Discovery (`GET /.well-known/core`)
+ทดสอบใช้ CoAP Client ส่งคำขอ GET ไปยัง URI มาตรฐาน `/.well-known/core` เพื่อค้นหาบริการทั้งหมดที่ ESP32 ให้บริการ:
+
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> python -m aiocoap.cli.client -m GET coap://192.168.1.41/.well-known/core
+</sensor/pot>,</actuator/led>
+```
+
+**ผลการทดสอบ:** ESP32 ตอบกลับรายการทรัพยากรที่มีอยู่ทั้งหมด ได้แก่ `</sensor/pot>` และ `</actuator/led>` ในรูปแบบ CoRE Link Format ได้อย่างถูกต้องสมบูรณ์
+
+---
+
+### 3.2 ผลการทดสอบอ่านค่าเซนเซอร์ (`GET /sensor/pot`)
+ทดสอบส่งคำขอ GET เพื่ออ่านค่าแอนะล็อกเซนเซอร์ Potentiometer (Virtual Potentiometer จำลองค่า 0–4095):
+
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> python -m aiocoap.cli.client -m GET coap://192.168.1.41/sensor/pot
+2528
+```
+ข้อความ Log บน Serial Monitor ของ ESP32:
+```text
+I (621395) COAP_LAB: GET /sensor/pot -> 2528
+```
+**ผลการทดสอบ:** ได้รับค่าตัวเลขแอนะล็อก `2528` พร้อมรหัสสถานะ `2.05 Content` โดยมีขนาด Payload เพียง 4 ไบต์
+
+---
+
+### 3.3 ผลการทดสอบควบคุม LED (`PUT /actuator/led`)
+
+#### 1) คำสั่งเปิดไฟ LED (ส่ง Payload `'1'`)
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> python -m aiocoap.cli.client -m PUT --payload 1 coap://192.168.1.41/actuator/led
+```
+ข้อความ Log บน Serial Monitor ของ ESP32:
+```text
+I (709035) COAP_LAB: LED turned ON via CoAP PUT
+```
+*สังเกตได้ว่าหลอดไฟ LED บนขา GPIO 2 ติดสว่าง และเซิร์ฟเวอร์ตอบกลับรหัส `2.04 Changed`*
+
+#### 2) คำสั่งปิดไฟ LED (ส่ง Payload `'0'`)
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> python -m aiocoap.cli.client -m PUT --payload 0 coap://192.168.1.41/actuator/led
+```
+ข้อความ Log บน Serial Monitor ของ ESP32:
+```text
+I (711040) COAP_LAB: LED turned OFF via CoAP PUT
+```
+*หลอดไฟ LED ดับลง และได้รับรหัสตอบกลับ `2.04 Changed` สำเร็จ*
+
+---
+
+### 3.4 ผลการทดสอบอัตโนมัติด้วยสคริปต์ Python (`python test_coap.py`)
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> python test_coap.py
+
+--- 1. Testing CoAP Resource Discovery (/.well-known/core) ---
+Resource Directory (CoRE Link Format):
+</sensor/pot>,</actuator/led>
+
+--- 2. Testing CoAP GET /sensor/pot ---
+Potentiometer Value: 2528 (Code: 2.05 Content)
+
+--- 3. Testing CoAP PUT /actuator/led (Turn ON) ---
+LED ON Response Code: 2.04 Changed
+
+--- 4. Testing CoAP PUT /actuator/led (Turn OFF) ---
+LED OFF Response Code: 2.04 Changed
+```
+
+---
+
 ## 4. บันทึกผลการทดลองและคำถามท้ายบท (Lab Report & Questions)
-1. นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ **CoRE Link Format (RFC 6690)** ว่าแสดงข้อมูลทรัพยากรอย่างไร
-2. อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง **CON (Confirmable)** และ **NON (Non-confirmable)** เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ
-3. ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?
+
+### คำถามข้อที่ 1
+> **นำผลการ Query `/.well-known/core` มาแสดงในรายงาน พร้อมอธิบายรูปแบบ CoRE Link Format (RFC 6690) ว่าแสดงข้อมูลทรัพยากรอย่างไร**
+
+#### 1) ผลการ Query:
+```text
+</sensor/pot>,</actuator/led>
+```
+
+#### 2) โครงสร้างและการทำงานของ CoRE Link Format (RFC 6690):
+- **รูปแบบการเข้ารหัส (Encoding):** เป็นการจัดรูปแบบข้อความกะทัดรัด (Compact Web Linking) ที่ออกแบบมาสำหรับเครือข่ายอุปกรณ์สมองกลฝังตัว (Constrained M2M Networks)
+- **การคั่นและระบุ URI:** แต่ละเส้นทางของทรัพยากร (URI-Reference) จะถูกครอบด้วยเครื่องหมาย Bracket `<` และ `>` (เช่น `</sensor/pot>`) และคั่นระหว่างทรัพยากรแต่ละตัวด้วยเครื่องหมายจุลภาค (`,`)
+- **การระบุ Link Format Attributes (Optional Parameters):** สามารถต่อท้ายด้วยพารามิเตอร์เพื่อระบุคุณลักษณะเชิงลึก เช่น
+  - `rt="sensor.analog"` : ระบุ Resource Type สำหรับค้นหาประเภทของเซนเซอร์
+  - `if="core.s"` : ระบุ Interface Description (เช่น core.s สำหรับ Sensor, core.a สำหรับ Actuator)
+  - `ct=0` : ระบุ Content-Format (เช่น `0` = text/plain, `50` = application/json)
+  - `obs` : ธงระบุว่าทรัพยากรนี้รองรับการติดตามอัตโนมัติ (CoAP Observe - RFC 7641)
+- **ประโยชน์ในงาน IoT:** ช่วยให้ Client สามารถทำ **Automated Resource Discovery** โดยค้นหา URI และบริการทั้งหมดบนโหนด IoT ได้อัตโนมัติ โดยไม่ต้องฮาร์ดโค้ด URL ไว้ล่วงหน้า
+
+---
+
+### คำถามข้อที่ 2
+> **อธิบายความแตกต่างของแพ็กเก็ต CoAP ระหว่าง CON (Confirmable) และ NON (Non-confirmable) เมื่อทดสอบในเครือข่ายที่มีการรบกวนสัญญาณ**
+
+| มิติการเปรียบเทียบ | CON (Confirmable) | NON (Non-confirmable) |
+| :--- | :--- | :--- |
+| **กลไกการยืนยัน (Reliability)** | **มี ACK ตอบกลับ:** ผู้รับต้องส่งแพ็กเก็ต Acknowledgment กลับมาพร้อม Message ID เดียวกันเสมอ | **ไม่มี ACK (Fire-and-Forget):** ผู้ส่งจะไม่รอการตอบรับ ส่งข้อมูลออกไปแล้วจบกระบวนการทันที |
+| **พฤติกรรมเมื่อสัญญาณรบกวน/ข้อมูลสูญหาย** | หากไม่ได้รับ ACK ภายใน Timeout (ค่าเริ่มต้น 2 วินาที) ผู้ส่งจะทำ **Retransmission ซ้ำอัตโนมัติแบบ Exponential Backoff** (สูงสุด 4 ครั้ง) จนกว่าจะส่งสำเร็จ | หากแพ็กเก็ตตกหล่นเนื่องจากสัญญาณรบกวน ข้อมูลจะ **สูญหายไปทันทีโดยไม่มีการส่งซ้ำ** |
+| **ความหน่วงเวลา (Latency) & พลังงาน** | มีความหน่วงสูงกว่าเล็กน้อย และใช้วิทยุนานกว่าเนื่องจากต้องรอ ACK | มีความหน่วงต่ำที่สุด (Zero RTT Wait) และประหยัดพลังงานแบตเตอรี่สูงสุด |
+| **กรณีการใช้งานที่เหมาะสม** | เหมาะสำหรับ **คำสั่งควบคุมที่ผิดพลาดไม่ได้** เช่น สั่งเปิด-ปิดวาล์วน้ำ, สั่งรีเซ็ตระบบ หรือการแจ้งเตือนภัย | เหมาะสำหรับ **ข้อมูล Telemetry ความถี่สูง** ที่ค่าที่ตกหล่นจะถูกแทนที่ด้วยค่าใหม่ในรอบถัดไปอยู่แล้ว |
+
+---
+
+### คำถามข้อที่ 3
+> **ทำไม CoAP จึงเหมาะสมกับโปรโตคอลการสื่อสารบนเครือข่ายเช่น Thread, Zigbee IP หรือ NB-IoT มากกว่า HTTP?**
+
+1. **ขนาด Header ที่เล็กมากระดับไบนารี (Ultra-compact Binary Header):**
+   - ส่วนหัวของ CoAP มีขนาดคงที่เพียง **4 ไบต์** (Ver, Type, TKL, Code, Message ID) ในขณะที่ HTTP/1.1 มีส่วนหัวแบบ Text มากถึง **150–300 ไบต์**
+   - บนเครือข่าย **Thread / Zigbee (IEEE 802.15.4)** มีขนาด MTU จำกัดเพียง **127 ไบต์** แพ็กเก็ต CoAP สามารถบรรจุลงใน 1 เฟรมวิทยุได้อย่างพอดีโดยไม่ต้องแบ่งชิ้นส่วน (Fragmentation) ผ่าน 6LoWPAN ช่วยลดอัตราการสูญหายและประหยัด Buffer แรมของชิป
+2. **การทำงานบน Transport Layer แบบ UDP:**
+   - CoAP ทำงานบน **UDP (พอร์ต 5683)** จึงไม่มีขั้นตอน TCP 3-Way Handshake และไม่ต้องรักษา Connection State
+   - ลดเวลาการเปิดใช้งานภาครับส่งวิทยุ (Radio On-time / Airtime) ของโหนด ทำให้อุปกรณ์ที่ใช้พลังงานจากแบตเตอรี่หรือโซลาร์เซลล์มีอายุการใช้งานยาวนานขึ้นหลายปี
+3. **การประหยัดค่าใช้จ่ายด้านแบนด์วิดท์บน NB-IoT / Cellular:**
+   - การคิดค่าบริการของซิมเครือข่าย NB-IoT คิดตามปริมาณข้อมูล (Kilobyte Billing) การใช้ CoAP ช่วยลด Data Volume ได้มากกว่า **90–95%** เมื่อเทียบกับ HTTP ช่วยลดต้นทุนการดำเนินงานอย่างมหาศาล
+4. **รองรับสถาปัตยกรรมแบบ Asynchronous Publish-Subscribe (CoAP Observe - RFC 7641):**
+   - CoAP รองรับการบอกรับข้อมูล (Observe) เมื่อเซนเซอร์มีการเปลี่ยนแปลงสถานะ เซิร์ฟเวอร์จะผลักข้อมูลมายัง Client เอง โดยไม่ต้องให้ Client ส่งคำขอ Poll ซ้ำๆ ตลอดเวลาเหมือน HTTP GET
+
+---
+
+## 5. สรุปผลการทดลอง
+- สามารถพัฒนาเซิร์ฟเวอร์ CoAP บน ESP-IDF ได้สำเร็จ โดยเปิดให้บริการทรัพยากร `sensor/pot` สำหรับอ่านค่าแอนะล็อก และ `actuator/led` สำหรับควบคุมสถานะไฟ LED บนพอร์ต UDP 5683
+- ได้ทดสอบกลไก CoRE Link Format (`/.well-known/core`) ซึ่งเป็นมาตรฐานสำคัญที่ช่วยให้อุปกรณ์ Client สามารถค้นหาทรัพยากรบนเครือข่าย IoT ได้โดยอัตโนมัติ
+- CoAP พิสูจน์ให้เห็นว่าเป็นโปรโตคอลที่ตอบโจทย์เครือข่าย IoT ยุคใหม่อย่างแท้จริง โดยผสมผสานรูปแบบการสั่งงานสไตล์ RESTful API เข้ากับความรวดเร็ว ประหยัดพลังงาน และขนาด Header ที่เล็กระดับไบนารีบน UDP ได้อย่างสมบูรณ์แบบ
