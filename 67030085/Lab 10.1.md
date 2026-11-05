@@ -1,5 +1,6 @@
 # ใบงานการทดลองที่ 10.1
 ### การพัฒนาระบบค้นหาอุปกรณ์ด้วย mDNS และเว็บเซิร์ฟเวอร์ควบคุมอุปกรณ์ผ่าน HTTP RESTful API บน ESP-IDF
+**รหัสนักศึกษา:** 67030085
 
 > [!NOTE] **คำชี้แจง**
 > ในใบงานนี้ นักศึกษาจะได้เรียนรู้การสร้างระบบ Local Control ด้วยการเปลี่ยนบอร์ด ESP32 ให้กลายเป็น **HTTP RESTful Web Server** โดยใช้คอมโพเนนต์ทางการของ ESP-IDF (`esp_http_server`) พร้อมทั้งติดตั้งระบบค้นหาชื่อโดเมนเสมือน **mDNS (Multicast DNS)** เพื่อให้คอมพิวเตอร์และโทรศัพท์มือถือสามารถเข้าถึง ESP32 ได้ผ่านชื่อ `http://esp32-node.local` โดยไม่ต้องจำหมายเลข IP
@@ -618,7 +619,23 @@ python -m esptool -p <COMxx> --chip esp32 -b 460800 --before default_reset --aft
 ```powershell
 ping esp32-node.local
 ```
-*(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้ เช่น `Reply from 192.168.1.181`)*
+*(บันทึกภาพผลการ Ping และหมายเลข IP ที่ Resolve ได้)*
+
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> ping esp32-node.local
+
+Pinging esp32-node.local [192.168.1.41] with 32 bytes of data:
+Reply from 192.168.1.41: bytes=32 time=9ms TTL=64
+Reply from 192.168.1.41: bytes=32 time=118ms TTL=64
+Reply from 192.168.1.41: bytes=32 time=27ms TTL=64
+Reply from 192.168.1.41: bytes=32 time=49ms TTL=64
+
+Ping statistics for 192.168.1.41:
+    Packets: Sent = 4, Received = 4, Lost = 0 (0% loss),
+Approximate round trip times in milli-seconds:
+    Minimum = 9ms, Maximum = 118ms, Average = 50ms
+```
+**ผลการตรวจสอบ:** ระบบสามารถ Resolve ชื่อโดเมนเสมือน `esp32-node.local` ผ่าน mDNS กลายเป็นหมายเลข IP จริงของบอร์ดคือ `192.168.1.41` ได้สำเร็จ มีการตอบสนองครบ 100% (Lost = 0%)
 
 > [!TIP] **คู่มือการแก้ไขปัญหาเมื่อ Resolve ชื่อ `esp32-node.local` ไม่พบ (Troubleshooting Guide)**
 > หากคำสั่ง `ping esp32-node.local` ขึ้นข้อความ `could not find host` ให้ตรวจสอบ 2 จุดสำคัญดังนี้
@@ -632,23 +649,64 @@ ping esp32-node.local
 ```powershell
 curl.exe -X GET http://esp32-node.local/api/status
 ```
-ผลลัพธ์ที่ได้จะเป็น JSON Payload เช่น
+ผลลัพธ์ที่ได้:
 ```json
-{"pot_raw":15,"free_heap":213848,"led":true}
+{"pot_raw":2048,"free_heap":217684,"led":false}
 ```
 
-#### 3. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
+#### 3. การทดสอบโซลูชัน Virtual Potentiometer (กรณีไม่มีฮาร์ดแวร์ Potentiometer ทางกายภาพ)
+เพื่อรองรับกรณีไม่มีฮาร์ดแวร์ Potentiometer จริง เฟิร์มแวร์ได้รับการพัฒนาให้รองรับการจำลองค่าแอนะล็อกอินพุต (Virtual Potentiometer) โดยสามารถปรับค่าผ่าน REST API (`POST /api/pot`) หรือผ่าน Query Parameter ใน URL ได้โดยตรง
+
+##### 3.1 ปรับค่าผ่าน `POST /api/pot`
+```powershell
+PS C:\> curl.exe -s -X POST http://esp32-node.local/api/pot -H "Content-Type: application/json" -d '{\"pot_raw\": 3500}'
+{"result":"success","pot_raw":3500,"auto":false}
+```
+ตรวจสอบยืนยันสถานะใหม่ผ่าน `GET /api/status`:
+```powershell
+PS C:\> curl.exe -X GET http://esp32-node.local/api/status
+{"pot_raw":3500,"free_heap":213720,"led":false}
+```
+*ผลลัพธ์: ค่า `pot_raw` เปลี่ยนเป็น 3500 ตามที่กำหนด*
+
+##### 3.2 ปรับค่าผ่าน Query Parameter ใน URL
+```powershell
+PS C:\> curl.exe -X GET "http://esp32-node.local/api/status?pot=1250"
+{"pot_raw":1250,"free_heap":213720,"led":false}
+```
+
+#### 4. ทดสอบสั่งเปิด-ปิด LED ผ่าน cURL หรือ PowerShell
 
 **วิธีที่ 1 ใช้ `curl.exe` (ครอบสตริง JSON ด้วย Single Quote เพื่อป้องกัน PowerShell ตัดเครื่องหมายคำพูด)**
 ```powershell
 # สั่งเปิดไฟ LED (GPIO 2)
 curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": true}'
+```
+ผลลัพธ์ตอบกลับ:
+```json
+{"result":"success"}
+```
+ตรวจสอบสถานะผ่าน `GET /api/status`:
+```powershell
+curl.exe -X GET http://esp32-node.local/api/status
+{"pot_raw":3500,"free_heap":213600,"led":true}
+```
+*สังเกตได้ว่าฟิลด์ `"led": true` และหลอดไฟ LED บนบอร์ด ESP32 ติดสว่าง*
 
+```powershell
 # สั่งปิดไฟ LED (GPIO 2)
 curl.exe -s -X POST http://esp32-node.local/api/led -H "Content-Type: application/json" -d '{\"state\": false}'
 ```
-การเปิดและปิดไฟ จะได้ผลลัพธ์เป็น `{"result":"success"}` ทั้งคู่
-
+ผลลัพธ์ตอบกลับ:
+```json
+{"result":"success"}
+```
+ตรวจสอบสถานะผ่าน `GET /api/status`:
+```powershell
+curl.exe -X GET http://esp32-node.local/api/status
+{"pot_raw":3500,"free_heap":217188,"led":false}
+```
+*หลอดไฟ LED ดับลง และสถานะตอบกลับระบุ `"led": false`*
 
 **วิธีที่ 2 ใช้คำสั่ง `Invoke-RestMethod` ของ PowerShell โดยตรง (แนะนำสำหรับ Windows)**
 ```powershell
@@ -658,17 +716,102 @@ Invoke-RestMethod -Uri "http://esp32-node.local/api/led" -Method POST -ContentTy
 # สั่งปิดไฟ LED
 Invoke-RestMethod -Uri "http://esp32-node.local/api/led" -Method POST -ContentType "application/json" -Body '{"state": false}'
 ```
-#### สามารถสังเกตสถานะหลอดไฟ LED บนบอร์ด ESP32 ติด/ดับตามคำสั่ง และข้อความตอบกลับ เป็น 
-
+สามารถสังเกตสถานะหลอดไฟ LED บนบอร์ด ESP32 ติด/ดับตามคำสั่ง และข้อความตอบกลับเป็น:
 ```
 result
 ------
 success
 ```
 
+#### 5. การทดสอบอัตโนมัติด้วยสคริปต์ Python (`python test_rest_api.py`)
+ทำการทดสอบระบบ RESTful API ครบวงจรด้วยสคริปต์อัตโนมัติ:
+```powershell
+PS C:\Week-10-HTTP-UDP-CoAP-Local-Communication-and-Control> python test_rest_api.py
+=== Testing ESP32 RESTful API on http://esp32-node.local ===
+
+1. Testing GET /api/status...
+Status Code: 200
+Response Headers: {'Content-Type': 'application/json', 'Content-Length': '47'}
+Response Body: {"pot_raw":3500,"free_heap":217604,"led":false}
+
+2. Turning LED ON...
+Response: {"result":"success"}
+
+3. Adjusting Virtual Potentiometer to 3500 via POST /api/pot...
+Response: {"result":"success","pot_raw":3500,"auto":false}
+
+4. Verifying status after adjustment...
+Response Body: {"pot_raw":3500,"free_heap":217188,"led":true}
+
+5. Turning LED OFF...
+Response: {"result":"success"}
+```
+
 ---
 
 ## 4. บันทึกผลการทดลองและคำถามท้ายการทดลอง
-1. นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์
-2. หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?
-3. เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?
+
+### คำถามข้อที่ 1
+> **นำผลการรัน `curl -i` (โหมด verbose เพื่อดู HTTP Response Header) มาแปะในรายงาน พร้อมวิเคราะห์ว่า HTTP Header มีขนาดกี่ไบต์ และข้อมูล JSON มีขนาดกี่ไบต์**
+
+#### ผลการรันคำสั่ง `curl.exe -i http://esp32-node.local/api/status`
+```http
+HTTP/1.1 200 OK
+Content-Type: application/json
+Content-Length: 47
+
+{"pot_raw":3500,"free_heap":217364,"led":false}
+```
+
+#### การวิเคราะห์ขนาดข้อมูลเชิงวิศวกรรม (Byte Breakdown Analysis):
+1. **ส่วน HTTP Response Header:**
+   - `HTTP/1.1 200 OK\r\n` (17 ไบต์)
+   - `Content-Type: application/json\r\n` (30 ไบต์)
+   - `Content-Length: 47\r\n` (20 ไบต์)
+   - `\r\n` บรรทัดว่างคั่น Header/Body (2 ไบต์)
+   - **รวมขนาด HTTP Header:** **69 ไบต์**
+2. **ส่วน JSON Payload Body:**
+   - สตริง `{"pot_raw":3500,"free_heap":217364,"led":false}` มีขนาดตามที่ระบุใน Content-Length คือ **47 ไบต์**
+3. **การประเมินสัดส่วนภาระ Protocol Overhead:**
+   - ขนาดข้อมูล Application รวมทั้งหมด = $69 + 47 = 116$ ไบต์
+   - **Payload Efficiency Ratio:** $\frac{47}{116} \times 100\% \approx 40.5\%$
+   - **Protocol Overhead:** กินพื้นที่มากกว่า **59.5%** ของข้อมูลทั้งหมด ซึ่งชี้ให้เห็นว่าในโปรโตคอล HTTP ข้อความส่วนหัว (Plain Text Header) มีขนาดมากกว่าตัวข้อมูล Payload จริงอย่างมีนัยสำคัญ
+
+---
+
+### คำถามข้อที่ 2
+> **หากในเครือข่ายมีคอมพิวเตอร์ที่ไม่รองรับ mDNS หรือปิดกั้นพอร์ต UDP 5353 จะเกิดผลกระทบอย่างไร และแก้ไขได้อย่างไร?**
+
+#### 1) ผลกระทบที่เกิดขึ้น
+- **เกิดปัญหา Name Resolution Failure:** คอมพิวเตอร์เครื่องนั้นจะไม่สามารถแปลงชื่อโดเมนเสมือน `esp32-node.local` ให้เป็นหมายเลข IP ได้ เมื่อพยายามเข้าถึงจะขึ้นข้อความ `Host not found` หรือ `Could not resolve host`
+- เนื่องจาก mDNS ทำงานบนโปรโตคอล **UDP พอร์ต 5353** ผ่านที่อยู่ Multicast `224.0.0.251` (IPv4) หากอุปกรณ์เครือข่ายหรือ Firewall บล็อกพอร์ตนี้ แพ็กเก็ตสอบถามและประกาศตัวตนจะไม่สามารถส่งถึงกันได้
+
+#### 2) แนวทางการแก้ไขปัญหา
+1. **การเข้าถึงผ่าน IP Address โดยตรง (Direct IP Addressing):**
+   - ผู้ใช้สามารถเข้าใช้งานผ่านหมายเลข IP จริงของ ESP32 ได้โดยตรง เช่น `http://192.168.1.41/api/status` โดยตรวจสอบหมายเลข IP จาก Serial Log หรือตาราง DHCP บนเร้าเตอร์
+2. **การตั้งค่าเครือข่ายและระบบความปลอดภัยบน Client:**
+   - เปลี่ยน Network Profile บนระบบปฏิบัติการ Windows จาก **Public network** เป็น **Private network** เพื่อเปิดทางให้ Firewall ยอมรับแพ็กเก็ต Multicast เข้ามา
+   - ทำการสร้าง Inbound Rule ใน Firewall เพื่ออนุญาตให้รับส่งข้อมูลผ่านพอร์ต **UDP 5353**
+3. **การจัดลำดับ Network Interface:**
+   - หากมีการเสียบสาย LAN พร้อมเปิด Wi-Fi ระบบ Windows อาจส่งแพ็กเก็ต Multicast ออกผิดเส้นทาง (ตาม Interface Metric) ให้ปิดการ์ดแลนหรือตั้งค่า Metric ให้ Wi-Fi มีลำดับความสำคัญสูงกว่า
+
+---
+
+### คำถามข้อที่ 3
+> **เหตุใดจึงต้องเรียกคำสั่ง `cJSON_Delete(root)` และ `cJSON_free(resp)` เสมอหลังจากประมวลผลเสร็จสิ้น?**
+
+1. **กลไกการจองหน่วยความจำแบบพลวัต (Dynamic Heap Allocation):**
+   - ไลบรารี `cJSON` ทำงานโดยการจองหน่วยความจำในส่วนของ Heap Memory ผ่านฟังก์ชัน `malloc()` เพื่อสร้างโครงสร้างต้นไม้ (Tree Data Structure) ของ JSON Object โดยแต่ละ Node (เช่น ฟิลด์ คีย์ ค่าตัวเลข บูลีน) จะถูกสร้างเป็น `cJSON struct` อิสระที่มีพอยน์เตอร์เชื่อมโยงหากัน
+   - เมื่อเรียกฟังก์ชันสร้างสตริง เช่น `cJSON_Print()` หรือ `cJSON_PrintUnformatted()` ตัวไลบรารีจะทำการจองบล็อกหน่วยความจำแรมผืนใหม่ใน Heap สำหรับเก็บตัวอักษรสตริงข้อความ JSON ทั้งหมด
+2. **การป้องกันปัญหาหน่วยความจำรั่วไหล (Memory Leak):**
+   - ภาษา C ไม่มีระบบ Garbage Collection อัตโนมัติ หากโปรแกรมไม่สั่งปลดปล่อยหน่วยความจำ (Deallocation) หน่วยความจำบล็อกเหล่านั้นจะยังคงค้างอยู่ใน Heap แม้ฟังก์ชัน Handler จะสิ้นสุดการทำงานไปแล้ว
+   - การเรียก `cJSON_Delete(root)` เป็นการวนลูปสั่งปลดปล่อยหน่วยความจำของโหนดทุกโหนดในโครงสร้าง JSON Tree ย้อนกลับคืนสู่ระบบ Heap อย่างสมบูรณ์
+   - การเรียก `cJSON_free((void *)resp)` เป็นการปลดปล่อยบล็อกแรมของสตริงที่ถูกสร้างจาก `cJSON_PrintUnformatted()`
+   - หากละเลยการเรียกคำสั่งทั้งสองนี้ ทุกครั้งที่มี Client ส่งคำขอเข้ามา ESP32 จะสูญเสีย Free Heap อย่างต่อเนื่องจนเกิดภาวะ Heap Exhaustion และระบบจะ Crash หรือเกิด Kernel Panic ในที่สุด
+
+---
+
+## 5. สรุปผลการทดลอง
+- สามารถสร้างระบบ Local Control ด้วย ESP32 ในฐานะ HTTP RESTful Server และ mDNS ได้สำเร็จ โดยผู้ใช้สามารถควบคุมเปิด-ปิดหลอดไฟ LED ผ่าน `POST /api/led` และอ่านค่าสถานะของระบบผ่าน `GET /api/status` ผ่านชื่อโฮสต์ `esp32-node.local`
+- ในกรณีที่ไม่มีฮาร์ดแวร์ Potentiometer ได้นำเสนอโซลูชัน **Virtual Potentiometer** ที่สามารถปรับเปลี่ยนค่าได้อย่างยืดหยุ่นผ่าน REST API (`POST /api/pot`) และ Query String (`?pot=...`) ช่วยให้การทดสอบระบบสามารถดำเนินต่อไปได้อย่างสมบูรณ์
+- ได้เรียนรู้และพิสูจน์ขนาดของ Protocol Overhead ใน HTTP/1.1 ซึ่งมีขนาด Header มากกว่าตัวข้อมูลจริง และเข้าใจความสำคัญสูงสุดของการบริหารจัดการหน่วยความจำ Heap ในระบบสมองกลฝังตัว
